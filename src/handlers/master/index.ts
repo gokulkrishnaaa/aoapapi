@@ -1,0 +1,11 @@
+export { getGender, addGender, updateGender, removeGender } from "./gender";
+export { getDistrictsFromState } from "./district";
+export { getInfoSource } from "./infosource";
+export { getSocialStatus } from "./socialstatus";
+export { getStates } from "./states";
+export { getCityFromDistrict } from "./city";
+export { getCityForExam } from "./examcity";
+export { createCourse } from "./course";
+export { createCampus, getCampus } from "./campus";
+export { createProgramme } from "./programme";
+export { addProgrammeToEntrance, getProgrammesByEntrance } from "./entrance";

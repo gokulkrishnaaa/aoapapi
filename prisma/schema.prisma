@@ -1,0 +1,311 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  directUrl         = env("DIRECT_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model Gender {
+  id        Int         @id @default(autoincrement())
+  name      String      @unique
+  createdAt DateTime    @default(now())
+  Candidate Candidate[]
+}
+
+model SocialStatus {
+  id        Int         @id @default(autoincrement())
+  name      String      @unique
+  createdAt DateTime    @default(now())
+  Candidate Candidate[]
+}
+
+model InfoSource {
+  id        Int         @id @default(autoincrement())
+  name      String      @unique
+  createdAt DateTime    @default(now())
+  Candidate Candidate[]
+}
+
+model State {
+  id          Int           @id @default(autoincrement())
+  name        String        @unique
+  districts   District[]
+  createdAt   DateTime      @default(now())
+  Candidate   Candidate[]
+  PlusTwoInfo PlusTwoInfo[]
+}
+
+model District {
+  id        Int         @id @default(autoincrement())
+  name      String      @unique
+  state     State       @relation(fields: [stateId], references: [id])
+  stateId   Int
+  cities    City[]
+  createdAt DateTime    @default(now())
+  Candidate Candidate[]
+}
+
+model City {
+  id         Int         @id @default(autoincrement())
+  name       String      @unique
+  district   District    @relation(fields: [districtId], references: [id])
+  districtId Int
+  createdAt  DateTime    @default(now())
+  Candidate  Candidate[]
+}
+
+model CountryCode {
+  id        Int      @id @default(autoincrement())
+  code      String   @unique
+  createdAt DateTime @default(now())
+}
+
+model Onboarding {
+  createdAt   DateTime  @default(now())
+  candidate   Candidate @relation(fields: [candidateId], references: [id])
+  candidateId String    @unique
+  status      Boolean   @default(false)
+  current     Int       @default(1)
+}
+
+model Candidate {
+  id               String             @id @default(uuid())
+  createdAt        DateTime           @default(now())
+  fullname         String?
+  dob              DateTime?
+  gender           Gender?            @relation(fields: [genderId], references: [id])
+  genderId         Int?
+  socialstatus     SocialStatus?      @relation(fields: [socialstatusId], references: [id])
+  socialstatusId   Int?
+  email            String?            @unique
+  phone            String?            @unique
+  phonecode        String?
+  infosource       InfoSource?        @relation(fields: [infosourceId], references: [id])
+  infosourceId     Int?
+  aadhaarnumber    String?            @unique
+  state            State?             @relation(fields: [stateId], references: [id])
+  stateId          Int?
+  district         District?          @relation(fields: [districtId], references: [id])
+  districtId       Int?
+  city             City?              @relation(fields: [cityId], references: [id])
+  cityId           Int?
+  address1         String?
+  address2         String?
+  photoid          String?
+  signid           String?
+  emailverified    DateTime?
+  phoneverified    DateTime?
+  aadhaarverified  DateTime?
+  Onboarding       Onboarding?
+  ParentInfo       ParentInfo?
+  PlusTwoInfo      PlusTwoInfo?
+  ExamApplication  ExamApplication[]
+  EntrancePayments EntrancePayments[]
+}
+
+model ParentInfo {
+  id            String    @id @default(uuid())
+  createdAt     DateTime  @default(now())
+  fullname      String?
+  candidate     Candidate @relation(fields: [candidateId], references: [id])
+  candidateId   String    @unique
+  email         String?   @unique
+  phone         String?   @unique
+  phonecode     String?
+  emailverified DateTime?
+  phoneverified DateTime?
+}
+
+model PlusTwoInfo {
+  id          String    @id @default(uuid())
+  createdAt   DateTime  @default(now())
+  candidate   Candidate @relation(fields: [candidateId], references: [id])
+  candidateId String    @unique
+  state       State?    @relation(fields: [stateId], references: [id])
+  stateId     Int?
+}
+
+model Entrance {
+  id                 String               @id @default(cuid())
+  createdAt          DateTime             @default(now())
+  name               String
+  code               String               @unique
+  description        String
+  Exam               Exam[]
+  ExamCity           ExamCity[]
+  EntranceProgrammes EntranceProgrammes[]
+}
+
+enum ExamStatus {
+  CLOSED
+  APPLY
+  SLOT
+  ADMIT
+  RANK
+  PAUSE
+}
+
+model Exam {
+  id              String            @id @default(cuid())
+  createdAt       DateTime          @default(now())
+  entrance        Entrance          @relation(fields: [entranceId], references: [id])
+  entranceId      String
+  description     String?
+  status          ExamStatus        @default(PAUSE)
+  ExamApplication ExamApplication[]
+  Registration    Registration[]
+}
+
+enum ExamApplicationStatus {
+  PENDING
+  APPLIED
+  REGISTERED
+  SLOT
+  ADMIT
+  RANK
+}
+
+model ExamApplication {
+  id                      String                   @id @default(cuid())
+  exam                    Exam                     @relation(fields: [examId], references: [id])
+  examId                  String
+  candidate               Candidate                @relation(fields: [candidateId], references: [id])
+  candidateId             String
+  status                  ExamApplicationStatus    @default(PENDING)
+  Registration            Registration[]
+  ExamApplicationProgress ExamApplicationProgress?
+  EntrancePayments        EntrancePayments[]
+  ApplicationProgrammes   ApplicationProgrammes[]
+  ApplicationJEE          ApplicationJEE?
+  ApplicationCities       ApplicationCities[]
+
+  @@unique([examId, candidateId])
+}
+
+model ExamApplicationProgress {
+  examapplication   ExamApplication @relation(fields: [examapplicationId], references: [id])
+  examapplicationId String          @unique
+  current           Int             @default(1)
+}
+
+model Registration {
+  id                String          @id @default(cuid())
+  exam              Exam            @relation(fields: [examId], references: [id])
+  examId            String
+  examapplication   ExamApplication @relation(fields: [examapplicationId], references: [id])
+  examapplicationId String
+  registrationNo    String
+}
+
+enum PaymentStatus {
+  FAILED
+  SUCCESS
+}
+
+model EntrancePayments {
+  id                String          @id @default(cuid())
+  candidate         Candidate       @relation(fields: [candidateId], references: [id])
+  candidateId       String
+  examapplication   ExamApplication @relation(fields: [examapplicationId], references: [id])
+  examapplicationId String
+  status            PaymentStatus
+  amount            Int
+}
+
+model EmailOtp {
+  id        Int      @id @default(autoincrement())
+  email     String
+  code      String   @unique
+  expiresAt DateTime
+}
+
+model ExamCity {
+  id                Int                 @id @default(autoincrement())
+  entrance          Entrance            @relation(fields: [entranceId], references: [id])
+  entranceId        String
+  name              String              @unique
+  createdAt         DateTime            @default(now())
+  ApplicationCities ApplicationCities[]
+}
+
+model Course {
+  id         Int          @id @default(autoincrement())
+  name       String       @unique
+  createdAt  DateTime     @default(now())
+  Programmes Programmes[]
+}
+
+model Campus {
+  id         Int          @id @default(autoincrement())
+  name       String       @unique
+  Programmes Programmes[]
+}
+
+model Programmes {
+  id                    Int                     @id @default(autoincrement())
+  course                Course                  @relation(fields: [courseId], references: [id])
+  courseId              Int
+  campus                Campus                  @relation(fields: [campusId], references: [id])
+  campusId              Int
+  code                  String                  @unique
+  createdAt             DateTime                @default(now())
+  EntranceProgrammes    EntranceProgrammes[]
+  ApplicationProgrammes ApplicationProgrammes[]
+
+  @@unique([courseId, campusId])
+}
+
+model EntranceProgrammes {
+  id          Int        @id @default(autoincrement())
+  entrance    Entrance   @relation(fields: [entranceId], references: [id])
+  entranceId  String
+  programme   Programmes @relation(fields: [programmeId], references: [id])
+  programmeId Int
+  createdAt   DateTime   @default(now())
+
+  @@unique([entranceId, programmeId])
+}
+
+model ApplicationProgrammes {
+  id                Int             @id @default(autoincrement())
+  examapplication   ExamApplication @relation(fields: [examapplicationId], references: [id])
+  examapplicationId String
+  programme         Programmes      @relation(fields: [programmeId], references: [id])
+  programmeId       Int
+  createdAt         DateTime        @default(now())
+
+  @@unique([examapplicationId, programmeId])
+}
+
+model ApplicationJEE {
+  id                Int             @id @default(autoincrement())
+  examapplication   ExamApplication @relation(fields: [examapplicationId], references: [id])
+  examapplicationId String          @unique
+  jee               Boolean         @default(false)
+  createdAt         DateTime        @default(now())
+}
+
+model ApplicationCities {
+  id                Int             @id @default(autoincrement())
+  examapplication   ExamApplication @relation(fields: [examapplicationId], references: [id])
+  examapplicationId String
+  examcity          ExamCity        @relation(fields: [examcityId], references: [id])
+  examcityId        Int
+  createdAt         DateTime        @default(now())
+
+  @@unique([examapplicationId, examcityId])
+}
+
+model AdminUser {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
