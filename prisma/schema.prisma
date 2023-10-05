@@ -137,7 +137,7 @@ model Entrance {
   createdAt          DateTime             @default(now())
   name               String
   code               String               @unique
-  description        String
+  description        String               @unique
   Exam               Exam[]
   ExamCity           ExamCity[]
   EntranceProgrammes EntranceProgrammes[]
@@ -157,7 +157,7 @@ model Exam {
   createdAt       DateTime          @default(now())
   entrance        Entrance          @relation(fields: [entranceId], references: [id])
   entranceId      String
-  description     String?
+  description     String            @unique
   status          ExamStatus        @default(PAUSE)
   ExamApplication ExamApplication[]
   Registration    Registration[]

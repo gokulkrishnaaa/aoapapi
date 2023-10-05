@@ -40,7 +40,7 @@ import {
   getOpenExams,
   updateExam,
 } from "./handlers/entrance";
-import { checkExamValid } from "./handlers/entrance/exam";
+import { checkExamValid, getExamsByEntrance } from "./handlers/entrance/exam";
 import {
   addCityToApplication,
   addProgrammeToApplication,
@@ -99,6 +99,7 @@ router.put("/exam/:id", requireAuth, updateExam);
 router.post("/exam/check/:id", requireAuth, checkExamValid);
 router.get("/exam/open", requireAuth, getOpenExams);
 router.get("/exam", requireAuth, getAllExams);
+router.get("/exam/:entranceId", requireAuth, getExamsByEntrance);
 router.post("/application", requireAuth, createApplication);
 router.post(
   "/application/:id/progress",

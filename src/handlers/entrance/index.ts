@@ -10,5 +10,11 @@ export {
   getCityByApplication,
   removeCityFromApplication,
 } from "./application";
-export { createEntrance } from "./entrance";
-export { createExam, getOpenExams, updateExam, getAllExams } from "./exam";
+export { createEntrance, getEntrances } from "./entrance";
+export {
+  createExam,
+  getOpenExams,
+  updateExam,
+  getAllExams,
+  getExamsByEntrance,
+} from "./exam";

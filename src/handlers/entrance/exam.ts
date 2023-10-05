@@ -72,6 +72,19 @@ export const getAllExams = async (req, res) => {
   return res.json(allexams);
 };
 
+export const getExamsByEntrance = async (req, res) => {
+  const { entranceId } = req.params;
+  const allexams = await prisma.exam.findMany({
+    where: {
+      entranceId,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+  return res.json(allexams);
+};
+
 export const updateExam = async (req, res) => {
   const data = req.body;
   const id = req.params.id;
