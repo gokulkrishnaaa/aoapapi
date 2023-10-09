@@ -55,7 +55,11 @@ import {
   updateApplicationProgress,
 } from "./handlers/entrance/application";
 import { sendEmailOtp, verifyEmail } from "./handlers/email";
-import { adminSignin, currentAdminUser } from "./handlers/admin";
+import {
+  adminSignin,
+  createAdminUser,
+  currentAdminUser,
+} from "./handlers/admin";
 import { requireCandidate } from "./middlewares/require-candidate";
 
 const router = Router();
@@ -125,6 +129,7 @@ router.post("/email/verify", verifyEmail);
 
 //admin
 router.post("/admin/signin", adminSignin);
+router.post("/admin/register", createAdminUser);
 router.post("/admin/currentuser", requireAuth, currentAdminUser);
 
 export default router;

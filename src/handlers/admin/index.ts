@@ -1,2 +1,2 @@
 export { currentAdminUser } from "./currentuser";
-export { adminSignin } from "./signin";
+export { adminSignin, createAdminUser } from "./signin";
