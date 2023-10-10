@@ -10,7 +10,7 @@ export {
   getCityByApplication,
   removeCityFromApplication,
 } from "./application";
-export { createEntrance, getEntrances } from "./entrance";
+export { createEntrance, getEntrances, removeEntrance } from "./entrance";
 export {
   createExam,
   getOpenExams,

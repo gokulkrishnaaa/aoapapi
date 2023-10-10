@@ -2,7 +2,11 @@ import prisma from "../../db";
 import { InternalServerError } from "../../errors/internal-server-error";
 
 export const getGender = async (req, res) => {
-  const data = await prisma.gender.findMany();
+  const data = await prisma.gender.findMany({
+    orderBy: {
+      id: "asc", // Sort by 'id' field in descending order
+    },
+  });
   res.json(data);
 };
 

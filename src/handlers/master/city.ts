@@ -1,5 +1,7 @@
 import prisma from "../../db";
 import { BadRequestError } from "../../errors/bad-request-error";
+import { InternalServerError } from "../../errors/internal-server-error";
+
 export const getCityFromDistrict = async (req, res) => {
   const districtId = parseInt(req.params.districtId);
 
@@ -12,6 +14,9 @@ export const getCityFromDistrict = async (req, res) => {
       where: {
         districtId,
       },
+      orderBy: {
+        id: "asc",
+      },
     });
     return res.json(cities);
   } catch (error) {
@@ -19,5 +24,43 @@ export const getCityFromDistrict = async (req, res) => {
     throw new BadRequestError("Request cannot be processed");
   } finally {
     await prisma.$disconnect();
+  }
+};
+
+export const addCity = async (req, res) => {
+  try {
+    const data = req.body;
+    const item = await prisma.city.create({
+      data,
+    });
+    return res.json(item);
+  } catch (error) {
+    throw new InternalServerError("Error adding City");
+  }
+};
+
+export const updateCity = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = req.body;
+    const item = await prisma.city.update({
+      where: { id: parseInt(id) },
+      data,
+    });
+    return res.json(item);
+  } catch (error) {
+    throw new InternalServerError("Error updating City");
+  }
+};
+
+export const removeCity = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const item = await prisma.city.delete({
+      where: { id: parseInt(id) },
+    });
+    return res.json(item);
+  } catch (error) {
+    throw new InternalServerError("Error deleting City");
   }
 };

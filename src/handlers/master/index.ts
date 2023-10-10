@@ -1,11 +1,31 @@
 export { getGender, addGender, updateGender, removeGender } from "./gender";
-export { getDistrictsFromState } from "./district";
-export { getInfoSource } from "./infosource";
-export { getSocialStatus } from "./socialstatus";
-export { getStates } from "./states";
-export { getCityFromDistrict } from "./city";
-export { getCityForExam } from "./examcity";
-export { createCourse } from "./course";
-export { createCampus, getCampus } from "./campus";
+export {
+  getSocialStatus,
+  addSocialStatus,
+  updateSocialStatus,
+  removeSocialStatus,
+} from "./socialstatus";
+export {
+  getInfoSource,
+  addInfoSource,
+  updateInfoSource,
+  removeInfoSource,
+} from "./infosource";
+export { getStates, addState, removeState, updateState } from "./states";
+export {
+  getDistrictsFromState,
+  addDistrict,
+  updateDistrict,
+  removeDistrict,
+} from "./district";
+export { getCityFromDistrict, addCity, updateCity, removeCity } from "./city";
+export {
+  getCityForExam,
+  addCityForEntrance,
+  updateCityForEntrance,
+  removeCityForEntrance,
+} from "./examcity";
+export { getCourses, addCourse, updateCourse, removeCourse } from "./course";
+export { addCampus, getCampus, removeCampus, updateCampus } from "./campus";
 export { createProgramme } from "./programme";
 export { addProgrammeToEntrance, getProgrammesByEntrance } from "./entrance";
