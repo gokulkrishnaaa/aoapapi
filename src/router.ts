@@ -18,6 +18,7 @@ import {
   getDistrictsFromState,
   getGender,
   getInfoSource,
+  getProgrammes,
   getProgrammesByEntrance,
   getSocialStatus,
   getStates,
@@ -26,8 +27,10 @@ import {
   removeCityForEntrance,
   removeCourse,
   removeDistrict,
+  removeEntranceFromProgram,
   removeGender,
   removeInfoSource,
+  removeProgramme,
   removeSocialStatus,
   removeState,
   updateCampus,
@@ -141,6 +144,8 @@ router.put("/master/city/:id", updateCity);
 router.delete("/master/city/:id", removeCity);
 
 router.post("/master/programme/", createProgramme);
+router.get("/master/programme/", getProgrammes);
+router.delete("/master/programme/:id", removeProgramme);
 
 router.get("/master/examcity/:entranceid", getCityForExam);
 router.post("/master/examcity/", addCityForEntrance);
@@ -148,6 +153,10 @@ router.put("/master/examcity/:id", updateCityForEntrance);
 router.delete("/master/examcity/:id", removeCityForEntrance);
 
 router.post("/master/entrance/programme", addProgrammeToEntrance);
+router.delete(
+  "/master/entrance/:entranceId/programme/:programmeId",
+  removeEntranceFromProgram
+);
 router.get("/master/entrance/:entranceId/programme", getProgrammesByEntrance);
 
 // entrance and exam

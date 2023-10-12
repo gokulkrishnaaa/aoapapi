@@ -27,5 +27,9 @@ export {
 } from "./examcity";
 export { getCourses, addCourse, updateCourse, removeCourse } from "./course";
 export { addCampus, getCampus, removeCampus, updateCampus } from "./campus";
-export { createProgramme } from "./programme";
-export { addProgrammeToEntrance, getProgrammesByEntrance } from "./entrance";
+export { createProgramme, getProgrammes, removeProgramme } from "./programme";
+export {
+  addProgrammeToEntrance,
+  getProgrammesByEntrance,
+  removeEntranceFromProgram,
+} from "./entrance";

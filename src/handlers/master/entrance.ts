@@ -2,10 +2,14 @@ import { Prisma } from "@prisma/client";
 import prisma from "../../db";
 import { BadRequestError } from "../../errors/bad-request-error";
 import { CannotProcessError } from "../../errors/cannot-process-error";
+import { InternalServerError } from "../../errors/internal-server-error";
 
 export const addProgrammeToEntrance = async (req, res) => {
   // check for empty string throw bad request error
   const { entranceId, programmeId } = req.body;
+  console.log("entranceid", entranceId);
+  console.log("programmeId", programmeId);
+
   if (!entranceId || !programmeId) {
     throw new BadRequestError("Input is invalid");
   }
@@ -15,7 +19,7 @@ export const addProgrammeToEntrance = async (req, res) => {
     item = await prisma.entranceProgrammes.create({
       data: {
         entranceId,
-        programmeId,
+        programmeId: parseInt(programmeId),
       },
     });
   } catch (error) {
@@ -38,6 +42,24 @@ export const addProgrammeToEntrance = async (req, res) => {
   }
 
   return res.json(item);
+};
+
+export const removeEntranceFromProgram = async (req, res) => {
+  const { entranceId, programmeId } = req.params;
+  try {
+    const deletedEntranceProgramme = await prisma.entranceProgrammes.delete({
+      where: {
+        entranceId_programmeId: {
+          entranceId,
+          programmeId: parseInt(programmeId),
+        },
+      },
+    });
+
+    return res.json(deletedEntranceProgramme);
+  } catch (error) {
+    throw new InternalServerError("Error removing entrance programme");
+  }
 };
 
 export const getProgrammesByEntrance = async (req, res) => {

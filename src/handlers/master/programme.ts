@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import prisma from "../../db";
 import { BadRequestError } from "../../errors/bad-request-error";
 import { CannotProcessError } from "../../errors/cannot-process-error";
+import { InternalServerError } from "../../errors/internal-server-error";
 
 export const createProgramme = async (req, res) => {
   // check for empty string throw bad request error
@@ -34,4 +35,33 @@ export const createProgramme = async (req, res) => {
   }
 
   return res.json(item);
+};
+
+export const getProgrammes = async (req, res) => {
+  const data = await prisma.programmes.findMany({
+    include: {
+      course: true,
+      campus: true,
+      EntranceProgrammes: {
+        include: {
+          entrance: true,
+        },
+      },
+    },
+  });
+  res.json(data);
+};
+
+export const removeProgramme = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleted = await prisma.programmes.delete({
+      where: { id: parseInt(id) },
+    });
+    return res.json(deleted);
+  } catch (error) {
+    console.log(error);
+
+    throw new InternalServerError("Error deleting Programmes");
+  }
 };
