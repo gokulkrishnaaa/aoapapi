@@ -13,11 +13,11 @@ export const createApplication = async (req, res) => {
     data: applndata,
   });
 
-  await prisma.examApplicationProgress.create({
-    data: {
-      examapplicationId: application.id,
-    },
-  });
+  //   await prisma.examApplicationProgress.create({
+  //     data: {
+  //       examapplicationId: application.id,
+  //     },
+  //   });
 
   await prisma.applicationJEE.create({
     data: {
@@ -31,7 +31,7 @@ export const createApplication = async (req, res) => {
     },
     include: {
       Registration: true,
-      ExamApplicationProgress: true,
+
       exam: {
         include: {
           entrance: true, // Include Entrance details
@@ -66,7 +66,7 @@ export const getApplication = async (req, res) => {
     },
     include: {
       Registration: true,
-      ExamApplicationProgress: true,
+
       candidate: true,
       exam: {
         include: {
@@ -92,7 +92,7 @@ export const getApplicationByExam = async (req, res) => {
     },
     include: {
       Registration: true,
-      ExamApplicationProgress: true,
+
       exam: {
         include: {
           entrance: true, // Include Entrance details

@@ -1,6 +1,7 @@
 import prisma from "../../db";
 import { createJWT } from "../../modules/auth";
 import isValidEmail from "../../utilities/checkemail";
+import isValidPhone from "../../utilities/checkphone";
 
 export const signin = async (req, res) => {
   const username = req.body.username;
@@ -15,6 +16,24 @@ export const signin = async (req, res) => {
     const latestValidOTP = await prisma.emailOtp.findFirst({
       where: {
         email: username,
+        expiresAt: {
+          gt: new Date(), // Check if the expiration date is greater than the current date and time
+        },
+      },
+      orderBy: {
+        expiresAt: "desc", // Order by expiration date in ascending order to get the latest OTP
+      },
+    });
+
+    if (latestValidOTP) {
+      if (latestValidOTP.code === otp) {
+        isValid = true;
+      }
+    }
+  } else if (isValidPhone(username)) {
+    const latestValidOTP = await prisma.numberOtp.findFirst({
+      where: {
+        number: username,
         expiresAt: {
           gt: new Date(), // Check if the expiration date is greater than the current date and time
         },
@@ -60,10 +79,15 @@ export const signin = async (req, res) => {
 
   let onboarding = null;
   if (!candidate) {
-    const candidateData = {
-      email: username,
-      emailverified: new Date(),
-    };
+    const candidateData = isValidEmail(username)
+      ? {
+          email: username,
+          emailverified: new Date(),
+        }
+      : {
+          phone: username,
+          phoneverified: new Date(),
+        };
 
     candidate = await prisma.candidate.create({
       data: candidateData,
@@ -89,6 +113,8 @@ export const signin = async (req, res) => {
     id: candidate.id,
     email: candidate.email,
     emailverified: candidate.emailverified,
+    phone: candidate.phone,
+    phoneverified: candidate.phoneverified,
     photoid: candidate.photoid,
     onboarding: onboarding.current,
     onboardingstatus: onboarding.status,

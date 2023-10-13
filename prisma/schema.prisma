@@ -196,12 +196,15 @@ model ExamApplicationProgress {
 }
 
 model Registration {
-  id                String          @id @default(cuid())
+  id                Int             @id @default(autoincrement())
   exam              Exam            @relation(fields: [examId], references: [id])
   examId            String
   examapplication   ExamApplication @relation(fields: [examapplicationId], references: [id])
   examapplicationId String
-  registrationNo    String
+  registrationNo    Int
+
+  @@unique([examId, examapplicationId])
+  @@unique([examId, registrationNo])
 }
 
 enum PaymentStatus {
@@ -222,6 +225,13 @@ model EntrancePayments {
 model EmailOtp {
   id        Int      @id @default(autoincrement())
   email     String
+  code      String   @unique
+  expiresAt DateTime
+}
+
+model NumberOtp {
+  id        Int      @id @default(autoincrement())
+  number    String
   code      String   @unique
   expiresAt DateTime
 }

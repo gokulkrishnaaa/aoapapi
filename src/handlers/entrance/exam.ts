@@ -1,5 +1,6 @@
 import prisma from "../../db";
 import { BadRequestError } from "../../errors/bad-request-error";
+import { InternalServerError } from "../../errors/internal-server-error";
 
 export const createExam = async (req, res) => {
   const data = req.body;
@@ -97,4 +98,36 @@ export const updateExam = async (req, res) => {
   });
 
   return res.json(updatedExam);
+};
+
+export const registerForExam = async (req, res) => {
+  const { examId, examapplicationId, transactionId } = req.body;
+
+  // check whether transaction is successfull
+  // if not return false
+
+  const lastEntry = await prisma.registration.findFirst({
+    where: { examId },
+    orderBy: { id: "desc" },
+  });
+
+  let registrationNo = 1000001;
+
+  if (lastEntry) {
+    const lastRegNo = lastEntry.registrationNo;
+    registrationNo = lastRegNo + 1;
+  }
+
+  try {
+    const registration = await prisma.registration.create({
+      data: {
+        examId,
+        examapplicationId,
+        registrationNo,
+      },
+    });
+    return res.json(registration);
+  } catch (error) {
+    throw new InternalServerError("Cannot be registered");
+  }
 };

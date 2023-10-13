@@ -71,7 +71,11 @@ import {
   getOpenExams,
   updateExam,
 } from "./handlers/entrance";
-import { checkExamValid, getExamsByEntrance } from "./handlers/entrance/exam";
+import {
+  checkExamValid,
+  getExamsByEntrance,
+  registerForExam,
+} from "./handlers/entrance/exam";
 import {
   addCityToApplication,
   addProgrammeToApplication,
@@ -92,6 +96,7 @@ import {
   currentAdminUser,
 } from "./handlers/admin";
 import { requireCandidate } from "./middlewares/require-candidate";
+import { sendPhoneOtp, verifyPhone } from "./handlers/phone";
 
 const router = Router();
 
@@ -168,6 +173,7 @@ router.post("/exam", requireAuth, createExam);
 router.put("/exam/:id", requireAuth, updateExam);
 router.post("/exam/check/:id", requireAuth, checkExamValid);
 router.get("/exam/open", requireAuth, getOpenExams);
+router.post("/exam/register", requireAuth, registerForExam);
 router.get("/exam", requireAuth, getAllExams);
 router.get("/exam/:entranceId", requireAuth, getExamsByEntrance);
 router.post("/application", requireAuth, createApplication);
@@ -192,6 +198,8 @@ router.get("/application/:id/city", getCityByApplication);
 router.delete("/application/:id/city/:examcityId", removeCityFromApplication);
 router.post("/email/otp", sendEmailOtp);
 router.post("/email/verify", verifyEmail);
+router.post("/phone/otp", sendPhoneOtp);
+router.post("/phone/verify", verifyPhone);
 
 //admin
 router.post("/admin/signin", adminSignin);

@@ -17,4 +17,5 @@ export {
   updateExam,
   getAllExams,
   getExamsByEntrance,
+  registerForExam,
 } from "./exam";
