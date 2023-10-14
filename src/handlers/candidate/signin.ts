@@ -105,6 +105,7 @@ export const signin = async (req, res) => {
       },
     });
   }
+  console.log(onboarding);
 
   // 3. create jwt with id
   // 4. add session with jwt

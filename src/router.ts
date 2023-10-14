@@ -205,5 +205,8 @@ router.post("/phone/verify", verifyPhone);
 router.post("/admin/signin", adminSignin);
 router.post("/admin/register", createAdminUser);
 router.post("/admin/currentuser", requireAuth, currentAdminUser);
+router.post("/paymentresponse", (req, res) => {
+  res.redirect("/onboarding");
+});
 
 export default router;
