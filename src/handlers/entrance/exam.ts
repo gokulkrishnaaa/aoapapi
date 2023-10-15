@@ -101,10 +101,18 @@ export const updateExam = async (req, res) => {
 };
 
 export const registerForExam = async (req, res) => {
-  const { examId, examapplicationId, transactionId } = req.body;
+  const { examId, examapplicationId } = req.body;
 
-  // check whether transaction is successfull
-  // if not return false
+  const successPayment = await prisma.entrancePayments.findMany({
+    where: {
+      examapplicationId, // Replace with the actual application ID you want to filter by
+      status: "SUCCESS",
+    },
+  });
+
+  if (successPayment.length === 0) {
+    throw new BadRequestError("Payment Pending");
+  }
 
   const lastEntry = await prisma.registration.findFirst({
     where: { examId },
@@ -128,6 +136,72 @@ export const registerForExam = async (req, res) => {
     });
     return res.json(registration);
   } catch (error) {
-    throw new InternalServerError("Cannot be registered");
+    console.log(error);
+    throw new InternalServerError("Registration Failed. Please try again");
   }
+};
+
+export const examPaymentSuccess = async (req, res) => {
+  const { txnid, result } = req.body;
+
+  const transactionDetails = await prisma.entrancePayments.findUnique({
+    where: {
+      txnid,
+    },
+    include: {
+      examapplication: {
+        include: {
+          exam: {
+            include: {
+              entrance: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  let txnstatus =
+    result === "success"
+      ? "SUCCESS"
+      : result === "failed"
+      ? "FAILED"
+      : transactionDetails.status;
+
+  const updatedTransaction = await prisma.entrancePayments.update({
+    where: {
+      txnid,
+    },
+    data: {
+      status: txnstatus,
+    },
+  });
+
+  if (updatedTransaction.status === "SUCCESS") {
+    const lastEntry = await prisma.registration.findFirst({
+      where: { examId: transactionDetails.examapplication.exam.id },
+      orderBy: { id: "desc" },
+    });
+
+    let registrationNo = 1000001;
+
+    if (lastEntry) {
+      const lastRegNo = lastEntry.registrationNo;
+      registrationNo = lastRegNo + 1;
+    }
+
+    try {
+      const registration = await prisma.registration.create({
+        data: {
+          examId: transactionDetails.examapplication.exam.id,
+          examapplicationId: transactionDetails.examapplication.id,
+          registrationNo,
+        },
+      });
+      console.log(registration);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  res.redirect("/applications");
 };

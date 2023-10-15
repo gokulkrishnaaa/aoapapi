@@ -7,6 +7,7 @@ import {
   addDistrict,
   addGender,
   addInfoSource,
+  addProduct,
   addProgrammeToEntrance,
   addSocialStatus,
   addState,
@@ -18,6 +19,8 @@ import {
   getDistrictsFromState,
   getGender,
   getInfoSource,
+  getProductByCode,
+  getProducts,
   getProgrammes,
   getProgrammesByEntrance,
   getSocialStatus,
@@ -30,6 +33,7 @@ import {
   removeEntranceFromProgram,
   removeGender,
   removeInfoSource,
+  removeProduct,
   removeProgramme,
   removeSocialStatus,
   removeState,
@@ -40,6 +44,7 @@ import {
   updateDistrict,
   updateGender,
   updateInfoSource,
+  updateProduct,
   updateSocialStatus,
   updateState,
 } from "./handlers/master";
@@ -73,6 +78,7 @@ import {
 } from "./handlers/entrance";
 import {
   checkExamValid,
+  examPaymentSuccess,
   getExamsByEntrance,
   registerForExam,
 } from "./handlers/entrance/exam";
@@ -97,6 +103,10 @@ import {
 } from "./handlers/admin";
 import { requireCandidate } from "./middlewares/require-candidate";
 import { sendPhoneOtp, verifyPhone } from "./handlers/phone";
+import {
+  createEntranceTransaction,
+  getTransactionsByApplication,
+} from "./handlers/entrance/transactions";
 
 const router = Router();
 
@@ -118,6 +128,13 @@ router.get("/master/gender", getGender);
 router.post("/master/gender", addGender);
 router.put("/master/gender/:id", updateGender);
 router.delete("/master/gender/:id", removeGender);
+
+router.get("/master/product", getProducts);
+router.get("/master/product/code/:code", getProductByCode);
+router.post("/master/product", addProduct);
+router.put("/master/product/:id", updateProduct);
+router.delete("/master/product/:id", removeProduct);
+
 router.get("/master/socialstatus", getSocialStatus);
 router.post("/master/socialstatus", addSocialStatus);
 router.put("/master/socialstatus/:id", updateSocialStatus);
@@ -174,6 +191,7 @@ router.put("/exam/:id", requireAuth, updateExam);
 router.post("/exam/check/:id", requireAuth, checkExamValid);
 router.get("/exam/open", requireAuth, getOpenExams);
 router.post("/exam/register", requireAuth, registerForExam);
+router.post("/exam/paymentsuccess", requireAuth, examPaymentSuccess);
 router.get("/exam", requireAuth, getAllExams);
 router.get("/exam/:entranceId", requireAuth, getExamsByEntrance);
 router.post("/application", requireAuth, createApplication);
@@ -196,6 +214,14 @@ router.get("/application/:id/jee", getApplicationJeeStatus);
 router.post("/application/:id/city", addCityToApplication);
 router.get("/application/:id/city", getCityByApplication);
 router.delete("/application/:id/city/:examcityId", removeCityFromApplication);
+
+router.get(
+  "/transactions/application/:id",
+  requireAuth,
+  getTransactionsByApplication
+);
+
+router.post("/transactions/entrance/", requireAuth, createEntranceTransaction);
 router.post("/email/otp", sendEmailOtp);
 router.post("/email/verify", verifyEmail);
 router.post("/phone/otp", sendPhoneOtp);
@@ -206,7 +232,8 @@ router.post("/admin/signin", adminSignin);
 router.post("/admin/register", createAdminUser);
 router.post("/admin/currentuser", requireAuth, currentAdminUser);
 router.post("/paymentresponse", (req, res) => {
-  res.redirect("/onboarding");
+  console.log("Form Data:", req.body);
+  res.redirect("/applications");
 });
 
 export default router;

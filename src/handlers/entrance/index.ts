@@ -1,4 +1,9 @@
 export {
+  getTransactionsByApplication,
+  createEntranceTransaction,
+} from "./transactions";
+
+export {
   createApplication,
   getApplication,
   addProgrammeToApplication,
@@ -18,4 +23,5 @@ export {
   getAllExams,
   getExamsByEntrance,
   registerForExam,
+  examPaymentSuccess,
 } from "./exam";

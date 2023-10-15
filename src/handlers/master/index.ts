@@ -1,3 +1,11 @@
+export {
+  getProducts,
+  addProduct,
+  updateProduct,
+  removeProduct,
+  getProductByCode,
+} from "./product";
+
 export { getGender, addGender, updateGender, removeGender } from "./gender";
 export {
   getSocialStatus,

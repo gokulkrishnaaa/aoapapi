@@ -208,18 +208,23 @@ model Registration {
 }
 
 enum PaymentStatus {
+  STARTED
   FAILED
   SUCCESS
 }
 
 model EntrancePayments {
   id                String          @id @default(cuid())
+  txnid             String          @unique @default(cuid())
   candidate         Candidate       @relation(fields: [candidateId], references: [id])
   candidateId       String
   examapplication   ExamApplication @relation(fields: [examapplicationId], references: [id])
   examapplicationId String
-  status            PaymentStatus
-  amount            Int
+  description       String?
+  status            PaymentStatus   @default(STARTED)
+  amount            Decimal
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
 }
 
 model EmailOtp {
@@ -318,4 +323,11 @@ model AdminUser {
   username  String   @unique
   password  String
   createdAt DateTime @default(now())
+}
+
+model Products {
+  id     Int     @id @default(autoincrement())
+  code   String  @unique
+  name   String  @unique
+  amount Decimal
 }
