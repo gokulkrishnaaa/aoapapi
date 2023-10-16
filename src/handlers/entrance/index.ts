@@ -24,4 +24,5 @@ export {
   getExamsByEntrance,
   registerForExam,
   examPaymentSuccess,
+  examPaymentFailure,
 } from "./exam";

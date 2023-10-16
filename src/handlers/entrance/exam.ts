@@ -142,66 +142,135 @@ export const registerForExam = async (req, res) => {
 };
 
 export const examPaymentSuccess = async (req, res) => {
-  const { txnid, result } = req.body;
+  //   const { txnid, result } = req.body;
+  console.log("payment success");
+  console.log(req.body);
 
-  const transactionDetails = await prisma.entrancePayments.findUnique({
-    where: {
-      txnid,
-    },
-    include: {
-      examapplication: {
-        include: {
-          exam: {
-            include: {
-              entrance: true,
-            },
-          },
-        },
-      },
-    },
-  });
+  //   const transactionDetails = await prisma.entrancePayments.findUnique({
+  //     where: {
+  //       txnid,
+  //     },
+  //     include: {
+  //       examapplication: {
+  //         include: {
+  //           exam: {
+  //             include: {
+  //               entrance: true,
+  //             },
+  //           },
+  //         },
+  //       },
+  //     },
+  //   });
 
-  let txnstatus =
-    result === "success"
-      ? "SUCCESS"
-      : result === "failed"
-      ? "FAILED"
-      : transactionDetails.status;
+  //   let txnstatus =
+  //     result === "success"
+  //       ? "SUCCESS"
+  //       : result === "failed"
+  //       ? "FAILED"
+  //       : transactionDetails.status;
 
-  const updatedTransaction = await prisma.entrancePayments.update({
-    where: {
-      txnid,
-    },
-    data: {
-      status: txnstatus,
-    },
-  });
+  //   const updatedTransaction = await prisma.entrancePayments.update({
+  //     where: {
+  //       txnid,
+  //     },
+  //     data: {
+  //       status: txnstatus,
+  //     },
+  //   });
 
-  if (updatedTransaction.status === "SUCCESS") {
-    const lastEntry = await prisma.registration.findFirst({
-      where: { examId: transactionDetails.examapplication.exam.id },
-      orderBy: { id: "desc" },
-    });
+  //   if (updatedTransaction.status === "SUCCESS") {
+  //     const lastEntry = await prisma.registration.findFirst({
+  //       where: { examId: transactionDetails.examapplication.exam.id },
+  //       orderBy: { id: "desc" },
+  //     });
 
-    let registrationNo = 1000001;
+  //     let registrationNo = 1000001;
 
-    if (lastEntry) {
-      const lastRegNo = lastEntry.registrationNo;
-      registrationNo = lastRegNo + 1;
-    }
+  //     if (lastEntry) {
+  //       const lastRegNo = lastEntry.registrationNo;
+  //       registrationNo = lastRegNo + 1;
+  //     }
 
-    try {
-      const registration = await prisma.registration.create({
-        data: {
-          examId: transactionDetails.examapplication.exam.id,
-          examapplicationId: transactionDetails.examapplication.id,
-          registrationNo,
-        },
-      });
-      console.log(registration);
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  //     try {
+  //       const registration = await prisma.registration.create({
+  //         data: {
+  //           examId: transactionDetails.examapplication.exam.id,
+  //           examapplicationId: transactionDetails.examapplication.id,
+  //           registrationNo,
+  //         },
+  //       });
+  //       console.log(registration);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   }
+  res.redirect("/applications");
+};
+
+export const examPaymentFailure = async (req, res) => {
+  //   const { txnid, result } = req.body;
+  console.log("payment failure");
+  console.log(req.body);
+
+  //   const transactionDetails = await prisma.entrancePayments.findUnique({
+  //     where: {
+  //       txnid,
+  //     },
+  //     include: {
+  //       examapplication: {
+  //         include: {
+  //           exam: {
+  //             include: {
+  //               entrance: true,
+  //             },
+  //           },
+  //         },
+  //       },
+  //     },
+  //   });
+
+  //   let txnstatus =
+  //     result === "success"
+  //       ? "SUCCESS"
+  //       : result === "failed"
+  //       ? "FAILED"
+  //       : transactionDetails.status;
+
+  //   const updatedTransaction = await prisma.entrancePayments.update({
+  //     where: {
+  //       txnid,
+  //     },
+  //     data: {
+  //       status: txnstatus,
+  //     },
+  //   });
+
+  //   if (updatedTransaction.status === "SUCCESS") {
+  //     const lastEntry = await prisma.registration.findFirst({
+  //       where: { examId: transactionDetails.examapplication.exam.id },
+  //       orderBy: { id: "desc" },
+  //     });
+
+  //     let registrationNo = 1000001;
+
+  //     if (lastEntry) {
+  //       const lastRegNo = lastEntry.registrationNo;
+  //       registrationNo = lastRegNo + 1;
+  //     }
+
+  //     try {
+  //       const registration = await prisma.registration.create({
+  //         data: {
+  //           examId: transactionDetails.examapplication.exam.id,
+  //           examapplicationId: transactionDetails.examapplication.id,
+  //           registrationNo,
+  //         },
+  //       });
+  //       console.log(registration);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   }
   res.redirect("/applications");
 };
