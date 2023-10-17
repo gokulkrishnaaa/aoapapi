@@ -191,18 +191,16 @@ export const examPaymentSuccess = async (req, res) => {
     body: formData,
   });
   const chkResponseData = await chkResponse.json();
-  if (chkResponseData.status === 0) {
+  if ((chkResponseData as { status: number }).status === 0) {
     return res.redirect("/applications");
   }
-
-  console.log("hck respon data", chkResponseData.transaction_details[txnid]);
 
   // get all details and ssave to db
 
   let txnstatus =
-    chkResponseData.transaction_details[txnid].status === "success"
+    (chkResponseData as any).transaction_details[txnid].status === "success"
       ? "SUCCESS"
-      : chkResponseData.transaction_details[txnid].status === "failure"
+      : (chkResponseData as any).transaction_details[txnid].status === "failure"
       ? "FAILED"
       : transactionDetails.status;
 
