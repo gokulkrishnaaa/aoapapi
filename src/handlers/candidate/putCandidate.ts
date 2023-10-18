@@ -31,8 +31,8 @@ export const putCandidate = async (req, res) => {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === "P2002") {
         throw new CannotProcessError(
-          "Email, Phone or Aadhaar already exists",
-          "server"
+          `${error.meta.target[0]} already exists`,
+          `${error.meta.target[0]}`
         );
       } else if (error.code === "P2003") {
         throw new CannotProcessError("Required input is missing");
