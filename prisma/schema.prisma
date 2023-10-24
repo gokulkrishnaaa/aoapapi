@@ -59,6 +59,7 @@ model City {
   districtId Int
   createdAt  DateTime    @default(now())
   Candidate  Candidate[]
+  ExamCity   ExamCity[]
 }
 
 model CountryCode {
@@ -245,9 +246,13 @@ model ExamCity {
   id                Int                 @id @default(autoincrement())
   entrance          Entrance            @relation(fields: [entranceId], references: [id])
   entranceId        String
-  name              String              @unique
+  city              City?               @relation(fields: [cityId], references: [id])
+  cityId            Int?
+  name              String?
   createdAt         DateTime            @default(now())
   ApplicationCities ApplicationCities[]
+
+  @@unique([entranceId, cityId])
 }
 
 model Course {

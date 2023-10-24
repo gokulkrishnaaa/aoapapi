@@ -2,6 +2,22 @@ import prisma from "../../db";
 import { BadRequestError } from "../../errors/bad-request-error";
 import { InternalServerError } from "../../errors/internal-server-error";
 
+export const getCities = async (req, res) => {
+  try {
+    const cities = await prisma.city.findMany({
+      orderBy: {
+        name: "asc", // 'asc' for ascending order, 'desc' for descending
+      },
+    });
+    return res.json(cities);
+  } catch (error) {
+    console.log(error);
+    throw new BadRequestError("Request cannot be processed");
+  } finally {
+    await prisma.$disconnect();
+  }
+};
+
 export const getCityFromDistrict = async (req, res) => {
   const districtId = parseInt(req.params.districtId);
 

@@ -298,10 +298,14 @@ export const getCityByApplication = async (req, res) => {
 
   const citiesByApplicationId = await prisma.applicationCities.findMany({
     where: {
-      examapplicationId, // Filter by applicationId
+      examapplicationId,
     },
     include: {
-      examcity: true,
+      examcity: {
+        include: {
+          city: true, // Include the City details from ExamCity
+        },
+      },
     },
   });
 

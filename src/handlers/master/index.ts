@@ -26,9 +26,16 @@ export {
   updateDistrict,
   removeDistrict,
 } from "./district";
-export { getCityFromDistrict, addCity, updateCity, removeCity } from "./city";
+export {
+  getCities,
+  getCityFromDistrict,
+  addCity,
+  updateCity,
+  removeCity,
+} from "./city";
 export {
   getCityForExam,
+  getExamCityByState,
   addCityForEntrance,
   updateCityForEntrance,
   removeCityForEntrance,

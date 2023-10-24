@@ -13,10 +13,12 @@ import {
   addState,
   createProgramme,
   getCampus,
+  getCities,
   getCityForExam,
   getCityFromDistrict,
   getCourses,
   getDistrictsFromState,
+  getExamCityByState,
   getGender,
   getInfoSource,
   getProductByCode,
@@ -162,6 +164,7 @@ router.put("/master/district/:id", updateDistrict);
 router.delete("/master/district/:id", removeDistrict);
 
 router.get("/master/city/:districtId", getCityFromDistrict);
+router.get("/master/city/", getCities);
 router.post("/master/city/", addCity);
 router.put("/master/city/:id", updateCity);
 router.delete("/master/city/:id", removeCity);
@@ -170,10 +173,11 @@ router.post("/master/programme/", createProgramme);
 router.get("/master/programme/", getProgrammes);
 router.delete("/master/programme/:id", removeProgramme);
 
-router.get("/master/examcity/:entranceid", getCityForExam);
+router.get("/master/examcity/:entranceId", getCityForExam);
+router.get("/master/examcity/:entranceId/:stateId", getExamCityByState);
 router.post("/master/examcity/", addCityForEntrance);
 router.put("/master/examcity/:id", updateCityForEntrance);
-router.delete("/master/examcity/:id", removeCityForEntrance);
+router.delete("/master/examcity/:entranceId/:cityId", removeCityForEntrance);
 
 router.post("/master/entrance/programme", addProgrammeToEntrance);
 router.delete(
@@ -233,59 +237,5 @@ router.post("/phone/verify", verifyPhone);
 router.post("/admin/signin", adminSignin);
 router.post("/admin/register", createAdminUser);
 router.post("/admin/currentuser", requireAuth, currentAdminUser);
-router.post("/paymentresponse", (req, res) => {
-  console.log("Form Data:", req.body);
-  //   key: {
-  //     mihpayid: '403993715530286880',
-  //     mode: 'NB',
-  //     status: 'success',
-  //     unmappedstatus: 'captured',
-  //     key: 'aJ1WVm',
-  //     txnid: 'TXN23456',
-  //     amount: '1.00',
-  //     discount: '0.00',
-  //     net_amount_debit: '1',
-  //     addedon: '2023-10-16 09:07:17',
-  //     productinfo: 'AEEE Entrance',
-  //     firstname: 'Avinash Shankar',
-  //     lastname: '',
-  //     address1: '',
-  //     address2: '',
-  //     city: '',
-  //     state: '',
-  //     country: '',
-  //     zipcode: '',
-  //     email: 'test@gmail.com',
-  //     phone: '8446373837',
-  //     udf1: 'applicationid1',
-  //     udf2: '',
-  //     udf3: '',
-  //     udf4: '',
-  //     udf5: '',
-  //     udf6: '',
-  //     udf7: '',
-  //     udf8: '',
-  //     udf9: '',
-  //     udf10: '',
-  //     hash: '78c84f11d568804e9ecb22d0c6ad922af32cd8269300282ba57cd3d0c1c2c34f2d70694a2a33ab9ae0abc82443dd755c5af52c08d81b69a31706a4cf5da72862',
-  //     field1: '',
-  //     field2: '',
-  //     field3: '',
-  //     field4: '',
-  //     field5: '',
-  //     field6: '',
-  //     field7: '',
-  //     field8: '',
-  //     field9: 'Transaction Completed Successfully',
-  //     payment_source: 'payu',
-  //     meCode: '{"":null}',
-  //     PG_TYPE: 'NB-PG',
-  //     bank_ref_num: 'bdaeadf7-0771-4d16-a099-b415ef7ed540',
-  //     bankcode: 'ADBB',
-  //     error: 'E000',
-  //     error_Message: 'No Error'
-  //   }
-  res.redirect("/applications");
-});
 
 export default router;
