@@ -44,22 +44,26 @@ model State {
 
 model District {
   id        Int         @id @default(autoincrement())
-  name      String      @unique
+  name      String
   state     State       @relation(fields: [stateId], references: [id])
   stateId   Int
   cities    City[]
   createdAt DateTime    @default(now())
   Candidate Candidate[]
+
+  @@unique([stateId, name], name: "StateDistrictNameUnique")
 }
 
 model City {
   id         Int         @id @default(autoincrement())
-  name       String      @unique
+  name       String
   district   District    @relation(fields: [districtId], references: [id])
   districtId Int
   createdAt  DateTime    @default(now())
   Candidate  Candidate[]
   ExamCity   ExamCity[]
+
+  @@unique([districtId, name], name: "DistrictCityNameUnique")
 }
 
 model CountryCode {

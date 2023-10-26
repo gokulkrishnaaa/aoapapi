@@ -2,6 +2,7 @@ import express from "express";
 import "express-async-errors";
 import morgan from "morgan";
 import cors from "cors";
+import fileUpload from "express-fileupload";
 // import cookieSession from "cookie-session";
 import cookieSession from "express-session";
 import RedisStore from "connect-redis";
@@ -39,6 +40,7 @@ app.use(
 );
 
 app.use(mCurrentUser);
+app.use(fileUpload());
 app.use("/api", router);
 
 app.all("*", async (req, res) => {

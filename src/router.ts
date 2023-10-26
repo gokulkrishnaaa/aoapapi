@@ -110,6 +110,7 @@ import {
   createEntranceTransaction,
   getTransactionsByApplication,
 } from "./handlers/entrance/transactions";
+import { importlocation } from "./handlers/master/import";
 
 const router = Router();
 
@@ -178,6 +179,7 @@ router.get("/master/examcity/:entranceId/:stateId", getExamCityByState);
 router.post("/master/examcity/", addCityForEntrance);
 router.put("/master/examcity/:id", updateCityForEntrance);
 router.delete("/master/examcity/:entranceId/:cityId", removeCityForEntrance);
+router.post("/master/importcity", importlocation);
 
 router.post("/master/entrance/programme", addProgrammeToEntrance);
 router.delete(
