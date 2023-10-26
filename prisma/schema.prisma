@@ -117,8 +117,8 @@ model ParentInfo {
   fullname      String?
   candidate     Candidate @relation(fields: [candidateId], references: [id])
   candidateId   String    @unique
-  email         String?   @unique
-  phone         String?   @unique
+  email         String?
+  phone         String?
   phonecode     String?
   emailverified DateTime?
   phoneverified DateTime?
