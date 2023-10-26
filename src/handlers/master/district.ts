@@ -15,7 +15,7 @@ export const getDistrictsFromState = async (req, res) => {
         stateId,
       },
       orderBy: {
-        id: "asc",
+        name: "asc", // 'asc' for ascending order, 'desc' for descending
       },
     });
     return res.json(districts);

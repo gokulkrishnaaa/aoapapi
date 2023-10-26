@@ -4,7 +4,7 @@ import { InternalServerError } from "../../errors/internal-server-error";
 export const getStates = async (req, res) => {
   const data = await prisma.state.findMany({
     orderBy: {
-      id: "asc",
+      name: "asc", // 'asc' for ascending order, 'desc' for descending
     },
   });
   res.json(data);

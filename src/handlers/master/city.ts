@@ -31,7 +31,34 @@ export const getCityFromDistrict = async (req, res) => {
         districtId,
       },
       orderBy: {
-        id: "asc",
+        name: "asc",
+      },
+    });
+    return res.json(cities);
+  } catch (error) {
+    console.log(error);
+    throw new BadRequestError("Request cannot be processed");
+  } finally {
+    await prisma.$disconnect();
+  }
+};
+
+export const getCityFromState = async (req, res) => {
+  const stateId = parseInt(req.params.stateId);
+
+  if (!stateId) {
+    throw new BadRequestError("Input is invalid");
+  }
+
+  try {
+    const cities = await prisma.city.findMany({
+      where: {
+        district: {
+          stateId,
+        },
+      },
+      orderBy: {
+        name: "asc",
       },
     });
     return res.json(cities);

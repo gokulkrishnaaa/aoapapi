@@ -16,6 +16,7 @@ import {
   getCities,
   getCityForExam,
   getCityFromDistrict,
+  getCityFromState,
   getCourses,
   getDistrictsFromState,
   getExamCityByState,
@@ -165,6 +166,7 @@ router.put("/master/district/:id", updateDistrict);
 router.delete("/master/district/:id", removeDistrict);
 
 router.get("/master/city/:districtId", getCityFromDistrict);
+router.get("/master/city/state/:stateId", getCityFromState);
 router.get("/master/city/", getCities);
 router.post("/master/city/", addCity);
 router.put("/master/city/:id", updateCity);

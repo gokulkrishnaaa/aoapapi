@@ -31,6 +31,7 @@ export {
 export {
   getCities,
   getCityFromDistrict,
+  getCityFromState,
   addCity,
   updateCity,
   removeCity,
