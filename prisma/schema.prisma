@@ -250,9 +250,8 @@ model ExamCity {
   id                Int                 @id @default(autoincrement())
   entrance          Entrance            @relation(fields: [entranceId], references: [id])
   entranceId        String
-  city              City?               @relation(fields: [cityId], references: [id])
-  cityId            Int?
-  name              String?
+  city              City                @relation(fields: [cityId], references: [id])
+  cityId            Int
   createdAt         DateTime            @default(now())
   ApplicationCities ApplicationCities[]
 
