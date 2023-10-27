@@ -41,13 +41,15 @@ const smtptransporter = nodemailer.createTransport({
 
 async function mailOtp({ email, code }) {
   var options = {
-    from: "noreply@amrita.edu",
+    from: '"Directorate of Admissions - Amrita Vishwa Vidyapeetham" <noreply@amrita.edu>',
     to: email,
     subject: "Directorate of Admissions - Amrita",
     text: `Your OTP to verify is ${code}`,
     html: `
     <div style="text-align: center;">
-      <p style="margin: 20px; text-align: center; font-family: 'Arial', sans-serif;">Your OTP to verify is <span style="font-weight: bold">${code}</span></p>
+      <p style="margin: 20px; font-family: 'Arial', sans-serif;">Congratulations for showing interest in the undergraduate programmes offered by Amrita Vishwa Vidyapeetham.</p>
+      <p style="font-family: 'Arial', sans-serif;">Your OTP to verify is <span style="font-weight: bold">${code}</span>.</p>
+      <p style="font-family: 'Arial', sans-serif; font-style:italic"><span style="color: red;">*</span> OTP is valid only for 3 minutes</p>
     </div>
   `,
   };
