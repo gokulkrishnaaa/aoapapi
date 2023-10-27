@@ -3,14 +3,6 @@ import generateOtp from "../../utilities/otpgenerator";
 import isValidEmail from "../../utilities/checkemail";
 import prisma from "../../db";
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: "heppietechie@gmail.com",
-    pass: "dtqwihysdnigpmdc",
-  },
-});
-
 export const sendEmailOtp = async (req, res) => {
   const { email } = req.body;
 
@@ -37,15 +29,25 @@ export const sendEmailOtp = async (req, res) => {
   return res.json({ created: true });
 };
 
+const smtptransporter = nodemailer.createTransport({
+  host: "smtp.office365.com",
+  port: 587,
+  secure: false, // TLS
+  auth: {
+    user: "noreply@amrita.edu",
+    pass: "Bot55384",
+  },
+});
+
 async function mailOtp({ email, code }) {
   var options = {
-    from: "heppietechie@gmail.com ",
+    from: "noreply@amrita.edu",
     to: email,
     subject: "OTP to login",
     text: `Your OTP to verify is ${code}`,
     html: `<p>Your otp to verify is ${code}</p>`,
   };
-  await transporter.sendMail(options, (error, info) => {
+  await smtptransporter.sendMail(options, (error, info) => {
     if (error) {
       console.log(error);
     } else {
