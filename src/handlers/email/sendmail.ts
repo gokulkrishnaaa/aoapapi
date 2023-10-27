@@ -43,9 +43,13 @@ async function mailOtp({ email, code }) {
   var options = {
     from: "noreply@amrita.edu",
     to: email,
-    subject: "OTP to login",
+    subject: "Directorate of Admissions - Amrita",
     text: `Your OTP to verify is ${code}`,
-    html: `<p>Your otp to verify is ${code}</p>`,
+    html: `
+    <div style="text-align: center;">
+      <p style="margin: 20px; text-align: center; font-family: 'Arial', sans-serif;">Your OTP to verify is <span style="font-weight: bold">${code}</span></p>
+    </div>
+  `,
   };
   await smtptransporter.sendMail(options, (error, info) => {
     if (error) {
