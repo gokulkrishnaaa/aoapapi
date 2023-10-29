@@ -26,7 +26,9 @@ export const createEntranceTransaction = async (req, res) => {
   const { candidateId, examapplicationId, description, amount } = req.body;
   const randomNumber = Math.floor(Date.now());
 
-  const reference = `AEEE-${candidateId.slice(0, 4)}-${examapplicationId
+  const reference = `AEEE-${candidateId
+    .slice(0, 4)
+    .toUpperCase()}-${examapplicationId
     .slice(0, 4)
     .toUpperCase()}-${randomNumber}`;
 
