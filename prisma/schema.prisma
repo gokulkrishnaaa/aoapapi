@@ -179,6 +179,7 @@ enum ExamApplicationStatus {
 
 model ExamApplication {
   id                      String                   @id @default(cuid())
+  reference               String
   exam                    Exam                     @relation(fields: [examId], references: [id])
   examId                  String
   candidate               Candidate                @relation(fields: [candidateId], references: [id])
@@ -221,6 +222,7 @@ enum PaymentStatus {
 model EntrancePayments {
   id                String          @id @default(cuid())
   txnid             String          @unique @default(cuid())
+  reference         String
   candidate         Candidate       @relation(fields: [candidateId], references: [id])
   candidateId       String
   examapplication   ExamApplication @relation(fields: [examapplicationId], references: [id])

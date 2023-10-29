@@ -6,18 +6,14 @@ import { CannotProcessError } from "../../errors/cannot-process-error";
 export const createApplication = async (req, res) => {
   const body = req.body;
   const user = req.currentUser;
+  const randomNumber = Math.floor(Date.now());
+  const reference = `AEEE-${randomNumber}`;
 
-  const applndata = { ...body, candidateId: user.id };
+  const applndata = { ...body, candidateId: user.id, reference };
 
   let application = await prisma.examApplication.create({
     data: applndata,
   });
-
-  //   await prisma.examApplicationProgress.create({
-  //     data: {
-  //       examapplicationId: application.id,
-  //     },
-  //   });
 
   await prisma.applicationJEE.create({
     data: {

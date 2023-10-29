@@ -24,9 +24,16 @@ export const getTransactionsByApplication = async (req, res) => {
 
 export const createEntranceTransaction = async (req, res) => {
   const { candidateId, examapplicationId, description, amount } = req.body;
+  const randomNumber = Math.floor(Date.now());
+
+  const reference = `AEEE-${candidateId.slice(0, 4)}-${examapplicationId
+    .slice(0, 4)
+    .toUpperCase()}-${randomNumber}`;
+
   try {
     const newTransaction = await prisma.entrancePayments.create({
       data: {
+        reference,
         candidateId,
         examapplicationId,
         description,
