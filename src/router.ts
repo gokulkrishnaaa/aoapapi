@@ -99,7 +99,7 @@ import {
   updateApplicationJeeStatus,
   updateApplicationProgress,
 } from "./handlers/entrance/application";
-import { sendEmailOtp, verifyEmail } from "./handlers/email";
+import { sendEmailOtp, sendWelcomeMail, verifyEmail } from "./handlers/email";
 import {
   adminSignin,
   createAdminUser,
@@ -233,6 +233,7 @@ router.get(
 
 router.post("/transactions/entrance/", requireAuth, createEntranceTransaction);
 router.post("/email/otp", sendEmailOtp);
+router.get("/email/welcome", requireAuth, sendWelcomeMail);
 router.post("/email/verify", verifyEmail);
 router.post("/phone/otp", sendPhoneOtp);
 router.post("/phone/verify", verifyPhone);

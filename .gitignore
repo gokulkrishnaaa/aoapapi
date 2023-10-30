@@ -5,3 +5,4 @@
 # local env files
 .env
 .env*.local
+/.react-email/
