@@ -6,8 +6,8 @@ import isValidPhone from "../../utilities/checkphone";
 export const signin = async (req, res) => {
   const username = req.body.username;
   const otp = req.body.otp;
-  console.log(username);
-  console.log(otp);
+  const utm = req.body.utm;
+  console.log(utm);
 
   // 1. verify otp
   let isValid = false;

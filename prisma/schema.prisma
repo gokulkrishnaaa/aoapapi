@@ -113,6 +113,7 @@ model Candidate {
   PlusTwoInfo      PlusTwoInfo?
   ExamApplication  ExamApplication[]
   EntrancePayments EntrancePayments[]
+  Utm              Utm?
 }
 
 model ParentInfo {
@@ -135,6 +136,17 @@ model PlusTwoInfo {
   candidateId String    @unique
   state       State?    @relation(fields: [stateId], references: [id])
   stateId     Int?
+}
+
+model Utm {
+  id           Int       @id @default(autoincrement())
+  candidate    Candidate @relation(fields: [candidateId], references: [id])
+  candidateId  String    @unique
+  utm_source   String?
+  utm_medium   String?
+  utm_campaign String?
+
+  createdAt DateTime @default(now())
 }
 
 model Entrance {
