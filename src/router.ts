@@ -131,66 +131,79 @@ router.get("/candidate/plustwo", requireAuth, getCandidatePustwo);
 router.put("/candidate/onboarding", requireAuth, putOnboarding);
 
 //master data
-router.get("/master/gender", getGender);
-router.post("/master/gender", addGender);
-router.put("/master/gender/:id", updateGender);
-router.delete("/master/gender/:id", removeGender);
+router.get("/master/gender", requireAuth, getGender);
+router.post("/master/gender", requireAuth, addGender);
+router.put("/master/gender/:id", requireAuth, updateGender);
+router.delete("/master/gender/:id", requireAuth, removeGender);
 
-router.get("/master/product", getProducts);
-router.get("/master/product/code/:code", getProductByCode);
-router.post("/master/product", addProduct);
-router.put("/master/product/:id", updateProduct);
-router.delete("/master/product/:id", removeProduct);
+router.get("/master/product", requireAuth, getProducts);
+router.get("/master/product/code/:code", requireAuth, getProductByCode);
+router.post("/master/product", requireAuth, addProduct);
+router.put("/master/product/:id", requireAuth, updateProduct);
+router.delete("/master/product/:id", requireAuth, removeProduct);
 
-router.get("/master/socialstatus", getSocialStatus);
-router.post("/master/socialstatus", addSocialStatus);
-router.put("/master/socialstatus/:id", updateSocialStatus);
-router.delete("/master/socialstatus/:id", removeSocialStatus);
-router.get("/master/infosource", getInfoSource);
-router.post("/master/infosource", addInfoSource);
-router.put("/master/infosource/:id", updateInfoSource);
-router.delete("/master/infosource/:id", removeInfoSource);
-router.get("/master/states", getStates);
-router.post("/master/states", addState);
-router.put("/master/states/:id", updateState);
-router.delete("/master/states/:id", removeState);
-router.get("/master/course", getCourses);
-router.post("/master/course/", addCourse);
-router.put("/master/course/:id", updateCourse);
-router.delete("/master/course/:id", removeCourse);
-router.post("/master/campus/", addCampus);
-router.get("/master/campus/", getCampus);
-router.put("/master/campus/:id", updateCampus);
-router.delete("/master/campus/:id", removeCampus);
-router.get("/master/district/:stateId", getDistrictsFromState);
-router.post("/master/district/", addDistrict);
-router.put("/master/district/:id", updateDistrict);
-router.delete("/master/district/:id", removeDistrict);
+router.get("/master/socialstatus", requireAuth, getSocialStatus);
+router.post("/master/socialstatus", requireAuth, addSocialStatus);
+router.put("/master/socialstatus/:id", requireAuth, updateSocialStatus);
+router.delete("/master/socialstatus/:id", requireAuth, removeSocialStatus);
+router.get("/master/infosource", requireAuth, getInfoSource);
+router.post("/master/infosource", requireAuth, addInfoSource);
+router.put("/master/infosource/:id", requireAuth, updateInfoSource);
+router.delete("/master/infosource/:id", requireAuth, removeInfoSource);
+router.get("/master/states", requireAuth, getStates);
+router.post("/master/states", requireAuth, addState);
+router.put("/master/states/:id", requireAuth, updateState);
+router.delete("/master/states/:id", requireAuth, removeState);
+router.get("/master/course", requireAuth, getCourses);
+router.post("/master/course/", requireAuth, addCourse);
+router.put("/master/course/:id", requireAuth, updateCourse);
+router.delete("/master/course/:id", requireAuth, removeCourse);
+router.post("/master/campus/", requireAuth, addCampus);
+router.get("/master/campus/", requireAuth, getCampus);
+router.put("/master/campus/:id", requireAuth, updateCampus);
+router.delete("/master/campus/:id", requireAuth, removeCampus);
+router.get("/master/district/:stateId", requireAuth, getDistrictsFromState);
+router.post("/master/district/", requireAuth, addDistrict);
+router.put("/master/district/:id", requireAuth, updateDistrict);
+router.delete("/master/district/:id", requireAuth, removeDistrict);
 
-router.get("/master/city/:districtId", getCityFromDistrict);
-router.get("/master/city/state/:stateId", getCityFromState);
-router.get("/master/city/", getCities);
-router.post("/master/city/", addCity);
-router.put("/master/city/:id", updateCity);
-router.delete("/master/city/:id", removeCity);
+router.get("/master/city/:districtId", requireAuth, getCityFromDistrict);
+router.get("/master/city/state/:stateId", requireAuth, getCityFromState);
+router.get("/master/city/", requireAuth, getCities);
+router.post("/master/city/", requireAuth, addCity);
+router.put("/master/city/:id", requireAuth, updateCity);
+router.delete("/master/city/:id", requireAuth, removeCity);
 
-router.post("/master/programme/", createProgramme);
-router.get("/master/programme/", getProgrammes);
-router.delete("/master/programme/:id", removeProgramme);
+router.post("/master/programme/", requireAuth, createProgramme);
+router.get("/master/programme/", requireAuth, getProgrammes);
+router.delete("/master/programme/:id", requireAuth, removeProgramme);
 
-router.get("/master/examcity/:entranceId", getCityForExam);
-router.get("/master/examcity/:entranceId/:stateId", getExamCityByState);
-router.post("/master/examcity/", addCityForEntrance);
-router.put("/master/examcity/:id", updateCityForEntrance);
-router.delete("/master/examcity/:entranceId/:cityId", removeCityForEntrance);
-router.post("/master/importcity", importlocation);
+router.get("/master/examcity/:entranceId", requireAuth, getCityForExam);
+router.get(
+  "/master/examcity/:entranceId/:stateId",
+  requireAuth,
+  getExamCityByState
+);
+router.post("/master/examcity/", requireAuth, addCityForEntrance);
+router.put("/master/examcity/:id", requireAuth, updateCityForEntrance);
+router.delete(
+  "/master/examcity/:entranceId/:cityId",
+  requireAuth,
+  removeCityForEntrance
+);
+router.post("/master/importcity", requireAuth, importlocation);
 
-router.post("/master/entrance/programme", addProgrammeToEntrance);
+router.post("/master/entrance/programme", requireAuth, addProgrammeToEntrance);
 router.delete(
   "/master/entrance/:entranceId/programme/:programmeId",
+  requireAuth,
   removeEntranceFromProgram
 );
-router.get("/master/entrance/:entranceId/programme", getProgrammesByEntrance);
+router.get(
+  "/master/entrance/:entranceId/programme",
+  requireAuth,
+  getProgrammesByEntrance
+);
 
 // entrance and exam
 router.post("/entrance", requireAuth, createEntrance);
@@ -215,17 +228,30 @@ router.post(
 router.get("/application/:id", requireAuth, getApplication);
 router.put("/application/:id", requireAuth, updateApplication);
 router.get("/application/exam/:examid/", requireAuth, getApplicationByExam);
-router.post("/application/:id/programme", addProgrammeToApplication);
+router.post(
+  "/application/:id/programme",
+  requireAuth,
+  addProgrammeToApplication
+);
 router.delete(
   "/application/:id/programme/:programmeId",
+  requireAuth,
   removeProgrammeFromApplication
 );
-router.get("/application/:id/programme", getProgrammeByApplication);
-router.post("/application/:id/jee", updateApplicationJeeStatus);
-router.get("/application/:id/jee", getApplicationJeeStatus);
-router.post("/application/:id/city", addCityToApplication);
-router.get("/application/:id/city", getCityByApplication);
-router.delete("/application/:id/city/:examcityId", removeCityFromApplication);
+router.get(
+  "/application/:id/programme",
+  requireAuth,
+  getProgrammeByApplication
+);
+router.post("/application/:id/jee", requireAuth, updateApplicationJeeStatus);
+router.get("/application/:id/jee", requireAuth, getApplicationJeeStatus);
+router.post("/application/:id/city", requireAuth, addCityToApplication);
+router.get("/application/:id/city", requireAuth, getCityByApplication);
+router.delete(
+  "/application/:id/city/:examcityId",
+  requireAuth,
+  removeCityFromApplication
+);
 
 router.get(
   "/transactions/application/:id",
@@ -245,6 +271,6 @@ router.post("/phone/verify", verifyPhone);
 router.post("/admin/signin", adminSignin);
 router.post("/admin/register", createAdminUser);
 router.post("/admin/currentuser", requireAuth, currentAdminUser);
-router.get("/admin/reports/utm", getUTMReport);
+router.get("/admin/reports/utm", requireAuth, getUTMReport);
 
 export default router;
