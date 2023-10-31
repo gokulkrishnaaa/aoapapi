@@ -112,6 +112,7 @@ import {
   getTransactionsByApplication,
 } from "./handlers/entrance/transactions";
 import { importlocation } from "./handlers/master/import";
+import { getUTMReport } from "./handlers/admin/reports";
 
 const router = Router();
 
@@ -242,5 +243,6 @@ router.post("/phone/verify", verifyPhone);
 router.post("/admin/signin", adminSignin);
 router.post("/admin/register", createAdminUser);
 router.post("/admin/currentuser", requireAuth, currentAdminUser);
+router.get("/admin/reports/utm", getUTMReport);
 
 export default router;

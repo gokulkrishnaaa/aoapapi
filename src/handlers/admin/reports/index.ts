@@ -1,0 +1,1 @@
+export { getUTMReport } from "./utm";

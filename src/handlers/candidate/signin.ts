@@ -3,6 +3,12 @@ import { createJWT } from "../../modules/auth";
 import isValidEmail from "../../utilities/checkemail";
 import isValidPhone from "../../utilities/checkphone";
 
+interface UTMProps {
+  utm_source: string;
+  utm_medium: string;
+  utm_campaign: string;
+}
+
 export const signin = async (req, res) => {
   const username = req.body.username;
   const otp = req.body.otp;
@@ -94,9 +100,22 @@ export const signin = async (req, res) => {
     candidate = await prisma.candidate.create({
       data: candidateData,
     });
+
     const onboardingData = {
       candidateId: candidate.id,
     };
+
+    if (utm) {
+      await prisma.utm.create({
+        data: {
+          candidateId: candidate.id,
+          utm_source: utm.utm_source,
+          utm_medium: utm.utm_medium,
+          utm_campaign: utm.utm_campaign,
+        },
+      });
+    }
+
     onboarding = await prisma.onboarding.create({
       data: onboardingData,
     });
