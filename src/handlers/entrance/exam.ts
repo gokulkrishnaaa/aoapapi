@@ -193,7 +193,7 @@ export const examPaymentSuccess = async (req, res) => {
   });
   const chkResponseData = await chkResponse.json();
   if ((chkResponseData as { status: number }).status === 0) {
-    return res.redirect("/applications");
+    return res.redirect("/applications/payment/failure");
   }
 
   // get all details and ssave to db
@@ -237,12 +237,13 @@ export const examPaymentSuccess = async (req, res) => {
           registrationNo,
         },
       });
-      console.log(registration);
+      res.redirect("/applications/payment/success");
     } catch (error) {
       console.log(error);
+      res.redirect("/applications/payment/success");
     }
   }
-  res.redirect("/applications");
+  res.redirect("/applications/payment/failure");
 };
 
 export const examPaymentFailure = async (req, res) => {
@@ -258,7 +259,7 @@ export const examPaymentFailure = async (req, res) => {
       status: "FAILED",
     },
   });
-  return res.redirect("/applications");
+  return res.redirect("/applications/payment/failure");
 };
 
 function sha512(str) {
