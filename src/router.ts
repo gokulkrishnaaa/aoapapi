@@ -110,6 +110,7 @@ import { sendPhoneOtp, verifyPhone } from "./handlers/phone";
 import {
   createEntranceTransaction,
   getTransactionsByApplication,
+  getTransactionsByCandidate,
 } from "./handlers/entrance/transactions";
 import { importlocation } from "./handlers/master/import";
 import { getUTMReport } from "./handlers/admin/reports";
@@ -233,6 +234,7 @@ router.get(
 );
 
 router.post("/transactions/entrance/", requireAuth, createEntranceTransaction);
+router.get("/transactions/entrance/", requireAuth, getTransactionsByCandidate);
 router.post("/email/otp", sendEmailOtp);
 router.get("/email/welcome", requireAuth, sendWelcomeMail);
 router.post("/email/verify", verifyEmail);

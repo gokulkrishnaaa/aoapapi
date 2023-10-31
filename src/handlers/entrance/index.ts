@@ -1,6 +1,7 @@
 export {
   getTransactionsByApplication,
   createEntranceTransaction,
+  getTransactionsByCandidate,
 } from "./transactions";
 
 export {

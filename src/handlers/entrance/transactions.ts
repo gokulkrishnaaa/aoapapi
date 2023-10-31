@@ -22,6 +22,21 @@ export const getTransactionsByApplication = async (req, res) => {
   return res.json(entrancePayments);
 };
 
+export const getTransactionsByCandidate = async (req, res) => {
+  const { id } = req.currentUser;
+
+  const entrancePayments = await prisma.entrancePayments.findMany({
+    where: {
+      candidateId: id,
+    },
+    orderBy: {
+      createdAt: "desc", // Sort by createdAt in descending order (latest to oldest)
+    },
+  });
+
+  return res.json(entrancePayments);
+};
+
 export const createEntranceTransaction = async (req, res) => {
   const { candidateId, examapplicationId, description, amount } = req.body;
   const randomNumber = Math.floor(Date.now());
