@@ -237,13 +237,13 @@ export const examPaymentSuccess = async (req, res) => {
           registrationNo,
         },
       });
-      res.redirect("/applications/payment/success");
+      return res.redirect("/applications/payment/success");
     } catch (error) {
       console.log(error);
-      res.redirect("/applications/payment/success");
+      return res.redirect("/applications/payment/success");
     }
   }
-  res.redirect("/applications/payment/failure");
+  return res.redirect("/applications/payment/failure");
 };
 
 export const examPaymentFailure = async (req, res) => {
