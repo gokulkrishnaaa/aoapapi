@@ -48,6 +48,5 @@ app.all("*", async (req, res) => {
 });
 
 app.use(errorHandler);
-console.log(process.env.NODE_ENV);
 
 export default app;

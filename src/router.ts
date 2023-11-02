@@ -113,7 +113,11 @@ import {
   getTransactionsByCandidate,
 } from "./handlers/entrance/transactions";
 import { importlocation } from "./handlers/master/import";
-import { getUTMReport } from "./handlers/admin/reports";
+import {
+  getExamRegisteredReport,
+  getStateWiseReport,
+  getUTMReport,
+} from "./handlers/admin/reports";
 
 const router = Router();
 
@@ -272,5 +276,11 @@ router.post("/admin/signin", adminSignin);
 router.post("/admin/register", createAdminUser);
 router.post("/admin/currentuser", requireAuth, currentAdminUser);
 router.get("/admin/reports/utm", requireAuth, getUTMReport);
+router.get("/admin/reports/state", requireAuth, getStateWiseReport);
+router.get(
+  "/admin/reports/examregistered",
+  requireAuth,
+  getExamRegisteredReport
+);
 
 export default router;

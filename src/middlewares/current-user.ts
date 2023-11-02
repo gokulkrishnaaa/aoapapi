@@ -23,7 +23,6 @@ export const mCurrentUser = (
   if (!req.session?.jwt) {
     return next();
   }
-  console.log(process.env.JWT_SECRET);
   try {
     const payload = jwt.verify(
       req.session.jwt,
