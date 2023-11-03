@@ -115,6 +115,7 @@ import {
 import { importlocation } from "./handlers/master/import";
 import {
   getExamRegisteredReport,
+  getRefererReport,
   getStateWiseReport,
   getUTMReport,
 } from "./handlers/admin/reports";
@@ -283,5 +284,6 @@ router.get(
   requireAuth,
   getExamRegisteredReport
 );
+router.get("/admin/reports/referer", requireAuth, getRefererReport);
 router.post("/analytics/referer", addReferer);
 export default router;
