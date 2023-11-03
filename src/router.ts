@@ -279,8 +279,8 @@ router.post("/admin/signin", adminSignin);
 router.post("/admin/register", createAdminUser);
 router.post("/admin/currentuser", requireAuth, currentAdminUser);
 router.post("/admin/reports/utm", requireAuth, getUTMReport);
-router.get("/admin/reports/state", requireAuth, getStateWiseReport);
-router.get(
+router.post("/admin/reports/state", requireAuth, getStateWiseReport);
+router.post(
   "/admin/reports/district/:stateId",
   requireAuth,
   getDistrictWiseReport
