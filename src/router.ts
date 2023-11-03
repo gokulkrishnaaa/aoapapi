@@ -118,6 +118,7 @@ import {
   getStateWiseReport,
   getUTMReport,
 } from "./handlers/admin/reports";
+import { addReferer } from "./handlers/analytics";
 
 const router = Router();
 
@@ -282,5 +283,5 @@ router.get(
   requireAuth,
   getExamRegisteredReport
 );
-
+router.post("/analytics/referer", addReferer);
 export default router;

@@ -353,3 +353,8 @@ model Products {
   name   String  @unique
   amount Decimal
 }
+
+model Referer {
+  id  Int    @id @default(autoincrement())
+  url String
+}
