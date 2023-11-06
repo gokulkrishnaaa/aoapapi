@@ -121,6 +121,12 @@ import {
   getUTMReport,
 } from "./handlers/admin/reports";
 import { addReferer } from "./handlers/analytics";
+import {
+  agentSignin,
+  createAgentUser,
+  currentAgentUser,
+  listAgents,
+} from "./handlers/agent";
 
 const router = Router();
 
@@ -292,4 +298,11 @@ router.get(
 );
 router.get("/admin/reports/referer", requireAuth, getRefererReport);
 router.post("/analytics/referer", addReferer);
+
+//agent
+router.post("/admin/agent/create", createAgentUser);
+router.get("/admin/agent/list", listAgents);
+router.post("/admin/agent/signin", agentSignin);
+router.post("/admin/agent/currentuser", requireAuth, currentAgentUser);
+
 export default router;

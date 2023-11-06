@@ -87,6 +87,16 @@ export const CandidateWelcome = ({
               assist you every step of the way.
             </Text>
             <Text className="text-sm leading-6 text-gray-700">
+              Help us to support you well. Request you to complete the following
+              survey:{" "}
+              <Link
+                href="https://docs.google.com/forms/d/e/1FAIpQLSfKC7wikqLeU93po-YBtf2pSkVh8nAarUHL1s9TDP335Ql7ew/viewform"
+                className="text-pink-800 underline"
+              >
+                Click here for survey
+              </Link>
+            </Text>
+            <Text className="text-sm leading-6 text-gray-700">
               Thank you for choosing Amrita Vishwa Vidyapeetham for your
               educational journey. We wish you the best of luck in your upcoming
               entrance examination.

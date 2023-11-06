@@ -358,3 +358,13 @@ model Referer {
   id  Int    @id @default(autoincrement())
   url String
 }
+
+model Agent {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  email     String   @unique
+  username  String   @unique
+  password  String
+  active    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}

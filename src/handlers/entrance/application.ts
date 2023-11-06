@@ -296,6 +296,9 @@ export const getCityByApplication = async (req, res) => {
     where: {
       examapplicationId,
     },
+    orderBy: {
+      id: "asc", // Sort by 'id' in ascending order
+    },
     include: {
       examcity: {
         include: {
