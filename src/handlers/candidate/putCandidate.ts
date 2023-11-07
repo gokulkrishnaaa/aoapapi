@@ -15,9 +15,11 @@ export const putCandidate = async (req, res) => {
     delete data.aadhaarverified;
   }
   console.log(data);
-  //   if (data.aadhaarnumber === "") {
-  //     delete data.aadhaarnumber;
-  //   }
+  if (data.cityId === 9999999999) {
+    delete data.cityId;
+  } else {
+    delete data.otherCity;
+  }
   try {
     const candidate = await prisma.candidate.update({
       where: {

@@ -101,6 +101,7 @@ model Candidate {
   districtId       Int?
   city             City?              @relation(fields: [cityId], references: [id])
   cityId           Int?
+  otherCity        String?
   address1         String?
   address2         String?
   photoid          String?
