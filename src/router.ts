@@ -57,7 +57,9 @@ import {
   createOtp,
   currentUser,
   getCandidate,
+  getCandidateById,
   getCandidateParent,
+  getCandidateParentById,
   getCandidatePustwo,
   putCandidate,
   putOnboarding,
@@ -127,6 +129,15 @@ import {
   currentAgentUser,
   listAgents,
 } from "./handlers/agent";
+import {
+  getCandidatesByUtmSource,
+  getUtmCandidatesByEntrance,
+} from "./handlers/agent/reports";
+import {
+  getAgentDetails,
+  removeAgent,
+  updateAgent,
+} from "./handlers/agent/agent";
 
 const router = Router();
 
@@ -136,9 +147,11 @@ router.post("/candidate/signin", signin);
 router.post("/candidate/signout", requireAuth, signout);
 router.post("/candidate/currentuser", requireAuth, currentUser);
 router.get("/candidate", requireAuth, requireCandidate, getCandidate);
+router.get("/candidate/:id", requireAuth, getCandidateById);
 router.put("/candidate", requireAuth, putCandidate);
 router.post("/candidate/parent", requireAuth, createCandidateParent);
 router.get("/candidate/parent", requireAuth, getCandidateParent);
+router.get("/candidate/parent/:id", requireAuth, getCandidateParentById);
 router.post("/candidate/plustwo", requireAuth, createCandidatePlustwo);
 router.get("/candidate/plustwo", requireAuth, getCandidatePustwo);
 router.put("/candidate/onboarding", requireAuth, putOnboarding);
@@ -301,8 +314,14 @@ router.post("/analytics/referer", addReferer);
 
 //agent
 router.post("/admin/agent/create", createAgentUser);
+router.put("/admin/agent/:id", updateAgent);
+router.delete("/admin/agent/:id", removeAgent);
 router.get("/admin/agent/list", listAgents);
 router.post("/admin/agent/signin", agentSignin);
 router.post("/admin/agent/currentuser", requireAuth, currentAgentUser);
+router.get("/admin/agent/", requireAuth, getAgentDetails);
+
+router.post("/agent/reports/utm/:source", getCandidatesByUtmSource);
+router.post("/agent/reports/exam/:source", getUtmCandidatesByEntrance);
 
 export default router;

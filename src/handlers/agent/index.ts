@@ -1,4 +1,2 @@
-export { createAgentUser } from "./agent";
-export { listAgents } from "./agent";
-export { agentSignin } from "./agent";
+export { createAgentUser, listAgents, updateAgent, agentSignin } from "./agent";
 export { currentAgentUser } from "./currentuser";

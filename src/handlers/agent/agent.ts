@@ -1,8 +1,10 @@
 import prisma from "../../db";
 import { BadRequestError } from "../../errors/bad-request-error";
+import { InternalServerError } from "../../errors/internal-server-error";
 import { NotAuthorizedError } from "../../errors/not-authorized-error";
 import { createJWT } from "../../modules/auth";
 import { createHash, verifyPassword } from "../../utilities/passwordutils";
+import { sendWelcomeMailAgent } from "../email/welcomeagent";
 
 export const createAgentUser = async (req, res) => {
   const { name, username, password, email } = req.body;
@@ -38,6 +40,7 @@ export const createAgentUser = async (req, res) => {
     const user = await prisma.agent.create({
       data,
     });
+    sendWelcomeMailAgent({ name, email, username, password });
     return res.json({ message: `User created ${user.username}` });
   } else {
     throw new BadRequestError("Cannot create user.");
@@ -69,7 +72,7 @@ export const agentSignin = async (req, res) => {
     },
   });
 
-  if (user) {
+  if (user && user.active) {
     try {
       const result = await verifyPassword(password, user.password);
 
@@ -94,5 +97,61 @@ export const agentSignin = async (req, res) => {
     }
   } else {
     throw new NotAuthorizedError();
+  }
+};
+
+export const getAgentDetails = async (req, res) => {
+  const { username } = req.currentUser;
+
+  const user = await prisma.agent.findUnique({
+    where: {
+      username,
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      username: true,
+      active: true,
+    },
+  });
+
+  return res.json(user);
+};
+
+export const updateAgent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    let data = req.body;
+
+    if (data.password) {
+      const hash = await createHash(data.password);
+      data = { ...data, password: hash };
+    }
+
+    const updatedAgent = await prisma.agent.update({
+      where: {
+        id: parseInt(id),
+      },
+      data,
+    });
+    return res.json(updatedAgent);
+  } catch (error) {
+    console.log(error);
+
+    throw new InternalServerError("Error updating agent");
+  }
+};
+
+export const removeAgent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleted = await prisma.agent.delete({
+      where: { id: parseInt(id) },
+    });
+    const data = { ...deleted, password: "" };
+    return res.json(data);
+  } catch (error) {
+    throw new InternalServerError("Error deleting agent");
   }
 };

@@ -17,3 +17,21 @@ export const getCandidate = async (req, res) => {
   });
   return res.json(candidate);
 };
+
+export const getCandidateById = async (req, res) => {
+  const { id } = req.params;
+  let candidate = await prisma.candidate.findFirst({
+    where: {
+      id,
+    },
+    include: {
+      gender: true,
+      socialstatus: true,
+      infosource: true,
+      state: true,
+      district: true,
+      city: true,
+    },
+  });
+  return res.json(candidate);
+};
