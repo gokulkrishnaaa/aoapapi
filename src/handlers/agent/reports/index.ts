@@ -1,1 +1,6 @@
-export { getCandidatesByUtmSource, getUtmCandidatesByEntrance } from "./utm";
+export {
+  getCandidatesByUtmSource,
+  getUtmCandidatesByEntrance,
+  downloadCandidatesByUtmSource,
+  downloadUtmCandidatesByEntrance,
+} from "./utm";

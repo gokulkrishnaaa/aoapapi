@@ -114,7 +114,7 @@ import {
   getTransactionsByApplication,
   getTransactionsByCandidate,
 } from "./handlers/entrance/transactions";
-import { importlocation } from "./handlers/master/import";
+import { importlocation, downloadExcel } from "./handlers/master";
 import {
   getDistrictWiseReport,
   getExamRegisteredReport,
@@ -130,6 +130,8 @@ import {
   listAgents,
 } from "./handlers/agent";
 import {
+  downloadCandidatesByUtmSource,
+  downloadUtmCandidatesByEntrance,
   getCandidatesByUtmSource,
   getUtmCandidatesByEntrance,
 } from "./handlers/agent/reports";
@@ -322,6 +324,16 @@ router.post("/admin/agent/currentuser", requireAuth, currentAgentUser);
 router.get("/admin/agent/", requireAuth, getAgentDetails);
 
 router.post("/agent/reports/utm/:source", getCandidatesByUtmSource);
+router.post(
+  "/agent/reports/download/utm/:source",
+  downloadCandidatesByUtmSource
+);
 router.post("/agent/reports/exam/:source", getUtmCandidatesByEntrance);
+router.post(
+  "/agent/reports/download/exam/:source",
+  downloadUtmCandidatesByEntrance
+);
+
+router.get("/reports/download-excel", downloadExcel);
 
 export default router;

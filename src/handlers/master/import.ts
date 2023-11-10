@@ -82,3 +82,27 @@ export const importlocation = async (req, res) => {
     return res.json("error");
   }
 };
+
+export const downloadExcel = async (req, res) => {
+  // Create a new workbook
+  const workbook = XLSX.utils.book_new();
+
+  // Add a worksheet to the workbook
+  const worksheet = XLSX.utils.json_to_sheet([
+    { Name: "John Doe", Age: 30, Country: "USA" },
+    { Name: "Jane Doe", Age: 25, Country: "Canada" },
+  ]);
+
+  // Add the worksheet to the workbook
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet 1");
+
+  // Set the appropriate headers for the response
+  res.setHeader(
+    "Content-Type",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  );
+  res.setHeader("Content-Disposition", "attachment; filename=excel.xlsx");
+
+  // Send the workbook directly to the response
+  res.end(XLSX.write(workbook, { bookType: "xlsx", type: "buffer" }));
+};

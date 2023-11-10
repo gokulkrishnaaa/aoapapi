@@ -1,4 +1,4 @@
-import { importlocation } from "./import";
+export { importlocation, downloadExcel } from "./import";
 
 export {
   getProducts,
