@@ -135,6 +135,7 @@ export const updateAgent = async (req, res) => {
       },
       data,
     });
+    delete updatedAgent.password;
     return res.json(updatedAgent);
   } catch (error) {
     console.log(error);
