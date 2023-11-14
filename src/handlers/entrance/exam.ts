@@ -147,8 +147,17 @@ export const examPaymentSuccess = async (req, res) => {
   console.log("payment success");
   console.log(req.body);
   const { txnid } = req.body;
-  const key = "5serGB";
-  const salt = "SfUWYazGo07yRh3gH0BEjTbzxCliTVCQ";
+
+  // production details
+  //   const key = "5serGB";
+  //   const salt = "SfUWYazGo07yRh3gH0BEjTbzxCliTVCQ";
+  //   const chkUrl = "https://info.payu.in/merchant/postservice?form=2";
+
+  //development details
+  const key = "aJ1WVm";
+  const salt = "hKmYSMBAzg5QOw64IV9MFtcu6BKaIyYA";
+  const chkUrl = "https://test.payu.in/merchant/postservice?form=2";
+
   const command = "verify_payment";
 
   const transactionDetails = await prisma.entrancePayments.findUnique({
@@ -168,7 +177,6 @@ export const examPaymentSuccess = async (req, res) => {
     },
   });
 
-  const chkUrl = "https://info.payu.in/merchant/postservice?form=2";
   const chkHeaders = {
     accept: "application/json",
     "Content-Type": "application/x-www-form-urlencoded",

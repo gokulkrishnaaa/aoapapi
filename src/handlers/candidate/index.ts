@@ -1,3 +1,10 @@
+export {
+  createJeeApplication,
+  getJeeApplicationByJeeId,
+  getJeeApplicationById,
+  updateJeeApplication,
+  getJeeApplicationByCandidateId,
+} from "./jee";
 export { getCandidate, getCandidateById } from "./getCandidate";
 export { signout } from "./signout";
 export { signin } from "./signin";

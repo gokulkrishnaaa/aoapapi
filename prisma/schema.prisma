@@ -115,6 +115,8 @@ model Candidate {
   ExamApplication  ExamApplication[]
   EntrancePayments EntrancePayments[]
   Utm              Utm?
+  JEEApplication   JEEApplication[]
+  JEEPayments      JEEPayments[]
 }
 
 model ParentInfo {
@@ -179,6 +181,7 @@ model Exam {
   status          ExamStatus        @default(PAUSE)
   ExamApplication ExamApplication[]
   Registration    Registration[]
+  Jee             Jee[]
 }
 
 enum ExamApplicationStatus {
@@ -368,4 +371,49 @@ model Agent {
   password  String
   active    Boolean  @default(true)
   createdAt DateTime @default(now())
+}
+
+model Jee {
+  id             Int              @id @default(autoincrement())
+  description    String           @unique
+  exam           Exam             @relation(fields: [examId], references: [id])
+  examId         String           @unique
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  JEEApplication JEEApplication[]
+}
+
+enum JEEApplicationStatus {
+  PENDING
+  REGISTERED
+}
+
+model JEEApplication {
+  id          String               @id @default(cuid())
+  reference   String
+  candidate   Candidate            @relation(fields: [candidateId], references: [id])
+  candidateId String
+  jee         Jee                  @relation(fields: [jeeId], references: [id])
+  jeeId       Int
+  status      JEEApplicationStatus @default(PENDING)
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  JEEPayments JEEPayments[]
+
+  @@unique([jeeId, candidateId])
+}
+
+model JEEPayments {
+  id               String         @id @default(cuid())
+  txnid            String         @unique @default(cuid())
+  reference        String
+  candidate        Candidate      @relation(fields: [candidateId], references: [id])
+  candidateId      String
+  jeeapplication   JEEApplication @relation(fields: [jeeapplicationId], references: [id])
+  jeeapplicationId String
+  description      String?
+  status           PaymentStatus  @default(STARTED)
+  amount           Decimal
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
 }

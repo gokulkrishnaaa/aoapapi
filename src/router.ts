@@ -54,6 +54,7 @@ import {
 import {
   createCandidateParent,
   createCandidatePlustwo,
+  createJeeApplication,
   createOtp,
   currentUser,
   getCandidate,
@@ -61,10 +62,14 @@ import {
   getCandidateParent,
   getCandidateParentById,
   getCandidatePustwo,
+  getJeeApplicationByCandidateId,
+  getJeeApplicationById,
+  getJeeApplicationByJeeId,
   putCandidate,
   putOnboarding,
   signin,
   signout,
+  updateJeeApplication,
 } from "./handlers/candidate";
 import { requireAuth } from "./middlewares/require-auth";
 import {
@@ -114,6 +119,7 @@ import {
   getTransactionsByApplication,
   getTransactionsByCandidate,
 } from "./handlers/entrance/transactions";
+
 import { importlocation, downloadExcel } from "./handlers/master";
 import {
   getDistrictWiseReport,
@@ -140,6 +146,19 @@ import {
   removeAgent,
   updateAgent,
 } from "./handlers/agent/agent";
+import {
+  createJee,
+  getActiveJee,
+  getAllJee,
+  updateJee,
+} from "./handlers/master/jee";
+import {
+  getJeeTransactionsByApplication,
+  getJeeTransactionsByCandidate,
+  createJeeTransaction,
+  jeePaymentSuccess,
+  jeePaymentFailure,
+} from "./handlers/jee";
 
 const router = Router();
 
@@ -149,14 +168,14 @@ router.post("/candidate/signin", signin);
 router.post("/candidate/signout", requireAuth, signout);
 router.post("/candidate/currentuser", requireAuth, currentUser);
 router.get("/candidate", requireAuth, requireCandidate, getCandidate);
-router.get("/candidate/:id", requireAuth, getCandidateById);
 router.put("/candidate", requireAuth, putCandidate);
 router.post("/candidate/parent", requireAuth, createCandidateParent);
-router.get("/candidate/parent", requireAuth, getCandidateParent);
+router.get("/candidate/parent", getCandidateParent);
 router.get("/candidate/parent/:id", requireAuth, getCandidateParentById);
 router.post("/candidate/plustwo", requireAuth, createCandidatePlustwo);
 router.get("/candidate/plustwo", requireAuth, getCandidatePustwo);
 router.put("/candidate/onboarding", requireAuth, putOnboarding);
+router.get("/candidate/:id", requireAuth, getCandidateById);
 
 //master data
 router.get("/master/gender", requireAuth, getGender);
@@ -289,6 +308,23 @@ router.get(
 
 router.post("/transactions/entrance/", requireAuth, createEntranceTransaction);
 router.get("/transactions/entrance/", requireAuth, getTransactionsByCandidate);
+
+router.get(
+  "/transactions/jee/application/:id",
+  requireAuth,
+  getJeeTransactionsByApplication
+);
+
+router.post("/transactions/jee/", requireAuth, createJeeTransaction);
+router.get(
+  "/transactions/jee/candidate",
+  requireAuth,
+  getJeeTransactionsByCandidate
+);
+
+router.post("/jee/paymentsuccess", jeePaymentSuccess);
+router.post("/jee/paymentfailure", jeePaymentFailure);
+
 router.post("/email/otp", sendEmailOtp);
 router.get("/email/welcome", requireAuth, sendWelcomeMail);
 router.post("/email/verify", verifyEmail);
@@ -322,6 +358,21 @@ router.get("/admin/agent/list", listAgents);
 router.post("/admin/agent/signin", agentSignin);
 router.post("/admin/agent/currentuser", requireAuth, currentAgentUser);
 router.get("/admin/agent/", requireAuth, getAgentDetails);
+
+// JEE Routes
+router.post("/admin/jee/", createJee);
+router.put("/admin/jee/:id", updateJee);
+router.get("/admin/jee/", getAllJee);
+router.get("/admin/jee/active", getActiveJee);
+router.get("/candidate/jee/:jeeid", getJeeApplicationByJeeId);
+router.post("/candidate/jee/application", createJeeApplication);
+router.get("/candidate/jee/application/:id", getJeeApplicationById);
+router.get(
+  "/jee/application/candidate",
+  requireAuth,
+  getJeeApplicationByCandidateId
+);
+router.put("/candidate/jee/application/:id", updateJeeApplication);
 
 router.post("/agent/reports/utm/:source", getCandidatesByUtmSource);
 router.post(

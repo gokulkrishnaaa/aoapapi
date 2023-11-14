@@ -1,3 +1,5 @@
+import { createJee, updateJee, getAllJee, getActiveJee } from "./jee";
+
 export { importlocation, downloadExcel } from "./import";
 
 export {
