@@ -124,6 +124,7 @@ import {
 import { importlocation, downloadExcel } from "./handlers/master";
 import {
   getDistrictWiseReport,
+  getExamCityReport,
   getExamRegisteredReport,
   getRefererReport,
   getStateWiseReport,
@@ -339,6 +340,7 @@ router.post("/admin/register", createAdminUser);
 router.post("/admin/currentuser", requireAuth, currentAdminUser);
 router.post("/admin/reports/utm", requireAuth, getUTMReport);
 router.post("/admin/reports/state", requireAuth, getStateWiseReport);
+router.post("/admin/reports/examcity", requireAuth, getExamCityReport);
 router.post(
   "/admin/reports/district/:stateId",
   requireAuth,
