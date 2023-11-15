@@ -20,6 +20,7 @@ export { createEntrance, getEntrances, removeEntrance } from "./entrance";
 export {
   createExam,
   getOpenExams,
+  getActiveAeeeForJee,
   updateExam,
   getAllExams,
   getExamsByEntrance,

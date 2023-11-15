@@ -90,6 +90,7 @@ import {
 } from "./handlers/entrance";
 import {
   checkExamValid,
+  getActiveAeeeForJee,
   getExamsByEntrance,
   registerForExam,
 } from "./handlers/entrance/exam";
@@ -261,6 +262,7 @@ router.post("/exam", requireAuth, createExam);
 router.put("/exam/:id", requireAuth, updateExam);
 router.post("/exam/check/:id", requireAuth, checkExamValid);
 router.get("/exam/open", requireAuth, getOpenExams);
+router.get("/exam/open/jeeaeee", getActiveAeeeForJee);
 router.post("/exam/register", requireAuth, registerForExam);
 router.post("/exam/paymentsuccess", examPaymentSuccess);
 router.post("/exam/paymentfailure", examPaymentFailure);
