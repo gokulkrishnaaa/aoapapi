@@ -71,14 +71,14 @@ export const jeePaymentSuccess = async (req, res) => {
   const { txnid } = req.body;
 
   // production details
-  //   const key = "5serGB";
-  //   const salt = "SfUWYazGo07yRh3gH0BEjTbzxCliTVCQ";
-  //   const chkUrl = "https://info.payu.in/merchant/postservice?form=2";
+  const key = "5serGB";
+  const salt = "SfUWYazGo07yRh3gH0BEjTbzxCliTVCQ";
+  const chkUrl = "https://info.payu.in/merchant/postservice?form=2";
 
   //development details
-  const key = "aJ1WVm";
-  const salt = "hKmYSMBAzg5QOw64IV9MFtcu6BKaIyYA";
-  const chkUrl = "https://test.payu.in/merchant/postservice?form=2";
+  //   const key = "aJ1WVm";
+  //   const salt = "hKmYSMBAzg5QOw64IV9MFtcu6BKaIyYA";
+  //   const chkUrl = "https://test.payu.in/merchant/postservice?form=2";
 
   const command = "verify_payment";
 
