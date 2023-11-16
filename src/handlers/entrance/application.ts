@@ -99,6 +99,31 @@ export const getApplicationByExam = async (req, res) => {
   return res.json(application);
 };
 
+export const getApplicationByCandidateId = async (req, res) => {
+  const { id: candidateId } = req.currentUser;
+
+  console.log(candidateId);
+
+  let application = await prisma.examApplication.findFirst({
+    where: {
+      candidateId,
+    },
+    include: {
+      Registration: true,
+
+      exam: {
+        include: {
+          entrance: true, // Include Entrance details
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc", // Sorting by createdAt in descending order
+    },
+  });
+  return res.json(application);
+};
+
 export const updateApplicationProgress = async (req, res) => {
   const examapplicationId = req.params.id;
   const current = req.body.current;

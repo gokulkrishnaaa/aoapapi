@@ -181,7 +181,6 @@ model Exam {
   status          ExamStatus        @default(PAUSE)
   ExamApplication ExamApplication[]
   Registration    Registration[]
-  Jee             Jee[]
 }
 
 enum ExamApplicationStatus {
@@ -207,6 +206,7 @@ model ExamApplication {
   ApplicationProgrammes   ApplicationProgrammes[]
   ApplicationJEE          ApplicationJEE?
   ApplicationCities       ApplicationCities[]
+  createdAt        DateTime       @default(now())
 
   @@unique([examId, candidateId])
 }
@@ -224,6 +224,7 @@ model Registration {
   examapplication   ExamApplication @relation(fields: [examapplicationId], references: [id])
   examapplicationId String
   registrationNo    Int
+  createdAt        DateTime       @default(now())
 
   @@unique([examId, examapplicationId])
   @@unique([examId, registrationNo])
@@ -373,11 +374,16 @@ model Agent {
   createdAt DateTime @default(now())
 }
 
+enum JeeStatus {
+  PENDING
+  ACTIVE
+  ARCHIVED
+}
+
 model Jee {
   id             Int              @id @default(autoincrement())
   description    String           @unique
-  exam           Exam             @relation(fields: [examId], references: [id])
-  examId         String           @unique
+  status         JeeStatus        @default(PENDING)
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
   JEEApplication JEEApplication[]
@@ -414,6 +420,7 @@ model JEEPayments {
   description      String?
   status           PaymentStatus  @default(STARTED)
   amount           Decimal
+
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
 }

@@ -90,13 +90,13 @@ import {
 } from "./handlers/entrance";
 import {
   checkExamValid,
-  getActiveAeeeForJee,
   getExamsByEntrance,
   registerForExam,
 } from "./handlers/entrance/exam";
 import {
   addCityToApplication,
   addProgrammeToApplication,
+  getApplicationByCandidateId,
   getApplicationByExam,
   getApplicationJeeStatus,
   getCityByApplication,
@@ -264,7 +264,6 @@ router.post("/exam", requireAuth, createExam);
 router.put("/exam/:id", requireAuth, updateExam);
 router.post("/exam/check/:id", requireAuth, checkExamValid);
 router.get("/exam/open", requireAuth, getOpenExams);
-router.get("/exam/open/jeeaeee", getActiveAeeeForJee);
 router.post("/exam/register", requireAuth, registerForExam);
 router.post("/exam/paymentsuccess", examPaymentSuccess);
 router.post("/exam/paymentfailure", examPaymentFailure);
@@ -277,6 +276,11 @@ router.post(
   updateApplicationProgress
 );
 router.get("/application/:id", requireAuth, getApplication);
+router.get(
+  "/application/candidate/latest/aeee",
+  requireAuth,
+  getApplicationByCandidateId
+);
 router.put("/application/:id", requireAuth, updateApplication);
 router.get("/application/exam/:examid/", requireAuth, getApplicationByExam);
 router.post(

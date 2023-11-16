@@ -36,29 +36,6 @@ export const getOpenExams = async (req, res) => {
   return res.json(filteredEntrances);
 };
 
-export const getActiveAeeeForJee = async (req, res) => {
-  const latestExam = await prisma.entrance.findUnique({
-    where: {
-      code: "AEEE", // Replace with the actual entrance code
-    },
-    select: {
-      Exam: {
-        where: {
-          status: {
-            in: ["APPLY", "SLOT"],
-          },
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-        take: 1,
-      },
-    },
-  });
-
-  return res.json(latestExam);
-};
-
 export const checkExamValid = async (req, res) => {
   const id = req.params.id;
   const input = req.body;
