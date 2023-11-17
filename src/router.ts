@@ -162,6 +162,20 @@ import {
   jeePaymentSuccess,
   jeePaymentFailure,
 } from "./handlers/jee";
+import {
+  counsellorSignin,
+  createCounsellor,
+  currentCounsellorUser,
+  getCounsellorDetails,
+  listCounsellors,
+  removeCounsellor,
+  updateCounsellor,
+} from "./handlers/counsellor";
+import { searchApplication, searchCandidate } from "./handlers/search";
+import {
+  getFullAeeeDetailsByCandidateId,
+  getFullJeeDetailsByCandidateId,
+} from "./handlers/reports";
 
 const router = Router();
 
@@ -373,6 +387,19 @@ router.post("/admin/agent/signin", agentSignin);
 router.post("/admin/agent/currentuser", requireAuth, currentAgentUser);
 router.get("/admin/agent/", requireAuth, getAgentDetails);
 
+// counsellor
+router.post("/admin/counsellor/create", createCounsellor);
+router.get("/admin/counsellor/list", listCounsellors);
+router.delete("/admin/counsellor/:id", removeCounsellor);
+router.put("/admin/counsellor/:id", updateCounsellor);
+router.post("/admin/counsellor/signin", counsellorSignin);
+router.post(
+  "/admin/counsellor/currentuser",
+  requireAuth,
+  currentCounsellorUser
+);
+router.get("/admin/counsellor/", requireAuth, getCounsellorDetails);
+
 // JEE Routes
 router.post("/admin/jee/", createJee);
 router.put("/admin/jee/:id", updateJee);
@@ -388,6 +415,11 @@ router.get(
 );
 router.put("/candidate/jee/application/:id", updateJeeApplication);
 
+// search
+router.post("/search/candidate", searchCandidate);
+router.post("/search/application", searchApplication);
+
+// agent reports
 router.post("/agent/reports/utm/:source", getCandidatesByUtmSource);
 router.post(
   "/agent/reports/download/utm/:source",
@@ -397,6 +429,16 @@ router.post("/agent/reports/exam/:source", getUtmCandidatesByEntrance);
 router.post(
   "/agent/reports/download/exam/:source",
   downloadUtmCandidatesByEntrance
+);
+
+// reports
+router.get(
+  "/reports/candidate/aeee/:candidateId",
+  getFullAeeeDetailsByCandidateId
+);
+router.get(
+  "/reports/candidate/jee/:candidateId",
+  getFullJeeDetailsByCandidateId
 );
 
 router.get("/reports/download-excel", downloadExcel);
