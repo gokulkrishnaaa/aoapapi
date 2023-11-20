@@ -123,7 +123,6 @@ import {
 
 import { importlocation, downloadExcel } from "./handlers/master";
 import {
-  downloadExamCityReport,
   getDistrictWiseReport,
   getExamCityReport,
   getExamRegisteredReport,
@@ -360,11 +359,7 @@ router.post("/admin/currentuser", requireAuth, currentAdminUser);
 router.post("/admin/reports/utm", requireAuth, getUTMReport);
 router.post("/admin/reports/state", requireAuth, getStateWiseReport);
 router.post("/admin/reports/examcity", requireAuth, getExamCityReport);
-router.post(
-  "/admin/reports/examcity/download",
-  requireAuth,
-  downloadExamCityReport
-);
+router.post("/admin/reports/examcity/download", requireAuth);
 router.post(
   "/admin/reports/district/:stateId",
   requireAuth,

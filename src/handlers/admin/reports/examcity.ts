@@ -4,86 +4,100 @@ import { BadRequestError } from "../../../errors/bad-request-error";
 import XLSX from "xlsx";
 
 export const getExamCityReport = async (req, res) => {
-  const { examId } = req.body;
-  let queryString = Prisma.sql`
-    SELECT c.name AS cityName, COUNT(*) AS cityCount
+  const { download } = req.query;
+  const { examId, showBy } = req.body;
+
+  console.log("Show By", showBy);
+  let cityRowNumber = 0;
+
+  switch (showBy) {
+    case "city1":
+      cityRowNumber = 1;
+      break;
+    case "city2":
+      cityRowNumber = 2;
+      break;
+    case "city3":
+      cityRowNumber = 3;
+      break;
+    default:
+      break;
+  }
+
+  let queryString;
+
+  if (showBy != "state") {
+    queryString = Prisma.sql`
+    WITH RankedCities AS (
+    SELECT
+        c.name AS locationName,
+        ROW_NUMBER() OVER (PARTITION BY ea.id ORDER BY ac.id) AS rowNumber
     FROM "ExamApplication" ea
     LEFT JOIN "ApplicationCities" ac ON ea.id = ac."examapplicationId"
     LEFT JOIN "ExamCity" ec ON ac."examcityId" = ec.id
     LEFT JOIN "City" c ON ec."cityId" = c.id
-    WHERE ac.id = (
-    SELECT MIN(ac2.id)
-    FROM "ApplicationCities" ac2
-    WHERE ac2."examapplicationId" = ac."examapplicationId"
+    WHERE ea."examId" = ${examId}
     )
-    AND ea."examId" = ${examId}
-    GROUP BY c.name;
+    SELECT locationName, COUNT(*) AS locationCount
+    FROM RankedCities
+    WHERE rowNumber = ${cityRowNumber}
+    GROUP BY locationName;
       `;
-
-  try {
-    const resultRows = await prisma.$queryRaw(queryString);
-
-    const resultArr = resultRows as any[];
-
-    // Convert BigInt to regular numbers
-    const formattedCounts = resultArr.map((row) => ({
-      cityname: row.cityname,
-      count: Number(row.citycount),
-    }));
-
-    return res.json(formattedCounts);
-  } catch (error) {
-    console.log(error);
-    throw new BadRequestError("Request cannot be processed");
-  }
-};
-
-export const downloadExamCityReport = async (req, res) => {
-  const { examId } = req.body;
-  let queryString = Prisma.sql`
-      SELECT c.name AS cityName, COUNT(*) AS cityCount
-      FROM "ExamApplication" ea
-      LEFT JOIN "ApplicationCities" ac ON ea.id = ac."examapplicationId"
-      LEFT JOIN "ExamCity" ec ON ac."examcityId" = ec.id
-      LEFT JOIN "City" c ON ec."cityId" = c.id
-      WHERE ac.id = (
-      SELECT MIN(ac2.id)
-      FROM "ApplicationCities" ac2
-      WHERE ac2."examapplicationId" = ac."examapplicationId"
+  } else {
+    queryString = Prisma.sql`
+    WITH RankedCities AS (
+        SELECT
+          s.name AS locationName,
+          ROW_NUMBER() OVER (PARTITION BY ea.id ORDER BY ac.id) AS rowNumber
+        FROM "ExamApplication" ea
+        LEFT JOIN "ApplicationCities" ac ON ea.id = ac."examapplicationId"
+        LEFT JOIN "ExamCity" ec ON ac."examcityId" = ec.id
+        LEFT JOIN "City" c ON ec."cityId" = c.id
+        LEFT JOIN "District" d ON c."districtId" = d.id
+        LEFT JOIN "State" s ON d."stateId" = s.id
+        WHERE ea."examId" = ${examId}
       )
-      AND ea."examId" = ${examId}
-      GROUP BY c.name;
-        `;
+      SELECT locationName, COUNT(*) AS locationCount
+      FROM RankedCities
+      GROUP BY locationName;
+      `;
+  }
 
   try {
     const resultRows = await prisma.$queryRaw(queryString);
 
     const resultArr = resultRows as any[];
+
+    console.log("result arr", resultArr);
 
     // Convert BigInt to regular numbers
     const formatted = resultArr.map((row) => ({
-      City: row.cityname,
-      Count: Number(row.citycount),
+      Location: row.locationname,
+      Count: Number(row.locationcount),
     }));
 
-    // Create a new workbook
-    const workbook = XLSX.utils.book_new();
+    if (download) {
+      // Create a new workbook
+      const workbook = XLSX.utils.book_new();
 
-    // Add a worksheet to the workbook
-    const worksheet = XLSX.utils.json_to_sheet(formatted);
+      // Add a worksheet to the workbook
+      const worksheet = XLSX.utils.json_to_sheet(formatted);
 
-    // Add the worksheet to the workbook
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+      // Add the worksheet to the workbook
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
 
-    // Set the appropriate headers for the response
-    res.setHeader(
-      "Content-Type",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    );
-    res.setHeader("Content-Disposition", "attachment; filename=excel.xlsx");
+      // Set the appropriate headers for the response
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+      res.setHeader("Content-Disposition", "attachment; filename=excel.xlsx");
 
-    // Send the workbook directly to the response
-    res.end(XLSX.write(workbook, { bookType: "xlsx", type: "buffer" }));
+      // Send the workbook directly to the response
+      res.end(XLSX.write(workbook, { bookType: "xlsx", type: "buffer" }));
+    } else {
+      return res.json(formatted);
+    }
   } catch (error) {
     console.log(error);
     throw new BadRequestError("Request cannot be processed");
