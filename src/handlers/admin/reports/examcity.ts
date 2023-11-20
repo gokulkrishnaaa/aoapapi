@@ -8,39 +8,28 @@ export const getExamCityReport = async (req, res) => {
   const { examId, showBy } = req.body;
 
   console.log("Show By", showBy);
-  let cityRowNumber = 0;
-
-  switch (showBy) {
-    case "city1":
-      cityRowNumber = 1;
-      break;
-    case "city2":
-      cityRowNumber = 2;
-      break;
-    case "city3":
-      cityRowNumber = 3;
-      break;
-    default:
-      break;
-  }
 
   let queryString;
 
-  if (showBy != "state") {
+  if (showBy === "city") {
     queryString = Prisma.sql`
     WITH RankedCities AS (
-    SELECT
-        c.name AS locationName,
-        ROW_NUMBER() OVER (PARTITION BY ea.id ORDER BY ac.id) AS rowNumber
-    FROM "ExamApplication" ea
-    LEFT JOIN "ApplicationCities" ac ON ea.id = ac."examapplicationId"
-    LEFT JOIN "ExamCity" ec ON ac."examcityId" = ec.id
-    LEFT JOIN "City" c ON ec."cityId" = c.id
-    WHERE ea."examId" = ${examId} AND c.name IS NOT NULL
+        SELECT
+            c.name AS locationName,
+            ROW_NUMBER() OVER (PARTITION BY ea.id ORDER BY ac.id) AS rowNumber
+        FROM "ExamApplication" ea
+        LEFT JOIN "ApplicationCities" ac ON ea.id = ac."examapplicationId"
+        LEFT JOIN "ExamCity" ec ON ac."examcityId" = ec.id
+        LEFT JOIN "City" c ON ec."cityId" = c.id
+        WHERE ea."examId" = ${examId} AND c.name IS NOT NULL
     )
-    SELECT locationName, COUNT(*) AS locationCount
+
+    SELECT
+      locationName,
+      COUNT(*) FILTER(WHERE rowNumber = 1) AS locationCount1,
+      COUNT(*) FILTER(WHERE rowNumber = 2) AS locationCount2,
+      COUNT(*) FILTER(WHERE rowNumber = 3) AS locationCount3
     FROM RankedCities
-    WHERE rowNumber = ${cityRowNumber}
     GROUP BY locationName;
       `;
   } else {
@@ -57,9 +46,15 @@ export const getExamCityReport = async (req, res) => {
         LEFT JOIN "State" s ON d."stateId" = s.id
         WHERE ea."examId" = ${examId} AND s.name IS NOT NULL
       )
-      SELECT locationName, COUNT(*) AS locationCount
+
+      SELECT
+        locationName,
+        COUNT(*) FILTER(WHERE rowNumber = 1) AS locationCount1,
+        COUNT(*) FILTER(WHERE rowNumber = 2) AS locationCount2,
+        COUNT(*) FILTER(WHERE rowNumber = 3) AS locationCount3
       FROM RankedCities
       GROUP BY locationName;
+
       `;
   }
 
@@ -73,7 +68,9 @@ export const getExamCityReport = async (req, res) => {
     // Convert BigInt to regular numbers
     const formatted = resultArr.map((row) => ({
       Location: row.locationname,
-      Count: Number(row.locationcount),
+      Count1: row.locationcount1 != null ? Number(row.locationcount1) : null,
+      Count2: row.locationcount2 != null ? Number(row.locationcount2) : null,
+      Count3: row.locationcount3 != null ? Number(row.locationcount3) : null,
     }));
 
     if (download) {
