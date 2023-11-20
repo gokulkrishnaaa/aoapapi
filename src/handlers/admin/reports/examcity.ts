@@ -36,7 +36,7 @@ export const getExamCityReport = async (req, res) => {
     LEFT JOIN "ApplicationCities" ac ON ea.id = ac."examapplicationId"
     LEFT JOIN "ExamCity" ec ON ac."examcityId" = ec.id
     LEFT JOIN "City" c ON ec."cityId" = c.id
-    WHERE ea."examId" = ${examId}
+    WHERE ea."examId" = ${examId} AND c.name IS NOT NULL
     )
     SELECT locationName, COUNT(*) AS locationCount
     FROM RankedCities
@@ -55,7 +55,7 @@ export const getExamCityReport = async (req, res) => {
         LEFT JOIN "City" c ON ec."cityId" = c.id
         LEFT JOIN "District" d ON c."districtId" = d.id
         LEFT JOIN "State" s ON d."stateId" = s.id
-        WHERE ea."examId" = ${examId}
+        WHERE ea."examId" = ${examId} AND s.name IS NOT NULL
       )
       SELECT locationName, COUNT(*) AS locationCount
       FROM RankedCities
