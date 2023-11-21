@@ -3,7 +3,12 @@ import prisma from "../../db";
 export const createCandidatePlustwo = async (req, res) => {
   const { id } = req.currentUser;
   const data = req.body;
-  console.log(data);
+
+  if (data.stateId === 9999999999) {
+    delete data.stateId;
+  } else {
+    delete data.otherState;
+  }
 
   const candidate = await prisma.plusTwoInfo.upsert({
     where: {

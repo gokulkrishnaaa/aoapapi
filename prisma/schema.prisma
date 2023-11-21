@@ -139,6 +139,7 @@ model PlusTwoInfo {
   candidateId String    @unique
   state       State?    @relation(fields: [stateId], references: [id])
   stateId     Int?
+  otherState  String?
 }
 
 model Utm {
