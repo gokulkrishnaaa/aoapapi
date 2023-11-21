@@ -175,6 +175,7 @@ import {
   getFullAeeeDetailsByCandidateId,
   getFullJeeDetailsByCandidateId,
 } from "./handlers/reports";
+import { createCrmSignin } from "./handlers/crm";
 
 const router = Router();
 
@@ -437,5 +438,7 @@ router.get(
 );
 
 router.get("/reports/download-excel", downloadExcel);
+
+router.post("/crm/signin", createCrmSignin);
 
 export default router;
