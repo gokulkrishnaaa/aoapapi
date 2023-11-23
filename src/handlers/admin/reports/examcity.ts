@@ -24,7 +24,8 @@ export const getExamCityReport = async (req, res) => {
         LEFT JOIN "City" c ON ec."cityId" = c.id
         LEFT JOIN "District" d ON c."districtId" = d.id
         LEFT JOIN "State" s ON d."stateId" = s.id
-        WHERE ea."examId" = ${examId} AND c.name IS NOT NULL
+        LEFT JOIN "Registration" r ON ea.id = r."examapplicationId"
+        WHERE ea."examId" = ${examId} AND c.name IS NOT NULL AND r.id IS NOT NULL
     )
 
     SELECT
@@ -52,7 +53,8 @@ export const getExamCityReport = async (req, res) => {
         LEFT JOIN "City" c ON ec."cityId" = c.id
         LEFT JOIN "District" d ON c."districtId" = d.id
         LEFT JOIN "State" s ON d."stateId" = s.id
-        WHERE ea."examId" = ${examId} AND s.name IS NOT NULL
+        LEFT JOIN "Registration" r ON ea.id = r."examapplicationId"
+        WHERE ea."examId" = ${examId} AND s.name IS NOT NULL AND r.id IS NOT NULL
     )
 
     SELECT
