@@ -24,6 +24,7 @@ export {
   updateExam,
   getAllExams,
   getExamsByEntrance,
+  getExamByEntrance,
   registerForExam,
   examPaymentSuccess,
   examPaymentFailure,

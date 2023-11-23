@@ -90,6 +90,7 @@ import {
 } from "./handlers/entrance";
 import {
   checkExamValid,
+  getExamByEntrance,
   getExamsByEntrance,
   registerForExam,
 } from "./handlers/entrance/exam";
@@ -272,6 +273,7 @@ router.get(
 // entrance and exam
 router.post("/entrance", requireAuth, createEntrance);
 router.get("/entrance", requireAuth, getEntrances);
+router.get("/entrance/:id/exam", requireAuth, getExamByEntrance);
 router.delete("/entrance/:id", requireAuth, removeEntrance);
 router.put("/entrance/:id", requireAuth, updateEntrance);
 router.post("/exam", requireAuth, createExam);

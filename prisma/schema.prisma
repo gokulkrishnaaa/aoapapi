@@ -178,7 +178,7 @@ model Exam {
   createdAt       DateTime          @default(now())
   entrance        Entrance          @relation(fields: [entranceId], references: [id])
   entranceId      String
-  description     String            @unique
+  description     String
   status          ExamStatus        @default(PAUSE)
   ExamApplication ExamApplication[]
   Registration    Registration[]
