@@ -193,6 +193,12 @@ enum ExamApplicationStatus {
   RANK
 }
 
+enum ExamApplicationType {
+  ONLINE
+  OMR
+  AGENT
+}
+
 model ExamApplication {
   id                      String                   @id @default(cuid())
   reference               String
@@ -201,6 +207,7 @@ model ExamApplication {
   candidate               Candidate                @relation(fields: [candidateId], references: [id])
   candidateId             String
   status                  ExamApplicationStatus    @default(PENDING)
+  type                    ExamApplicationType      @default(ONLINE)
   Registration            Registration[]
   ExamApplicationProgress ExamApplicationProgress?
   EntrancePayments        EntrancePayments[]
