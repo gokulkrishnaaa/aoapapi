@@ -80,8 +80,6 @@ export const signin = async (req, res) => {
     },
   });
 
-  console.log("candidate", candidate);
-
   // 5. check onboarding status
   // 6. if no onboarding entry, create
 

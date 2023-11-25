@@ -57,6 +57,7 @@ import {
   createJeeApplication,
   createOtp,
   currentUser,
+  getAllCandidatesInfo,
   getCandidate,
   getCandidateById,
   getCandidateParent,
@@ -90,6 +91,7 @@ import {
 } from "./handlers/entrance";
 import {
   checkExamValid,
+  getExamByEntrance,
   getExamsByEntrance,
   registerForExam,
 } from "./handlers/entrance/exam";
@@ -176,6 +178,7 @@ import {
   getFullAeeeDetailsByCandidateId,
   getFullJeeDetailsByCandidateId,
 } from "./handlers/reports";
+import { createCrmSignin } from "./handlers/crm";
 import { getUtmSource } from "./handlers/misc";
 
 const router = Router();
@@ -194,6 +197,7 @@ router.post("/candidate/plustwo", requireAuth, createCandidatePlustwo);
 router.get("/candidate/plustwo", requireAuth, getCandidatePustwo);
 router.put("/candidate/onboarding", requireAuth, putOnboarding);
 router.get("/candidate/:id", requireAuth, getCandidateById);
+router.get("/candidates", getAllCandidatesInfo);
 
 //master data
 router.get("/master/gender", requireAuth, getGender);
@@ -273,6 +277,7 @@ router.get(
 // entrance and exam
 router.post("/entrance", requireAuth, createEntrance);
 router.get("/entrance", requireAuth, getEntrances);
+router.get("/entrance/:id/exam", requireAuth, getExamByEntrance);
 router.delete("/entrance/:id", requireAuth, removeEntrance);
 router.put("/entrance/:id", requireAuth, updateEntrance);
 router.post("/exam", requireAuth, createExam);
@@ -365,7 +370,6 @@ router.post("/admin/reports/utmsource/download", requireAuth);
 
 router.post("/admin/reports/state", requireAuth, getStateWiseReport);
 router.post("/admin/reports/examcity", requireAuth, getExamCityReport);
-router.post("/admin/reports/examcity/download", requireAuth);
 router.post(
   "/admin/reports/district/:stateId",
   requireAuth,
@@ -445,5 +449,7 @@ router.get(
 router.get("/reports/download-excel", downloadExcel);
 
 router.get("/data/utmsource", getUtmSource);
+
+router.post("/crm/signin", createCrmSignin);
 
 export default router;

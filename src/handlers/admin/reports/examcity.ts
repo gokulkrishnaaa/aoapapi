@@ -16,45 +16,57 @@ export const getExamCityReport = async (req, res) => {
     WITH RankedCities AS (
         SELECT
             c.name AS locationName,
+            s.name AS stateName,
             ROW_NUMBER() OVER (PARTITION BY ea.id ORDER BY ac.id) AS rowNumber
-        FROM "ExamApplication" ea
-        LEFT JOIN "ApplicationCities" ac ON ea.id = ac."examapplicationId"
-        LEFT JOIN "ExamCity" ec ON ac."examcityId" = ec.id
-        LEFT JOIN "City" c ON ec."cityId" = c.id
-        WHERE ea."examId" = ${examId} AND c.name IS NOT NULL
-    )
-
-    SELECT
-      locationName,
-      COUNT(*) FILTER(WHERE rowNumber = 1) AS locationCount1,
-      COUNT(*) FILTER(WHERE rowNumber = 2) AS locationCount2,
-      COUNT(*) FILTER(WHERE rowNumber = 3) AS locationCount3
-    FROM RankedCities
-    GROUP BY locationName;
-      `;
-  } else {
-    queryString = Prisma.sql`
-    WITH RankedCities AS (
-        SELECT
-          s.name AS locationName,
-          ROW_NUMBER() OVER (PARTITION BY ea.id ORDER BY ac.id) AS rowNumber
         FROM "ExamApplication" ea
         LEFT JOIN "ApplicationCities" ac ON ea.id = ac."examapplicationId"
         LEFT JOIN "ExamCity" ec ON ac."examcityId" = ec.id
         LEFT JOIN "City" c ON ec."cityId" = c.id
         LEFT JOIN "District" d ON c."districtId" = d.id
         LEFT JOIN "State" s ON d."stateId" = s.id
-        WHERE ea."examId" = ${examId} AND s.name IS NOT NULL
-      )
+        LEFT JOIN "Registration" r ON ea.id = r."examapplicationId"
+        WHERE ea."examId" = ${examId} AND c.name IS NOT NULL AND r.id IS NOT NULL
+    )
 
-      SELECT
+    SELECT
+        stateName,
         locationName,
         COUNT(*) FILTER(WHERE rowNumber = 1) AS locationCount1,
         COUNT(*) FILTER(WHERE rowNumber = 2) AS locationCount2,
         COUNT(*) FILTER(WHERE rowNumber = 3) AS locationCount3
-      FROM RankedCities
-      GROUP BY locationName;
+    FROM RankedCities
+    GROUP BY stateName, locationName
+    ORDER BY
+        stateName ASC,
+        locationName ASC,
+        locationCount1 DESC;
+      `;
+  } else {
+    queryString = Prisma.sql`
+    WITH RankedCities AS (
+        SELECT
+            s.name AS locationName,
+            ROW_NUMBER() OVER (PARTITION BY ea.id ORDER BY ac.id) AS rowNumber
+        FROM "ExamApplication" ea
+        LEFT JOIN "ApplicationCities" ac ON ea.id = ac."examapplicationId"
+        LEFT JOIN "ExamCity" ec ON ac."examcityId" = ec.id
+        LEFT JOIN "City" c ON ec."cityId" = c.id
+        LEFT JOIN "District" d ON c."districtId" = d.id
+        LEFT JOIN "State" s ON d."stateId" = s.id
+        LEFT JOIN "Registration" r ON ea.id = r."examapplicationId"
+        WHERE ea."examId" = ${examId} AND s.name IS NOT NULL AND r.id IS NOT NULL
+    )
 
+    SELECT
+        locationName,
+        COUNT(*) FILTER(WHERE rowNumber = 1) AS locationCount1,
+        COUNT(*) FILTER(WHERE rowNumber = 2) AS locationCount2,
+        COUNT(*) FILTER(WHERE rowNumber = 3) AS locationCount3
+    FROM RankedCities
+    GROUP BY locationName
+    ORDER BY
+        locationName ASC,
+        locationCount1 DESC;
       `;
   }
 
@@ -67,6 +79,7 @@ export const getExamCityReport = async (req, res) => {
 
     // Convert BigInt to regular numbers
     const formatted = resultArr.map((row) => ({
+      State: row.statename,
       Location: row.locationname,
       Count1: row.locationcount1 != null ? Number(row.locationcount1) : null,
       Count2: row.locationcount2 != null ? Number(row.locationcount2) : null,
