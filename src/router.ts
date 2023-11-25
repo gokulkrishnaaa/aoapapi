@@ -129,6 +129,7 @@ import {
   getRefererReport,
   getStateWiseReport,
   getUTMReport,
+  getUTMReportBySource,
 } from "./handlers/admin/reports";
 import { addReferer } from "./handlers/analytics";
 import {
@@ -175,6 +176,7 @@ import {
   getFullAeeeDetailsByCandidateId,
   getFullJeeDetailsByCandidateId,
 } from "./handlers/reports";
+import { getUtmSource } from "./handlers/misc";
 
 const router = Router();
 
@@ -357,6 +359,10 @@ router.post("/admin/signin", adminSignin);
 router.post("/admin/register", createAdminUser);
 router.post("/admin/currentuser", requireAuth, currentAdminUser);
 router.post("/admin/reports/utm", requireAuth, getUTMReport);
+// router.post("/admin/reports/utm/source", requireAuth, getUTMReportBySource);
+router.post("/admin/reports/utmsource", requireAuth, getUTMReportBySource);
+router.post("/admin/reports/utmsource/download", requireAuth);
+
 router.post("/admin/reports/state", requireAuth, getStateWiseReport);
 router.post("/admin/reports/examcity", requireAuth, getExamCityReport);
 router.post("/admin/reports/examcity/download", requireAuth);
@@ -437,5 +443,7 @@ router.get(
 );
 
 router.get("/reports/download-excel", downloadExcel);
+
+router.get("/data/utmsource", getUtmSource);
 
 export default router;
