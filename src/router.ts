@@ -57,6 +57,7 @@ import {
   createJeeApplication,
   createOtp,
   currentUser,
+  getAllCandidatesInfo,
   getCandidate,
   getCandidateById,
   getCandidateParent,
@@ -194,6 +195,7 @@ router.post("/candidate/plustwo", requireAuth, createCandidatePlustwo);
 router.get("/candidate/plustwo", requireAuth, getCandidatePustwo);
 router.put("/candidate/onboarding", requireAuth, putOnboarding);
 router.get("/candidate/:id", requireAuth, getCandidateById);
+router.get("/candidates", getAllCandidatesInfo);
 
 //master data
 router.get("/master/gender", requireAuth, getGender);
