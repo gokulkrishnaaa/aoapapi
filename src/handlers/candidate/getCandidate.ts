@@ -160,11 +160,11 @@ export const getAllCandidatesInfo = async (req, res) => {
       ...jee,
       AEEPayments: row.EntrancePayments.reduce((acc, txn) => {
         if (acc !== "") {
-          acc += ", ";
+          acc += ", \n";
         }
         return (
           acc +
-          `A. Desc : ${txn.description} B. Amount : ${txn.amount} C. TxnId: ${txn.txnid} D. Ref: ${txn.reference} E. Status: ${txn.status} \n`
+          `A. Desc : ${txn.description} B. Amount : ${txn.amount} C. TxnId: ${txn.txnid} D. Ref: ${txn.reference} E. Status: ${txn.status}`
         );
       }, ""),
     };
