@@ -166,8 +166,8 @@ export const examPaymentSuccess = async (req, res) => {
   const { txnid } = req.body;
 
   // production details
-  const key = "5serGB";
-  const salt = "SfUWYazGo07yRh3gH0BEjTbzxCliTVCQ";
+  const key = "ypfBaj";
+  const salt = "aG3tGzBZ";
   const chkUrl = "https://info.payu.in/merchant/postservice?form=2";
 
   //development details
