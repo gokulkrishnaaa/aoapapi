@@ -67,12 +67,12 @@ export const createJeeTransaction = async (req, res) => {
 
 export const jeePaymentSuccess = async (req, res) => {
   console.log("payment success");
-  console.log(req.body);
+  console.log("payment success details", req.body);
   const { txnid } = req.body;
 
   // production details
-  const key = "5serGB";
-  const salt = "SfUWYazGo07yRh3gH0BEjTbzxCliTVCQ";
+  const key = "ypfBaj";
+  const salt = "aG3tGzBZ";
   const chkUrl = "https://info.payu.in/merchant/postservice?form=2";
 
   //development details
@@ -97,7 +97,7 @@ export const jeePaymentSuccess = async (req, res) => {
   formData.append("var1", txnid);
   formData.append("hash", hash);
 
-  console.log(formData);
+  console.log("form data", formData);
 
   const chkResponse = await fetch(chkUrl, {
     method: "POST",
@@ -105,6 +105,9 @@ export const jeePaymentSuccess = async (req, res) => {
     body: formData,
   });
   const chkResponseData = await chkResponse.json();
+
+  console.log("response data", chkResponseData);
+
   if ((chkResponseData as { status: number }).status === 0) {
     return res.redirect("/applications/payment/failure");
   }
