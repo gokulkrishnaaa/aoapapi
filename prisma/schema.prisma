@@ -373,11 +373,14 @@ model Referer {
 }
 
 model Agent {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
-  email     String   @unique
-  username  String   @unique
-  password  String
+  id       Int     @id @default(autoincrement())
+  name     String  @unique
+  email    String  @unique
+  phone    String? @unique
+  username String  @unique
+  password String
+  amount   Decimal @default(0)
+
   active    Boolean  @default(true)
   createdAt DateTime @default(now())
 }
