@@ -57,7 +57,6 @@ import {
   createJeeApplication,
   createOtp,
   currentUser,
-  getAllCandidatesInfo,
   getCandidate,
   getCandidateById,
   getCandidateParent,
@@ -364,10 +363,7 @@ router.post("/admin/signin", adminSignin);
 router.post("/admin/register", createAdminUser);
 router.post("/admin/currentuser", requireAuth, currentAdminUser);
 router.post("/admin/reports/utm", requireAuth, getUTMReport);
-// router.post("/admin/reports/utm/source", requireAuth, getUTMReportBySource);
 router.post("/admin/reports/utmsource", requireAuth, getUTMReportBySource);
-router.post("/admin/reports/utmsource/download", requireAuth);
-
 router.post("/admin/reports/state", requireAuth, getStateWiseReport);
 router.post("/admin/reports/examcity", requireAuth, getExamCityReport);
 router.post(

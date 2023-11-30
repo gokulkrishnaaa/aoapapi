@@ -5,7 +5,11 @@ export {
   updateJeeApplication,
   getJeeApplicationByCandidateId,
 } from "./jee";
-export { getCandidate, getCandidateById } from "./getCandidate";
+export {
+  getCandidate,
+  getCandidateById,
+  getAllCandidatesInfo,
+} from "./getCandidate";
 export { signout } from "./signout";
 export { signin } from "./signin";
 export { createOtp } from "./getotp";
