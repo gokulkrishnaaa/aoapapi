@@ -117,6 +117,9 @@ model Candidate {
   Utm              Utm?
   JEEApplication   JEEApplication[]
   JEEPayments      JEEPayments[]
+
+  agentId Int?
+  agent   Agent? @relation(fields: [agentId], references: [id])
 }
 
 model ParentInfo {
@@ -381,8 +384,9 @@ model Agent {
   password String
   amount   Decimal @default(0)
 
-  active    Boolean  @default(true)
-  createdAt DateTime @default(now())
+  active    Boolean     @default(true)
+  createdAt DateTime    @default(now())
+  Candidate Candidate[]
 }
 
 enum JeeStatus {

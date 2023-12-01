@@ -19,3 +19,22 @@ export const createCandidatePlustwo = async (req, res) => {
   });
   return res.json(candidate);
 };
+
+export const createAgentCandidatePlustwo = async (req, res) => {
+  const data = req.body;
+
+  if (data.stateId === 9999999999) {
+    delete data.stateId;
+  } else {
+    delete data.otherState;
+  }
+
+  const candidate = await prisma.plusTwoInfo.upsert({
+    where: {
+      candidateId: data.candidateId,
+    },
+    update: data,
+    create: data,
+  });
+  return res.json(candidate);
+};

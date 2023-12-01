@@ -14,12 +14,18 @@ export { signout } from "./signout";
 export { signin } from "./signin";
 export { createOtp } from "./getotp";
 export { currentUser } from "./currentuser";
-export { putCandidate } from "./putCandidate";
-export { createCandidateParent } from "./createCandidateParent";
+export { createCandidate, putCandidate } from "./putCandidate";
+export {
+  createCandidateParent,
+  createAgentCandidateParent,
+} from "./createCandidateParent";
 export {
   getCandidateParent,
   getCandidateParentById,
 } from "./getCandidateParent";
-export { createCandidatePlustwo } from "./createCandidatePlustwo";
+export {
+  createCandidatePlustwo,
+  createAgentCandidatePlustwo,
+} from "./createCandidatePlustwo";
 export { getCandidatePustwo } from "./getCandidatePustwo";
-export { putOnboarding } from "./putOnboarding";
+export { putOnboarding, putAgentOnboarding } from "./putOnboarding";

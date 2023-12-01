@@ -52,6 +52,9 @@ import {
   updateState,
 } from "./handlers/master";
 import {
+  createAgentCandidateParent,
+  createAgentCandidatePlustwo,
+  createCandidate,
   createCandidateParent,
   createCandidatePlustwo,
   createJeeApplication,
@@ -66,6 +69,7 @@ import {
   getJeeApplicationByCandidateId,
   getJeeApplicationById,
   getJeeApplicationByJeeId,
+  putAgentOnboarding,
   putCandidate,
   putOnboarding,
   signin,
@@ -187,13 +191,21 @@ router.post("/candidate/signin", signin);
 router.post("/candidate/signout", requireAuth, signout);
 router.post("/candidate/currentuser", requireAuth, currentUser);
 router.get("/candidate", requireAuth, requireCandidate, getCandidate);
+router.post("/candidate", requireAuth, createCandidate);
 router.put("/candidate", requireAuth, putCandidate);
 router.post("/candidate/parent", requireAuth, createCandidateParent);
+router.post("/candidate/parent/agent", requireAuth, createAgentCandidateParent);
 router.get("/candidate/parent", getCandidateParent);
 router.get("/candidate/parent/:id", requireAuth, getCandidateParentById);
 router.post("/candidate/plustwo", requireAuth, createCandidatePlustwo);
+router.post(
+  "/candidate/plustwo/agent",
+  requireAuth,
+  createAgentCandidatePlustwo
+);
 router.get("/candidate/plustwo", requireAuth, getCandidatePustwo);
 router.put("/candidate/onboarding", requireAuth, putOnboarding);
+router.put("/candidate/onboarding/agent", requireAuth, putAgentOnboarding);
 router.get("/candidate/:id", requireAuth, getCandidateById);
 router.get("/candidates", getAllCandidatesInfo);
 

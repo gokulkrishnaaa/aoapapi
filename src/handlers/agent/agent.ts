@@ -84,6 +84,7 @@ export const agentSignin = async (req, res) => {
         const userdetails = {
           username: user.username,
           role: "agent",
+          id: user.id,
         };
 
         const token = createJWT(userdetails);
