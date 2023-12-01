@@ -146,6 +146,7 @@ import {
 import {
   downloadCandidatesByUtmSource,
   downloadUtmCandidatesByEntrance,
+  getCandidatesByAgent,
   getCandidatesByUtmSource,
   getUtmCandidatesByEntrance,
 } from "./handlers/agent/reports";
@@ -441,6 +442,8 @@ router.post(
   "/agent/reports/download/exam/:source",
   downloadUtmCandidatesByEntrance
 );
+
+router.get("/agent/:id/candidates", getCandidatesByAgent);
 
 // reports
 router.get(
