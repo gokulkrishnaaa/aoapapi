@@ -39,6 +39,59 @@ export const createApplication = async (req, res) => {
   res.json(completeApplication);
 };
 
+enum ExamApplicationType {
+  ONLINE = "ONLINE",
+  OMR = "OMR",
+  AGENT = "AGENT",
+}
+
+export const createEntranceApplication = async (req, res) => {
+  const { examId, candidateId } = req.body;
+  const user = req.currentUser;
+  const randomNumber = Math.floor(Date.now());
+  let reference;
+  let type = ExamApplicationType.ONLINE;
+
+  const exam = await prisma.exam.findUnique({
+    where: {
+      id: examId,
+    },
+    include: {
+      entrance: true,
+    },
+  });
+
+  if (exam) {
+    reference = `${exam.entrance.code}-${randomNumber}`;
+  } else {
+    throw new BadRequestError("Exam does not exist");
+  }
+
+  if (user.role === "agent") {
+    type = ExamApplicationType.AGENT;
+  }
+
+  const applndata = { examId, candidateId, reference, type };
+
+  let application = await prisma.examApplication.create({
+    data: applndata,
+  });
+
+  if (exam.entrance.code === "AEEE") {
+    await createAEEEApplicationInfo(application);
+  }
+
+  res.json(application);
+};
+
+const createAEEEApplicationInfo = async (application) => {
+  await prisma.applicationJEE.create({
+    data: {
+      examapplicationId: application.id,
+    },
+  });
+};
+
 export const updateApplication = async (req, res) => {
   const data = req.body;
   const id = req.params.id;
@@ -96,6 +149,31 @@ export const getApplicationByExam = async (req, res) => {
       },
     },
   });
+  return res.json(application);
+};
+
+export const getApplicationByExamCandidate = async (req, res) => {
+  const { examId, candidateId } = req.params;
+
+  console.log(examId);
+  console.log(candidateId);
+
+  let application = await prisma.examApplication.findFirst({
+    where: {
+      examId,
+      candidateId,
+    },
+    include: {
+      Registration: true,
+
+      exam: {
+        include: {
+          entrance: true, // Include Entrance details
+        },
+      },
+    },
+  });
+
   return res.json(application);
 };
 

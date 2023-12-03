@@ -1,4 +1,5 @@
 import prisma from "../../db";
+import { BadRequestError } from "../../errors/bad-request-error";
 import { createJWT } from "../../modules/auth";
 import isValidEmail from "../../utilities/checkemail";
 import isValidPhone from "../../utilities/checkphone";
@@ -56,9 +57,7 @@ export const signin = async (req, res) => {
     }
   }
   if (!isValid) {
-    res.status(401);
-    res.json({ message: "nope" });
-    return;
+    throw new BadRequestError("Invalid OTP");
   }
   // 2. check candidate
   //    a. if no candidate, create candiate and get id
@@ -79,6 +78,10 @@ export const signin = async (req, res) => {
       ],
     },
   });
+
+  if (candidate && candidate.agentId) {
+    throw new BadRequestError("Login Restricted. Contact Admin");
+  }
 
   // 5. check onboarding status
   // 6. if no onboarding entry, create

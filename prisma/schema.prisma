@@ -235,6 +235,7 @@ model Registration {
   examapplication   ExamApplication @relation(fields: [examapplicationId], references: [id])
   examapplicationId String
   registrationNo    Int
+  type                    ExamApplicationType      @default(ONLINE)
   createdAt         DateTime        @default(now())
 
   @@unique([examId, examapplicationId])

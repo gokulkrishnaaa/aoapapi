@@ -27,5 +27,8 @@ export {
   createCandidatePlustwo,
   createAgentCandidatePlustwo,
 } from "./createCandidatePlustwo";
-export { getCandidatePustwo } from "./getCandidatePustwo";
+export {
+  getCandidatePustwo,
+  getCandidatePlustwoById,
+} from "./getCandidatePustwo";
 export { putOnboarding, putAgentOnboarding } from "./putOnboarding";

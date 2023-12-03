@@ -65,6 +65,7 @@ import {
   getCandidateById,
   getCandidateParent,
   getCandidateParentById,
+  getCandidatePlustwoById,
   getCandidatePustwo,
   getJeeApplicationByCandidateId,
   getJeeApplicationById,
@@ -95,6 +96,8 @@ import {
 } from "./handlers/entrance";
 import {
   checkExamValid,
+  examAgentPaymentFailure,
+  examAgentPaymentSuccess,
   getExamByEntrance,
   getExamsByEntrance,
   registerForExam,
@@ -102,8 +105,10 @@ import {
 import {
   addCityToApplication,
   addProgrammeToApplication,
+  createEntranceApplication,
   getApplicationByCandidateId,
   getApplicationByExam,
+  getApplicationByExamCandidate,
   getApplicationJeeStatus,
   getCityByApplication,
   getProgrammeByApplication,
@@ -146,8 +151,10 @@ import {
 import {
   downloadCandidatesByUtmSource,
   downloadUtmCandidatesByEntrance,
+  getApplicationsByAgent,
   getCandidatesByAgent,
   getCandidatesByUtmSource,
+  getStatsByAgent,
   getUtmCandidatesByEntrance,
 } from "./handlers/agent/reports";
 import {
@@ -183,8 +190,12 @@ import {
   getFullJeeDetailsByCandidateId,
 } from "./handlers/reports";
 import { createCrmSignin } from "./handlers/crm";
+import { getLoggedUser } from "./handlers/user/user";
 
 const router = Router();
+
+// user
+router.get("/loggeduser", requireAuth, getLoggedUser);
 
 //candidate
 router.post("/candiate/createotp", createOtp);
@@ -205,6 +216,7 @@ router.post(
   createAgentCandidatePlustwo
 );
 router.get("/candidate/plustwo", requireAuth, getCandidatePustwo);
+router.get("/candidate/plustwo/:id", requireAuth, getCandidatePlustwoById);
 router.put("/candidate/onboarding", requireAuth, putOnboarding);
 router.put("/candidate/onboarding/agent", requireAuth, putAgentOnboarding);
 router.get("/candidate/:id", requireAuth, getCandidateById);
@@ -301,6 +313,7 @@ router.post("/exam/paymentfailure", examPaymentFailure);
 router.get("/exam", requireAuth, getAllExams);
 router.get("/exam/:entranceId", requireAuth, getExamsByEntrance);
 router.post("/application", requireAuth, createApplication);
+router.post("/entrance/application", requireAuth, createEntranceApplication);
 router.post(
   "/application/:id/progress",
   requireAuth,
@@ -314,6 +327,11 @@ router.get(
 );
 router.put("/application/:id", requireAuth, updateApplication);
 router.get("/application/exam/:examid/", requireAuth, getApplicationByExam);
+router.get(
+  "/application/exam/:examId/:candidateId",
+  requireAuth,
+  getApplicationByExamCandidate
+);
 router.post(
   "/application/:id/programme",
   requireAuth,
@@ -443,7 +461,12 @@ router.post(
   downloadUtmCandidatesByEntrance
 );
 
-router.get("/agent/:id/candidates", getCandidatesByAgent);
+router.post("/agent/:id/candidates", getCandidatesByAgent);
+router.post("/agent/:id/applications", getApplicationsByAgent);
+router.get("/agent/:id/stats", getStatsByAgent);
+
+router.post("/exam/agentpaymentsuccess", examAgentPaymentSuccess);
+router.post("/exam/agentpaymentfailure", examAgentPaymentFailure);
 
 // reports
 router.get(

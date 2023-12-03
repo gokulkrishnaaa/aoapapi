@@ -1,4 +1,8 @@
-export { getCandidatesByAgent } from "./candidate";
+export {
+  getCandidatesByAgent,
+  getApplicationsByAgent,
+  getStatsByAgent,
+} from "./candidate";
 export {
   getCandidatesByUtmSource,
   getUtmCandidatesByEntrance,
