@@ -14,3 +14,16 @@ export const createCandidateParent = async (req, res) => {
   });
   return res.json(candidate);
 };
+
+export const createAgentCandidateParent = async (req, res) => {
+  const data = req.body;
+
+  const candidate = await prisma.parentInfo.upsert({
+    where: {
+      candidateId: data.candidateId,
+    },
+    update: data,
+    create: data,
+  });
+  return res.json(candidate);
+};

@@ -31,6 +31,7 @@ export const getCandidateById = async (req, res) => {
       state: true,
       district: true,
       city: true,
+      Onboarding: true,
     },
   });
   return res.json(candidate);

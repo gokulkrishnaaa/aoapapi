@@ -7,9 +7,9 @@ import { createHash, verifyPassword } from "../../utilities/passwordutils";
 import { sendWelcomeMailAgent } from "../email/welcomeagent";
 
 export const createAgentUser = async (req, res) => {
-  const { name, username, password, email } = req.body;
+  const { name, username, password, email, phone, amount } = req.body;
 
-  if (!name || !username || !password || !email) {
+  if (!name || !username || !password || !email || !phone || !amount) {
     throw new BadRequestError("User cannot be created");
   }
 
@@ -36,6 +36,8 @@ export const createAgentUser = async (req, res) => {
       email,
       username,
       password: hash,
+      phone,
+      amount,
     };
     const user = await prisma.agent.create({
       data,
@@ -54,6 +56,8 @@ export const listAgents = async (req, res) => {
       name: true,
       email: true,
       username: true,
+      phone: true,
+      amount: true,
       active: true,
       createdAt: true,
     },
@@ -80,6 +84,7 @@ export const agentSignin = async (req, res) => {
         const userdetails = {
           username: user.username,
           role: "agent",
+          id: user.id,
         };
 
         const token = createJWT(userdetails);
