@@ -60,6 +60,7 @@ import {
   createJeeApplication,
   createOtp,
   currentUser,
+  getAllCandidatesInfo,
   getCandidate,
   getCandidateById,
   getCandidateParent,
