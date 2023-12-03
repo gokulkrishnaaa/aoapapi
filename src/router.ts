@@ -60,7 +60,6 @@ import {
   createJeeApplication,
   createOtp,
   currentUser,
-  getAllCandidatesInfo,
   getCandidate,
   getCandidateById,
   getCandidateParent,
@@ -140,6 +139,7 @@ import {
   getRefererReport,
   getStateWiseReport,
   getUTMReport,
+  getUTMReportBySource,
 } from "./handlers/admin/reports";
 import { addReferer } from "./handlers/analytics";
 import {
@@ -191,6 +191,7 @@ import {
 } from "./handlers/reports";
 import { createCrmSignin } from "./handlers/crm";
 import { getLoggedUser } from "./handlers/user/user";
+import { getUtmSource } from "./handlers/misc";
 
 const router = Router();
 
@@ -393,6 +394,7 @@ router.post("/admin/signin", adminSignin);
 router.post("/admin/register", createAdminUser);
 router.post("/admin/currentuser", requireAuth, currentAdminUser);
 router.post("/admin/reports/utm", requireAuth, getUTMReport);
+router.post("/admin/reports/utmsource", requireAuth, getUTMReportBySource);
 router.post("/admin/reports/state", requireAuth, getStateWiseReport);
 router.post("/admin/reports/examcity", requireAuth, getExamCityReport);
 router.post(
@@ -479,6 +481,8 @@ router.get(
 );
 
 router.get("/reports/download-excel", downloadExcel);
+
+router.get("/data/utmsource", getUtmSource);
 
 router.post("/crm/signin", createCrmSignin);
 
