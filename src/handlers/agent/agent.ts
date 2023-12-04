@@ -124,7 +124,10 @@ export const getAgentDetails = async (req, res) => {
       name: true,
       email: true,
       username: true,
+      phone: true,
+      amount: true,
       active: true,
+      createdAt: true,
     },
   });
 
