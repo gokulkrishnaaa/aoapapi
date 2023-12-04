@@ -125,6 +125,31 @@ export const getCandidatesByAgent = async (req, res) => {
   return res.json(candidatesByAgentId);
 };
 
+export const getAllCandidatesByAgent = async (req, res) => {
+  const allAgentCandidates = await prisma.candidate.findMany({
+    where: {
+      agentId: {
+        not: null,
+      },
+    },
+    include: {
+      agent: true,
+      Onboarding: true,
+      ExamApplication: {
+        include: {
+          exam: {
+            include: {
+              entrance: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  return res.json(allAgentCandidates);
+};
+
 export const getApplicationsByAgent = async (req, res) => {
   const { id } = req.params;
 
@@ -196,41 +221,115 @@ export const getApplicationsByAgent = async (req, res) => {
   return res.json(applicationsByAgentId);
 };
 
-export const getStatsByAgent = async (req, res) => {
-  const { id } = req.params;
-  const candidates = await prisma.candidate.aggregate({
-    _count: true,
-    where: {
-      agentId: parseInt(id),
-    },
-  });
-
-  const applied = await prisma.examApplication.aggregate({
-    _count: true,
+export const getAllApplicationsByAgent = async (req, res) => {
+  const applicationsByAgentId = await prisma.examApplication.findMany({
     where: {
       type: "AGENT",
       candidate: {
-        agentId: parseInt(id),
+        agentId: {
+          not: null,
+        },
       },
     },
-  });
-
-  const registered = await prisma.examApplication.aggregate({
-    _count: true,
-    where: {
-      type: "AGENT",
+    include: {
       candidate: {
-        agentId: parseInt(id),
+        include: {
+          agent: true,
+        },
       },
-      Registration: {
-        some: {
-          id: {
-            gt: 0,
-          },
+      Registration: true,
+      exam: {
+        include: {
+          entrance: true,
         },
       },
     },
   });
+
+  return res.json(applicationsByAgentId);
+};
+
+export const getStatsByAgent = async (req, res) => {
+  const { id } = req.params;
+  let candidates = { _count: 0 };
+  let applied = { _count: 0 };
+  let registered = { _count: 0 };
+
+  console.log(id);
+
+  if (id === "all") {
+    candidates = await prisma.candidate.aggregate({
+      _count: true,
+      where: {
+        agentId: {
+          not: null,
+        },
+      },
+    });
+    applied = await prisma.examApplication.aggregate({
+      _count: true,
+      where: {
+        type: "AGENT",
+        candidate: {
+          agentId: {
+            not: null,
+          },
+        },
+      },
+    });
+    registered = await prisma.examApplication.aggregate({
+      _count: true,
+      where: {
+        type: "AGENT",
+        candidate: {
+          agentId: {
+            not: null,
+          },
+        },
+        Registration: {
+          some: {
+            id: {
+              gt: 0,
+            },
+          },
+        },
+      },
+    });
+  } else if (parseInt(id)) {
+    console.log("not here");
+
+    candidates = await prisma.candidate.aggregate({
+      _count: true,
+      where: {
+        agentId: parseInt(id),
+      },
+    });
+    applied = await prisma.examApplication.aggregate({
+      _count: true,
+      where: {
+        type: "AGENT",
+        candidate: {
+          agentId: parseInt(id),
+        },
+      },
+    });
+    registered = await prisma.examApplication.aggregate({
+      _count: true,
+      where: {
+        type: "AGENT",
+        candidate: {
+          agentId: parseInt(id),
+        },
+        Registration: {
+          some: {
+            id: {
+              gt: 0,
+            },
+          },
+        },
+      },
+    });
+  }
 
   let stats = {
     candidates: candidates._count,

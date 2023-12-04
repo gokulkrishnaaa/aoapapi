@@ -1,6 +1,8 @@
 export {
   getCandidatesByAgent,
+  getAllCandidatesByAgent,
   getApplicationsByAgent,
+  getAllApplicationsByAgent,
   getStatsByAgent,
 } from "./candidate";
 export {

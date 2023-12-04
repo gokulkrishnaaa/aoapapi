@@ -152,6 +152,8 @@ import {
 import {
   downloadCandidatesByUtmSource,
   downloadUtmCandidatesByEntrance,
+  getAllApplicationsByAgent,
+  getAllCandidatesByAgent,
   getApplicationsByAgent,
   getCandidatesByAgent,
   getCandidatesByUtmSource,
@@ -159,6 +161,7 @@ import {
   getUtmCandidatesByEntrance,
 } from "./handlers/agent/reports";
 import {
+  forgotAgentPassword,
   getAgentDetails,
   removeAgent,
   updateAgent,
@@ -464,9 +467,14 @@ router.post(
   downloadUtmCandidatesByEntrance
 );
 
-router.post("/agent/:id/candidates", getCandidatesByAgent);
-router.post("/agent/:id/applications", getApplicationsByAgent);
-router.get("/agent/:id/stats", getStatsByAgent);
+router.post("/agent/forgotpassword", forgotAgentPassword);
+router.get("/agent/all/candidates", requireAuth, getAllCandidatesByAgent);
+router.post("/agent/:id/candidates", requireAuth, getCandidatesByAgent);
+
+router.get("/agent/all/applications", requireAuth, getAllApplicationsByAgent);
+router.post("/agent/:id/applications", requireAuth, getApplicationsByAgent);
+
+router.get("/agent/:id/stats", requireAuth, getStatsByAgent);
 
 router.post("/exam/agentpaymentsuccess", examAgentPaymentSuccess);
 router.post("/exam/agentpaymentfailure", examAgentPaymentFailure);
