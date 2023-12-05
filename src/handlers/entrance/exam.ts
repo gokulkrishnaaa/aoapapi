@@ -3,6 +3,7 @@ import { BadRequestError } from "../../errors/bad-request-error";
 import { InternalServerError } from "../../errors/internal-server-error";
 import crypto from "crypto";
 import { entranceWelcome } from "../email";
+import { entranceWelcomeAgent } from "../email/entrancewelcome";
 
 export const createExam = async (req, res) => {
   const data = req.body;
@@ -384,7 +385,7 @@ export const examAgentPaymentSuccess = async (req, res) => {
       registrationNo = lastRegNo + 1;
     }
 
-    entranceWelcome(updatedTransaction.candidateId);
+    entranceWelcomeAgent(updatedTransaction.candidateId, registrationNo);
     try {
       const registration = await prisma.registration.create({
         data: {
