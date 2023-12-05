@@ -2,6 +2,7 @@ import nodemailer from "nodemailer";
 import prisma from "../../db";
 import { render } from "@react-email/render";
 import EntranceWelcome from "../../emails/entrancewelcome";
+import EntranceWelcomeAgent from "../../emails/entrancewelcomeagent";
 
 const smtptransporter = nodemailer.createTransport({
   host: "smtp.office365.com",
@@ -32,6 +33,36 @@ export const entranceWelcome = async (candidateId) => {
     });
 
     const emailHtml = render(EntranceWelcome({ name: candidate.fullname }));
+    var options = {
+      from: '"Directorate of Admissions - Amrita Vishwa Vidyapeetham" <noreply@amrita.edu>',
+      to: candidate.email,
+      subject: "Welcome to the Amrita Entrance Examination - Engineering 2024",
+      html: emailHtml,
+    };
+    sendMail(options);
+
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
+export const entranceWelcomeAgent = async (candidateId, registrationNo) => {
+  try {
+    const candidate = await prisma.candidate.findUnique({
+      where: {
+        id: candidateId,
+      },
+    });
+
+    const emailHtml = render(
+      EntranceWelcomeAgent({
+        name: candidate.fullname,
+        email: candidate.email,
+        phone: candidate.phone,
+        registrationNo: registrationNo,
+      })
+    );
     var options = {
       from: '"Directorate of Admissions - Amrita Vishwa Vidyapeetham" <noreply@amrita.edu>',
       to: candidate.email,
