@@ -1,6 +1,7 @@
 import nodemailer from "nodemailer";
 import { render } from "@react-email/render";
 import CounsellorWelcome from "../../emails/counsellorwelcome";
+import CounsellorPassReset from "../../emails/cousellorpassreset";
 
 const smtptransporter = nodemailer.createTransport({
   host: "smtp.office365.com",
@@ -34,6 +35,22 @@ export const sendWelcomeMailCounsellor = async (counsellor) => {
     from: '"Directorate of Admissions - Amrita Vishwa Vidyapeetham" <noreply@amrita.edu>',
     to: counsellor.email,
     subject: "Welcome to the Amrita Online Admission Portal (AOAP)",
+    html: emailHtml,
+  };
+  sendMail(options);
+};
+
+export const sendPasswordMailCounsellor = async (counsellor) => {
+  const emailHtml = render(
+    CounsellorPassReset({
+      name: counsellor.name,
+      password: counsellor.password,
+    })
+  );
+  var options = {
+    from: '"Directorate of Admissions - Amrita Vishwa Vidyapeetham" <noreply@amrita.edu>',
+    to: counsellor.email,
+    subject: "Your new AOAP Credentials",
     html: emailHtml,
   };
   sendMail(options);

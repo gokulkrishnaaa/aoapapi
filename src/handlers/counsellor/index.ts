@@ -7,4 +7,5 @@ export {
   updateCounsellor,
   counsellorSignin,
   getCounsellorDetails,
+  forgotCounsellorPassword,
 } from "./counsellor";

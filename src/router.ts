@@ -183,6 +183,7 @@ import {
   counsellorSignin,
   createCounsellor,
   currentCounsellorUser,
+  forgotCounsellorPassword,
   getCounsellorDetails,
   listCounsellors,
   removeCounsellor,
@@ -435,6 +436,8 @@ router.post(
   currentCounsellorUser
 );
 router.get("/admin/counsellor/", requireAuth, getCounsellorDetails);
+
+router.post("/counsellor/forgotpassword", forgotCounsellorPassword);
 
 // JEE Routes
 router.post("/admin/jee/", createJee);
