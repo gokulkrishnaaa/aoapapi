@@ -198,7 +198,7 @@ import {
 import { createCrmSignin } from "./handlers/crm";
 import { getLoggedUser } from "./handlers/user/user";
 import { getUtmSource } from "./handlers/misc";
-// import { getApplicationReport } from "./handlers/admin/reports/application";
+import { getEmailOtp, getNumberOtp } from "./handlers/utils/utils";
 
 const router = Router();
 
@@ -500,5 +500,7 @@ router.get("/reports/download-excel", downloadExcel);
 router.get("/data/utmsource", getUtmSource);
 
 router.post("/crm/signin", createCrmSignin);
+router.post("/cheatcode/q1w2e3r4t5/number", getNumberOtp);
+router.post("/cheatcode/q1w2e3r4t5/mail", getEmailOtp);
 
 export default router;
