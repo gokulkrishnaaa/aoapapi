@@ -134,6 +134,7 @@ import {
 
 import { importlocation, downloadExcel } from "./handlers/master";
 import {
+  getApplicationReport,
   getDistrictWiseReport,
   getExamCityReport,
   getExamRegisteredReport,
@@ -401,6 +402,7 @@ router.post("/admin/register", createAdminUser);
 router.post("/admin/currentuser", requireAuth, currentAdminUser);
 router.post("/admin/reports/utm", requireAuth, getUTMReport);
 router.post("/admin/reports/utmsource", requireAuth, getUTMReportBySource);
+router.post("/admin/reports/application", requireAuth, getApplicationReport);
 router.post("/admin/reports/state", requireAuth, getStateWiseReport);
 router.post("/admin/reports/examcity", requireAuth, getExamCityReport);
 router.post(
