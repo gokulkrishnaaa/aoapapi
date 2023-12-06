@@ -38,7 +38,8 @@ export const getTransactionsByCandidate = async (req, res) => {
 };
 
 export const createEntranceTransaction = async (req, res) => {
-  const { candidateId, examapplicationId, description, amount } = req.body;
+  const { candidateId, examapplicationId, description, amount, type } =
+    req.body;
   const randomNumber = Math.floor(Date.now());
 
   const reference = `AEEE-${candidateId
@@ -55,6 +56,7 @@ export const createEntranceTransaction = async (req, res) => {
         examapplicationId,
         description,
         amount,
+        type: type ? type : "ONLINE",
       },
     });
     return res.json(newTransaction);
