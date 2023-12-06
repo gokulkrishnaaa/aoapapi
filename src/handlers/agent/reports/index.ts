@@ -10,5 +10,4 @@ export {
   getUtmCandidatesByEntrance,
   downloadCandidatesByUtmSource,
   downloadUtmCandidatesByEntrance,
-  downloadApplicationReport,
 } from "./utm";
