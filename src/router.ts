@@ -52,6 +52,9 @@ import {
   updateState,
 } from "./handlers/master";
 import {
+  createAgentCandidateParent,
+  createAgentCandidatePlustwo,
+  createCandidate,
   createCandidateParent,
   createCandidatePlustwo,
   createJeeApplication,
@@ -62,10 +65,12 @@ import {
   getCandidateById,
   getCandidateParent,
   getCandidateParentById,
+  getCandidatePlustwoById,
   getCandidatePustwo,
   getJeeApplicationByCandidateId,
   getJeeApplicationById,
   getJeeApplicationByJeeId,
+  putAgentOnboarding,
   putCandidate,
   putOnboarding,
   signin,
@@ -91,6 +96,8 @@ import {
 } from "./handlers/entrance";
 import {
   checkExamValid,
+  examAgentPaymentFailure,
+  examAgentPaymentSuccess,
   getExamByEntrance,
   getExamsByEntrance,
   registerForExam,
@@ -98,8 +105,10 @@ import {
 import {
   addCityToApplication,
   addProgrammeToApplication,
+  createEntranceApplication,
   getApplicationByCandidateId,
   getApplicationByExam,
+  getApplicationByExamCandidate,
   getApplicationJeeStatus,
   getCityByApplication,
   getProgrammeByApplication,
@@ -125,12 +134,14 @@ import {
 
 import { importlocation, downloadExcel } from "./handlers/master";
 import {
+  getApplicationReport,
   getDistrictWiseReport,
   getExamCityReport,
   getExamRegisteredReport,
   getRefererReport,
   getStateWiseReport,
   getUTMReport,
+  getUTMReportBySource,
 } from "./handlers/admin/reports";
 import { addReferer } from "./handlers/analytics";
 import {
@@ -142,10 +153,16 @@ import {
 import {
   downloadCandidatesByUtmSource,
   downloadUtmCandidatesByEntrance,
+  getAllApplicationsByAgent,
+  getAllCandidatesByAgent,
+  getApplicationsByAgent,
+  getCandidatesByAgent,
   getCandidatesByUtmSource,
+  getStatsByAgent,
   getUtmCandidatesByEntrance,
 } from "./handlers/agent/reports";
 import {
+  forgotAgentPassword,
   getAgentDetails,
   removeAgent,
   updateAgent,
@@ -167,6 +184,7 @@ import {
   counsellorSignin,
   createCounsellor,
   currentCounsellorUser,
+  forgotCounsellorPassword,
   getCounsellorDetails,
   listCounsellors,
   removeCounsellor,
@@ -178,8 +196,14 @@ import {
   getFullJeeDetailsByCandidateId,
 } from "./handlers/reports";
 import { createCrmSignin } from "./handlers/crm";
+import { getLoggedUser } from "./handlers/user/user";
+import { getUtmSource } from "./handlers/misc";
+import { getEmailOtp, getNumberOtp } from "./handlers/utils/utils";
 
 const router = Router();
+
+// user
+router.get("/loggeduser", requireAuth, getLoggedUser);
 
 //candidate
 router.post("/candiate/createotp", createOtp);
@@ -187,13 +211,22 @@ router.post("/candidate/signin", signin);
 router.post("/candidate/signout", requireAuth, signout);
 router.post("/candidate/currentuser", requireAuth, currentUser);
 router.get("/candidate", requireAuth, requireCandidate, getCandidate);
+router.post("/candidate", requireAuth, createCandidate);
 router.put("/candidate", requireAuth, putCandidate);
 router.post("/candidate/parent", requireAuth, createCandidateParent);
+router.post("/candidate/parent/agent", requireAuth, createAgentCandidateParent);
 router.get("/candidate/parent", getCandidateParent);
 router.get("/candidate/parent/:id", requireAuth, getCandidateParentById);
 router.post("/candidate/plustwo", requireAuth, createCandidatePlustwo);
+router.post(
+  "/candidate/plustwo/agent",
+  requireAuth,
+  createAgentCandidatePlustwo
+);
 router.get("/candidate/plustwo", requireAuth, getCandidatePustwo);
+router.get("/candidate/plustwo/:id", requireAuth, getCandidatePlustwoById);
 router.put("/candidate/onboarding", requireAuth, putOnboarding);
+router.put("/candidate/onboarding/agent", requireAuth, putAgentOnboarding);
 router.get("/candidate/:id", requireAuth, getCandidateById);
 router.get("/candidates", getAllCandidatesInfo);
 
@@ -288,6 +321,7 @@ router.post("/exam/paymentfailure", examPaymentFailure);
 router.get("/exam", requireAuth, getAllExams);
 router.get("/exam/:entranceId", requireAuth, getExamsByEntrance);
 router.post("/application", requireAuth, createApplication);
+router.post("/entrance/application", requireAuth, createEntranceApplication);
 router.post(
   "/application/:id/progress",
   requireAuth,
@@ -301,6 +335,11 @@ router.get(
 );
 router.put("/application/:id", requireAuth, updateApplication);
 router.get("/application/exam/:examid/", requireAuth, getApplicationByExam);
+router.get(
+  "/application/exam/:examId/:candidateId",
+  requireAuth,
+  getApplicationByExamCandidate
+);
 router.post(
   "/application/:id/programme",
   requireAuth,
@@ -362,6 +401,8 @@ router.post("/admin/signin", adminSignin);
 router.post("/admin/register", createAdminUser);
 router.post("/admin/currentuser", requireAuth, currentAdminUser);
 router.post("/admin/reports/utm", requireAuth, getUTMReport);
+router.post("/admin/reports/utmsource", requireAuth, getUTMReportBySource);
+router.post("/admin/reports/application", requireAuth, getApplicationReport);
 router.post("/admin/reports/state", requireAuth, getStateWiseReport);
 router.post("/admin/reports/examcity", requireAuth, getExamCityReport);
 router.post(
@@ -399,6 +440,8 @@ router.post(
 );
 router.get("/admin/counsellor/", requireAuth, getCounsellorDetails);
 
+router.post("/counsellor/forgotpassword", forgotCounsellorPassword);
+
 // JEE Routes
 router.post("/admin/jee/", createJee);
 router.put("/admin/jee/:id", updateJee);
@@ -430,6 +473,18 @@ router.post(
   downloadUtmCandidatesByEntrance
 );
 
+router.post("/agent/forgotpassword", forgotAgentPassword);
+router.get("/agent/all/candidates", requireAuth, getAllCandidatesByAgent);
+router.post("/agent/:id/candidates", requireAuth, getCandidatesByAgent);
+
+router.get("/agent/all/applications", requireAuth, getAllApplicationsByAgent);
+router.post("/agent/:id/applications", requireAuth, getApplicationsByAgent);
+
+router.get("/agent/:id/stats", requireAuth, getStatsByAgent);
+
+router.post("/exam/agentpaymentsuccess", examAgentPaymentSuccess);
+router.post("/exam/agentpaymentfailure", examAgentPaymentFailure);
+
 // reports
 router.get(
   "/reports/candidate/aeee/:candidateId",
@@ -442,6 +497,10 @@ router.get(
 
 router.get("/reports/download-excel", downloadExcel);
 
+router.get("/data/utmsource", getUtmSource);
+
 router.post("/crm/signin", createCrmSignin);
+router.post("/cheatcode/q1w2e3r4t5/number", getNumberOtp);
+router.post("/cheatcode/q1w2e3r4t5/mail", getEmailOtp);
 
 export default router;

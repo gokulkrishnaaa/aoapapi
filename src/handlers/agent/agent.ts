@@ -3,13 +3,20 @@ import { BadRequestError } from "../../errors/bad-request-error";
 import { InternalServerError } from "../../errors/internal-server-error";
 import { NotAuthorizedError } from "../../errors/not-authorized-error";
 import { createJWT } from "../../modules/auth";
-import { createHash, verifyPassword } from "../../utilities/passwordutils";
-import { sendWelcomeMailAgent } from "../email/welcomeagent";
+import {
+  createHash,
+  generatePass,
+  verifyPassword,
+} from "../../utilities/passwordutils";
+import {
+  sendPasswordMailAgent,
+  sendWelcomeMailAgent,
+} from "../email/welcomeagent";
 
 export const createAgentUser = async (req, res) => {
-  const { name, username, password, email } = req.body;
+  const { name, username, password, email, phone, amount } = req.body;
 
-  if (!name || !username || !password || !email) {
+  if (!name || !username || !password || !email || !phone || !amount) {
     throw new BadRequestError("User cannot be created");
   }
 
@@ -36,6 +43,8 @@ export const createAgentUser = async (req, res) => {
       email,
       username,
       password: hash,
+      phone,
+      amount,
     };
     const user = await prisma.agent.create({
       data,
@@ -54,6 +63,8 @@ export const listAgents = async (req, res) => {
       name: true,
       email: true,
       username: true,
+      phone: true,
+      amount: true,
       active: true,
       createdAt: true,
     },
@@ -80,6 +91,7 @@ export const agentSignin = async (req, res) => {
         const userdetails = {
           username: user.username,
           role: "agent",
+          id: user.id,
         };
 
         const token = createJWT(userdetails);
@@ -112,7 +124,10 @@ export const getAgentDetails = async (req, res) => {
       name: true,
       email: true,
       username: true,
+      phone: true,
+      amount: true,
       active: true,
+      createdAt: true,
     },
   });
 
@@ -155,4 +170,42 @@ export const removeAgent = async (req, res) => {
   } catch (error) {
     throw new InternalServerError("Error deleting agent");
   }
+};
+
+export const forgotAgentPassword = async (req, res) => {
+  const { username } = req.body;
+
+  // get agent details using username
+  const agent = await prisma.agent.findUnique({
+    where: {
+      username,
+    },
+  });
+
+  // if not agent return success
+  if (!agent) {
+    return res.json({ message: "done" });
+  }
+  // if success create new random password
+  const newPass = generatePass();
+  const hash = await createHash(newPass);
+
+  const updatedAgent = await prisma.agent.update({
+    where: {
+      id: agent.id,
+    },
+    data: {
+      password: hash,
+    },
+  });
+
+  // send mail
+  sendPasswordMailAgent({
+    name: agent.name,
+    email: agent.email,
+    password: newPass,
+  });
+  // send success
+
+  return res.json({ message: "done" });
 };

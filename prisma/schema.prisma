@@ -117,6 +117,9 @@ model Candidate {
   Utm              Utm?
   JEEApplication   JEEApplication[]
   JEEPayments      JEEPayments[]
+
+  agentId Int?
+  agent   Agent? @relation(fields: [agentId], references: [id])
 }
 
 model ParentInfo {
@@ -226,13 +229,14 @@ model ExamApplicationProgress {
 }
 
 model Registration {
-  id                Int             @id @default(autoincrement())
-  exam              Exam            @relation(fields: [examId], references: [id])
+  id                Int                 @id @default(autoincrement())
+  exam              Exam                @relation(fields: [examId], references: [id])
   examId            String
-  examapplication   ExamApplication @relation(fields: [examapplicationId], references: [id])
+  examapplication   ExamApplication     @relation(fields: [examapplicationId], references: [id])
   examapplicationId String
   registrationNo    Int
-  createdAt         DateTime        @default(now())
+  type              ExamApplicationType @default(ONLINE)
+  createdAt         DateTime            @default(now())
 
   @@unique([examId, examapplicationId])
   @@unique([examId, registrationNo])
@@ -242,6 +246,11 @@ enum PaymentStatus {
   STARTED
   FAILED
   SUCCESS
+}
+
+enum ExamPaymentType {
+  ONLINE
+  AGENT
 }
 
 model EntrancePayments {
@@ -254,6 +263,7 @@ model EntrancePayments {
   examapplicationId String
   description       String?
   status            PaymentStatus   @default(STARTED)
+  type              ExamPaymentType @default(ONLINE)
   amount            Decimal
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
@@ -264,6 +274,7 @@ model EmailOtp {
   email     String
   code      String   @unique
   expiresAt DateTime
+  createdAt DateTime @default(now())
 }
 
 model NumberOtp {
@@ -271,6 +282,7 @@ model NumberOtp {
   number    String
   code      String   @unique
   expiresAt DateTime
+  createdAt DateTime @default(now())
 }
 
 model ExamCity {
@@ -373,13 +385,17 @@ model Referer {
 }
 
 model Agent {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
-  email     String   @unique
-  username  String   @unique
-  password  String
-  active    Boolean  @default(true)
-  createdAt DateTime @default(now())
+  id       Int     @id @default(autoincrement())
+  name     String  @unique
+  email    String  @unique
+  phone    String? @unique
+  username String  @unique
+  password String
+  amount   Decimal @default(0)
+
+  active    Boolean     @default(true)
+  createdAt DateTime    @default(now())
+  Candidate Candidate[]
 }
 
 enum JeeStatus {

@@ -3,8 +3,16 @@ import { BadRequestError } from "../../errors/bad-request-error";
 import { InternalServerError } from "../../errors/internal-server-error";
 import { NotAuthorizedError } from "../../errors/not-authorized-error";
 import { createJWT } from "../../modules/auth";
-import { createHash, verifyPassword } from "../../utilities/passwordutils";
-import { sendWelcomeMailCounsellor } from "../email/welcomecounsellor";
+import {
+  createHash,
+  generatePass,
+  verifyPassword,
+} from "../../utilities/passwordutils";
+import { sendPasswordMailAgent } from "../email/welcomeagent";
+import {
+  sendPasswordMailCounsellor,
+  sendWelcomeMailCounsellor,
+} from "../email/welcomecounsellor";
 
 export const createCounsellor = async (req, res) => {
   const { name, password, email } = req.body;
@@ -144,4 +152,42 @@ export const getCounsellorDetails = async (req, res) => {
   });
 
   return res.json(user);
+};
+
+export const forgotCounsellorPassword = async (req, res) => {
+  const { username } = req.body;
+
+  // get agent details using username
+  const counsellor = await prisma.counsellor.findUnique({
+    where: {
+      email: username,
+    },
+  });
+
+  // if not agent return success
+  if (!counsellor) {
+    return res.json({ message: "done" });
+  }
+  // if success create new random password
+  const newPass = generatePass();
+  const hash = await createHash(newPass);
+
+  const updated = await prisma.counsellor.update({
+    where: {
+      id: counsellor.id,
+    },
+    data: {
+      password: hash,
+    },
+  });
+
+  // send mail
+  sendPasswordMailCounsellor({
+    name: counsellor.name,
+    email: counsellor.email,
+    password: newPass,
+  });
+  // send success
+
+  return res.json({ message: "done" });
 };

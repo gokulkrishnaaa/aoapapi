@@ -3,6 +3,7 @@ import prisma from "../../db";
 import { render } from "@react-email/render";
 import CandidateWelcome from "../../emails/candidatewelcome";
 import AgentWelcome from "../../emails/agentwelcome";
+import AgentPassReset from "../../emails/agentpassreset";
 
 const smtptransporter = nodemailer.createTransport({
   host: "smtp.office365.com",
@@ -36,6 +37,22 @@ export const sendWelcomeMailAgent = async (agent) => {
     from: '"Directorate of Admissions - Amrita Vishwa Vidyapeetham" <noreply@amrita.edu>',
     to: agent.email,
     subject: "Welcome to the Amrita Online Admission Portal (AOAP)",
+    html: emailHtml,
+  };
+  sendMail(options);
+};
+
+export const sendPasswordMailAgent = async (agent) => {
+  const emailHtml = render(
+    AgentPassReset({
+      name: agent.name,
+      password: agent.password,
+    })
+  );
+  var options = {
+    from: '"Directorate of Admissions - Amrita Vishwa Vidyapeetham" <noreply@amrita.edu>',
+    to: agent.email,
+    subject: "Your new AOAP Credentials",
     html: emailHtml,
   };
   sendMail(options);

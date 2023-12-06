@@ -6,8 +6,10 @@ export {
 
 export {
   createApplication,
+  createEntranceApplication,
   getApplication,
   getApplicationByCandidateId,
+  getApplicationByExamCandidate,
   addProgrammeToApplication,
   getProgrammeByApplication,
   removeProgrammeFromApplication,
@@ -28,4 +30,6 @@ export {
   registerForExam,
   examPaymentSuccess,
   examPaymentFailure,
+  examAgentPaymentSuccess,
+  examAgentPaymentFailure,
 } from "./exam";
