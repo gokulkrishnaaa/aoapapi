@@ -116,7 +116,11 @@ export const getApplication = async (req, res) => {
     include: {
       Registration: true,
 
-      candidate: true,
+      candidate: {
+        include: {
+          agent: true,
+        },
+      },
       exam: {
         include: {
           entrance: true, // Include Entrance details

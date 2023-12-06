@@ -6,7 +6,10 @@ export const searchApplication = async (req, res) => {
   if (aeee) {
     const applications = await prisma.examApplication.findMany({
       where: {
-        reference: aeee,
+        reference: {
+          contains: aeee,
+          mode: "insensitive",
+        },
       },
       include: {
         candidate: true,
@@ -20,7 +23,10 @@ export const searchApplication = async (req, res) => {
   if (jee) {
     const applications = await prisma.jEEApplication.findMany({
       where: {
-        reference: jee,
+        reference: {
+          contains: jee,
+          mode: "insensitive",
+        },
       },
       include: {
         candidate: true,
