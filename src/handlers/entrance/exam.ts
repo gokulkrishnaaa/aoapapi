@@ -297,14 +297,14 @@ export const examAgentPaymentSuccess = async (req, res) => {
   const { txnid, udf1: applnno } = req.body;
 
   // production details
-  //   const key = "ypfBaj";
-  //   const salt = "aG3tGzBZ";
-  //   const chkUrl = "https://info.payu.in/merchant/postservice?form=2";
+  const key = "ypfBaj";
+  const salt = "aG3tGzBZ";
+  const chkUrl = "https://info.payu.in/merchant/postservice?form=2";
 
   //development details
-  const key = "aJ1WVm";
-  const salt = "hKmYSMBAzg5QOw64IV9MFtcu6BKaIyYA";
-  const chkUrl = "https://test.payu.in/merchant/postservice?form=2";
+  //   const key = "aJ1WVm";
+  //   const salt = "hKmYSMBAzg5QOw64IV9MFtcu6BKaIyYA";
+  //   const chkUrl = "https://test.payu.in/merchant/postservice?form=2";
 
   const command = "verify_payment";
 

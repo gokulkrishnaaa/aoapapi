@@ -14,7 +14,11 @@ export { signout } from "./signout";
 export { signin } from "./signin";
 export { createOtp } from "./getotp";
 export { currentUser } from "./currentuser";
-export { createCandidate, putCandidate } from "./putCandidate";
+export {
+  createCandidate,
+  putCandidate,
+  putCandidateById,
+} from "./putCandidate";
 export {
   createCandidateParent,
   createAgentCandidateParent,
