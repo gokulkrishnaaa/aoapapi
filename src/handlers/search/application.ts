@@ -39,3 +39,25 @@ export const searchApplication = async (req, res) => {
 
   return res.json([]);
 };
+
+export const searchRegistration = async (req, res) => {
+  const { regno } = req.body;
+  const registrationDetails = await prisma.registration.findMany({
+    where: {
+      registrationNo: {
+        equals: parseInt(regno),
+      },
+    },
+    include: {
+      examapplication: {
+        include: {
+          exam: true,
+          candidate: true,
+          EntrancePayments: true,
+        },
+      },
+    },
+  });
+
+  return res.json(registrationDetails);
+};

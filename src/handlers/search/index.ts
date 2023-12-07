@@ -1,2 +1,2 @@
 export { searchCandidate } from "./candidate";
-export { searchApplication } from "./application";
+export { searchApplication, searchRegistration } from "./application";

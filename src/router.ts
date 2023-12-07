@@ -190,7 +190,11 @@ import {
   removeCounsellor,
   updateCounsellor,
 } from "./handlers/counsellor";
-import { searchApplication, searchCandidate } from "./handlers/search";
+import {
+  searchApplication,
+  searchCandidate,
+  searchRegistration,
+} from "./handlers/search";
 import {
   getFullAeeeDetailsByCandidateId,
   getFullJeeDetailsByCandidateId,
@@ -460,6 +464,7 @@ router.put("/candidate/jee/application/:id", updateJeeApplication);
 // search
 router.post("/search/candidate", searchCandidate);
 router.post("/search/application", searchApplication);
+router.post("/search/registration", searchRegistration);
 
 // agent reports
 router.post("/agent/reports/utm/:source", getCandidatesByUtmSource);
