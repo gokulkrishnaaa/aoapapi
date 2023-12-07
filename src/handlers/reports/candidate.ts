@@ -22,6 +22,9 @@ export const getFullAeeeDetailsByCandidateId = async (req, res) => {
             },
           },
         },
+        orderBy: {
+          id: "asc", // Sorting by id in ascending order
+        },
       },
       EntrancePayments: true,
       ApplicationJEE: true,
