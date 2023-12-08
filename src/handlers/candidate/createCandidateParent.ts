@@ -15,6 +15,20 @@ export const createCandidateParent = async (req, res) => {
   return res.json(candidate);
 };
 
+export const updateCandidateParentById = async (req, res) => {
+  const { id } = req.params;
+  const data = req.body;
+  console.log(data);
+
+  const candidate = await prisma.parentInfo.update({
+    where: {
+      candidateId: id,
+    },
+    data,
+  });
+  return res.json(candidate);
+};
+
 export const createAgentCandidateParent = async (req, res) => {
   const data = req.body;
 

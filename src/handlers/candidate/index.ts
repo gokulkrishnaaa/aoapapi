@@ -21,6 +21,7 @@ export {
 } from "./putCandidate";
 export {
   createCandidateParent,
+  updateCandidateParentById,
   createAgentCandidateParent,
 } from "./createCandidateParent";
 export {
