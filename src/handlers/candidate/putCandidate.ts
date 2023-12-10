@@ -102,7 +102,7 @@ export const putCandidateById = async (req, res) => {
   if (data.cityId === 9999999999) {
     data.cityId = null;
   } else {
-    delete data.otherCity;
+    data.otherCity = "";
   }
   try {
     const candidate = await prisma.candidate.update({
