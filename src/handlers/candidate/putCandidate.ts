@@ -100,7 +100,7 @@ export const putCandidateById = async (req, res) => {
   }
   console.log(data);
   if (data.cityId === 9999999999) {
-    delete data.cityId;
+    data.cityId = null;
   } else {
     delete data.otherCity;
   }
