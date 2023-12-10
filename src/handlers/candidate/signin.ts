@@ -62,7 +62,8 @@ export const signin = async (req, res) => {
   // 2. check candidate
   //    a. if no candidate, create candiate and get id
   //    b. if candidate get id
-  let candidate = await prisma.candidate.findFirst({
+  let candidate;
+  candidate = await prisma.candidate.findFirst({
     where: {
       OR: [
         {
@@ -77,10 +78,23 @@ export const signin = async (req, res) => {
         },
       ],
     },
+    include: {
+      ExamApplication: {
+        include: {
+          Registration: true,
+        },
+      },
+    },
   });
 
   if (candidate && candidate.agentId) {
-    throw new BadRequestError("Login Restricted. Contact Admin");
+    try {
+      if (!candidate.ExamApplication[0].Registration[0]) {
+        throw new BadRequestError("Login Restricted. Contact Admin");
+      }
+    } catch (error) {
+      throw new BadRequestError("Login Restricted. Contact Admin");
+    }
   }
 
   // 5. check onboarding status
