@@ -174,7 +174,7 @@ export const getExamCityCityReport = async (req, res) => {
           SELECT
           c.code AS citycode,
           c.name AS cityname,
-          s.id AS statecode
+          s.code AS statecode
           FROM
           "ExamCity" ec
           JOIN
