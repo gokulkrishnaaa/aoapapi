@@ -1,0 +1,1 @@
+export { verifyCandidateSync } from "./examcenter";

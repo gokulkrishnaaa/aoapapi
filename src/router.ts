@@ -208,6 +208,7 @@ import { createCrmSignin } from "./handlers/crm";
 import { getLoggedUser } from "./handlers/user/user";
 import { getUtmSource } from "./handlers/misc";
 import { getEmailOtp, getNumberOtp } from "./handlers/utils/utils";
+import { verifyCandidateSync } from "./handlers/admin/vendor";
 
 const router = Router();
 
@@ -526,5 +527,7 @@ router.get("/data/utmsource", getUtmSource);
 router.post("/crm/signin", createCrmSignin);
 router.post("/cheatcode/q1w2e3r4t5/number", getNumberOtp);
 router.post("/cheatcode/q1w2e3r4t5/mail", getEmailOtp);
+
+router.post("/vendor/examcenter/usersync", verifyCandidateSync);
 
 export default router;
