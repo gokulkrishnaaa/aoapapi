@@ -89,6 +89,5 @@ export const getRegisteredUsersByExam = async (req, res) => {
     },
   });
 
-  console.log(candidates);
   return res.json(candidates);
 };

@@ -68,32 +68,45 @@ export const verifyCandidateSync = async (req, res) => {
   try {
     const { data } = await axios.post(apiUrl, postData, { headers });
 
-    const { statusCode, StatusMessage } = data;
+    console.log("postData", postData);
+    console.log("postData", data);
 
-    console.log("statuscode", statusCode);
-    console.log("statusmessage", StatusMessage);
+    const { StatusCode, StatusMessage } = data;
 
-    if (statusCode === "S001") {
-      // update database
+    if (StatusCode === "S001" || StatusCode === "IA001") {
+      await prisma.registration.updateMany({
+        where: {
+          registrationNo: applnDetails.registrationNo, // Replace with the actual registration number you want to update
+        },
+        data: {
+          centersyncstatus: true,
+          centersynccomment: "Success",
+        },
+      });
     }
 
     return res.json({ postData, applnDetails });
   } catch (error) {
-    console.log("error.data", error.response.data);
+    let errorMessage = "Server Error";
 
-    // update database
-    const updatedRegistration = await prisma.registration.updateMany({
-      where: {
-        registrationNo: applnDetails.registrationNo, // Replace with the actual registration number you want to update
-      },
-      data: {
-        centersyncstatus: false,
-        centersynccomment: error.response.data.StatusMessage,
-      },
-    });
+    if (error.response) {
+      await prisma.registration.updateMany({
+        where: {
+          registrationNo: applnDetails.registrationNo, // Replace with the actual registration number you want to update
+        },
+        data: {
+          centersyncstatus: false,
+          centersynccomment: error.response.data.StatusMessage,
+        },
+      });
+      errorMessage = error.response.data.StatusMessage;
+    }
 
-    throw new BadRequestError(error.response.data.StatusMessage);
+    throw new BadRequestError(errorMessage);
   }
 };
 
-export const verifyAllCandidates = async (req, res) => {};
+export const verifyAllCandidates = async (req, res) => {
+  // get all registered candidates
+  // sync all candidates
+};
