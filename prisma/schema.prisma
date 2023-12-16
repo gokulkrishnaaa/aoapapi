@@ -238,6 +238,8 @@ model Registration {
   examapplicationId String
   registrationNo    Int
   type              ExamApplicationType @default(ONLINE)
+  centersyncstatus  Boolean           @default(false)
+  centersynccomment String?
   createdAt         DateTime            @default(now())
 
   @@unique([examId, examapplicationId])

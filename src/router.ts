@@ -144,6 +144,7 @@ import {
   getExamCityStateReport,
   getExamRegisteredReport,
   getRefererReport,
+  getRegisteredUsersByExam,
   getStateWiseReport,
   getUTMReport,
   getUTMReportBySource,
@@ -420,6 +421,11 @@ router.post("/admin/reports/application", requireAuth, getApplicationReport);
 router.post("/admin/reports/state", requireAuth, getStateWiseReport);
 router.post("/admin/reports/examcity", requireAuth, getExamCityReport);
 router.get(
+  "/admin/reports/registered/:examid",
+  requireAuth,
+  getRegisteredUsersByExam
+);
+router.get(
   "/admin/reports/examcity/states/:entranceid",
   requireAuth,
   getExamCityStateReport
@@ -528,6 +534,6 @@ router.post("/crm/signin", createCrmSignin);
 router.post("/cheatcode/q1w2e3r4t5/number", getNumberOtp);
 router.post("/cheatcode/q1w2e3r4t5/mail", getEmailOtp);
 
-router.post("/vendor/examcenter/usersync", verifyCandidateSync);
+router.get("/vendor/examcenter/usersync/:regno", verifyCandidateSync);
 
 export default router;

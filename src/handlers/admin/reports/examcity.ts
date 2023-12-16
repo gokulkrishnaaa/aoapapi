@@ -118,7 +118,7 @@ export const getExamCityStateReport = async (req, res) => {
   const { entranceid } = req.params;
   let queryString = Prisma.sql`
     SELECT DISTINCT
-    s.code AS statecode,
+    s.id AS statecode,
     s.name AS statename
     FROM
     "State" s
@@ -173,9 +173,9 @@ export const getExamCityCityReport = async (req, res) => {
   const { entranceid } = req.params;
   let queryString = Prisma.sql`
           SELECT
-          c.code AS citycode,
+          c.id AS citycode,
           c.name AS cityname,
-          s.code AS statecode
+          s.id AS statecode
           FROM
           "ExamCity" ec
           JOIN

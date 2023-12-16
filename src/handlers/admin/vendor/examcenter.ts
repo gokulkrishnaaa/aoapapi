@@ -1,16 +1,61 @@
 import axios from "axios";
 import { BadRequestError } from "../../../errors/bad-request-error";
+import prisma from "../../../db";
 
 export const verifyCandidateSync = async (req, res) => {
+  const { regno } = req.params;
+
+  let applnDetails;
   const postData = {
-    CandidateName: "Shankar",
-    Email: "shankar@gmail.com",
-    ApplicationNumber: "1000000003",
-    ExamMode: "SCHEDULE",
-    Preferred_CityCode_1: "2102",
-    Preferred_CityCode_2: "2106",
-    Preferred_CityCode_3: "2104",
+    CandidateName: "",
+    Email: "",
+    ApplicationNumber: "",
+    ExamMode: "",
+    Preferred_CityCode_1: "",
+    Preferred_CityCode_2: "",
+    Preferred_CityCode_3: "",
   };
+
+  try {
+    applnDetails = await prisma.registration.findFirst({
+      where: {
+        registrationNo: parseInt(regno),
+      },
+      include: {
+        examapplication: {
+          include: {
+            candidate: true,
+            ApplicationCities: {
+              include: {
+                examcity: {
+                  include: {
+                    city: true,
+                  },
+                },
+              },
+              orderBy: {
+                id: "asc", // Sorting ApplicationCities by id in ascending order
+              },
+            },
+          },
+        },
+      },
+    });
+
+    postData["CandidateName"] = applnDetails.examapplication.candidate.fullname;
+    postData["Email"] = applnDetails.examapplication.candidate.email;
+    postData["ApplicationNumber"] = `${applnDetails.registrationNo}`;
+    postData["ExamMode"] = "SCHEDULE";
+
+    const applncities = applnDetails.examapplication.ApplicationCities;
+
+    applncities.forEach((examcity, id) => {
+      const sl = id + 1;
+      postData[`Preferred_CityCode_${sl}`] = `${examcity.examcity.city.id}`;
+    });
+  } catch (error) {
+    throw new BadRequestError("Registration Not Found");
+  }
 
   const headers = {
     TokenID: "U@TUFnhDy6gur9B4",
@@ -21,13 +66,34 @@ export const verifyCandidateSync = async (req, res) => {
     "https://uat-pearsonvue.excelindia.com/AmritaSchedulerAPI/User/SyncUser";
 
   try {
-    const response = await axios.post(apiUrl, postData, { headers });
-    console.log(response.data);
+    const { data } = await axios.post(apiUrl, postData, { headers });
 
-    return res.json("dsfsf");
+    const { statusCode, StatusMessage } = data;
+
+    console.log("statuscode", statusCode);
+    console.log("statusmessage", StatusMessage);
+
+    if (statusCode === "S001") {
+      // update database
+    }
+
+    return res.json({ postData, applnDetails });
   } catch (error) {
     console.log("error.data", error.response.data);
+
+    // update database
+    const updatedRegistration = await prisma.registration.updateMany({
+      where: {
+        registrationNo: applnDetails.registrationNo, // Replace with the actual registration number you want to update
+      },
+      data: {
+        centersyncstatus: false,
+        centersynccomment: error.response.data.StatusMessage,
+      },
+    });
 
     throw new BadRequestError(error.response.data.StatusMessage);
   }
 };
+
+export const verifyAllCandidates = async (req, res) => {};
