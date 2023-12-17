@@ -1,1 +1,5 @@
-export { verifyCandidateSync } from "./examcenter";
+export {
+  verifyCandidateSync,
+  verifyAllCandidates,
+  verifyingAllCandidatesWorker,
+} from "./examcenter";
