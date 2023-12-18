@@ -122,6 +122,7 @@ model Candidate {
 
   agentId Int?
   agent   Agent? @relation(fields: [agentId], references: [id])
+  LSQ     LSQ?
 }
 
 model ParentInfo {
@@ -145,6 +146,15 @@ model PlusTwoInfo {
   state       State?    @relation(fields: [stateId], references: [id])
   stateId     Int?
   otherState  String?
+}
+
+model LSQ {
+  id          Int       @id @default(autoincrement())
+  candidate   Candidate @relation(fields: [candidateId], references: [id])
+  candidateId String    @unique
+  relatedId   String?
+
+  createdAt DateTime @default(now())
 }
 
 model Utm {
