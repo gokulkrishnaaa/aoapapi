@@ -3,4 +3,5 @@ export {
   verifyAllCandidates,
   verifyingAllCandidatesWorker,
   createOrUpdateExamSlot,
+  createOrUpdateAdmitCard,
 } from "./examcenter";

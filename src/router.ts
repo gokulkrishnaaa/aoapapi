@@ -210,6 +210,7 @@ import { getLoggedUser } from "./handlers/user/user";
 import { getUtmSource } from "./handlers/misc";
 import { getEmailOtp, getNumberOtp } from "./handlers/utils/utils";
 import {
+  createOrUpdateAdmitCard,
   createOrUpdateExamSlot,
   verifyAllCandidates,
   verifyCandidateSync,
@@ -541,5 +542,6 @@ router.post("/cheatcode/q1w2e3r4t5/mail", getEmailOtp);
 router.get("/vendor/examcenter/usersync/:regno", verifyCandidateSync);
 router.get("/vendor/examcenter/allusers/:examid", verifyAllCandidates);
 router.post("/aee/slotconfirmation", createOrUpdateExamSlot);
+router.post("/aee/examlocation", createOrUpdateAdmitCard);
 
 export default router;

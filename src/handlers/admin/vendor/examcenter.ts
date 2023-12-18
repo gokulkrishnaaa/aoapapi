@@ -322,3 +322,55 @@ export const createOrUpdateExamSlot = async (req, res) => {
     });
   }
 };
+
+export const createOrUpdateAdmitCard = async (req, res) => {
+  if (req.headers["x-api-key"] !== apiKey) {
+    throw new NotAuthorizedError();
+  }
+  const {
+    ApplicationNumber,
+    ExamMode,
+    LocationName,
+    ExamDate,
+    ExamTime,
+    LocationAddress,
+    Pincode,
+    PhoneNumber,
+  } = req.body;
+  const registrationNo = parseInt(ApplicationNumber);
+
+  const data = {
+    registrationNo: registrationNo,
+    examMode: ExamMode,
+    locationName: LocationName,
+    examDate: new Date(ExamDate),
+    examTime: ExamTime,
+    locationAddress: LocationAddress,
+    pincode: Pincode,
+    phoneNumber: PhoneNumber,
+  };
+
+  try {
+    await prisma.admitCard.upsert({
+      where: {
+        registrationNo: registrationNo,
+      },
+      update: data,
+      create: data,
+    });
+
+    res.status(200).json({
+      time: new Date().toISOString(),
+      status: 200,
+      statusCode: "SUCCESS",
+      message: "Successfully updated exam location information",
+    });
+  } catch (error) {
+    res.status(500).json({
+      time: new Date().toISOString(),
+      status: 500,
+      statusCode: "FAILED",
+      message: "Exam location processing failed",
+    });
+  }
+};
