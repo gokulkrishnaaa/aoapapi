@@ -3,6 +3,9 @@ import { BadRequestError } from "../../../errors/bad-request-error";
 import prisma from "../../../db";
 import mainqueue from "../../../queue";
 import { InternalServerError } from "../../../errors/internal-server-error";
+import { NotAuthorizedError } from "../../../errors/not-authorized-error";
+
+const apiKey = "6587ceff-28e9-44ac-8825-e26495ada87c";
 
 export const verifyCandidateSync = async (req, res) => {
   const { regno } = req.params;
@@ -276,5 +279,46 @@ export const verifyingAllCandidatesWorker = async (data) => {
     console.error(
       `Error in worker processing verifyAllCandidates: ${error.message}`
     );
+  }
+};
+
+export const createOrUpdateExamSlot = async (req, res) => {
+  if (req.headers["x-api-key"] !== apiKey) {
+    throw new NotAuthorizedError();
+  }
+  const { ApplicationNumber, ExamMode, ExamDate, ExamTime, SelectedCityCode } =
+    req.body;
+  const registrationNo = parseInt(ApplicationNumber);
+
+  const data = {
+    registrationNo: registrationNo,
+    examMode: ExamMode,
+    examDate: new Date(ExamDate),
+    examTime: ExamTime,
+    selectedCityCode: SelectedCityCode,
+  };
+
+  try {
+    await prisma.slot.upsert({
+      where: {
+        registrationNo: registrationNo,
+      },
+      update: data,
+      create: data,
+    });
+
+    res.status(200).json({
+      time: new Date().toISOString(),
+      status: 200,
+      statusCode: "SUCCESS",
+      message: "Slot processed successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      time: new Date().toISOString(),
+      status: 500,
+      statusCode: "FAILED",
+      message: "Slot processing failed",
+    });
   }
 };

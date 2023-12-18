@@ -236,14 +236,32 @@ model Registration {
   examId            String
   examapplication   ExamApplication     @relation(fields: [examapplicationId], references: [id])
   examapplicationId String
-  registrationNo    Int
+  registrationNo    Int                 @unique
   type              ExamApplicationType @default(ONLINE)
-  centersyncstatus  Boolean           @default(false)
+  centersyncstatus  Boolean             @default(false)
   centersynccomment String?
   createdAt         DateTime            @default(now())
+  Slot              Slot?
 
   @@unique([examId, examapplicationId])
   @@unique([examId, registrationNo])
+}
+
+enum ExamCenterMode {
+  SCHEDULE
+  REATTEMPT
+}
+
+model Slot {
+  id               Int            @id @default(autoincrement())
+  registration     Registration   @relation(fields: [registrationNo], references: [registrationNo])
+  registrationNo   Int
+  examMode         ExamCenterMode
+  examDate         DateTime
+  examTime         String
+  selectedCityCode String
+
+  @@unique([registrationNo])
 }
 
 enum PaymentStatus {
