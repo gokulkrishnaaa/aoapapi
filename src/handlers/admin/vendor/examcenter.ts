@@ -336,6 +336,7 @@ export const createOrUpdateAdmitCard = async (req, res) => {
     ExamTime,
     LocationAddress,
     Pincode,
+    QRcode,
     PhoneNumber,
   } = req.body;
   const registrationNo = parseInt(ApplicationNumber);
@@ -348,6 +349,7 @@ export const createOrUpdateAdmitCard = async (req, res) => {
     examTime: ExamTime,
     locationAddress: LocationAddress,
     pincode: Pincode,
+    qrcode: QRcode,
     phoneNumber: PhoneNumber,
   };
 
