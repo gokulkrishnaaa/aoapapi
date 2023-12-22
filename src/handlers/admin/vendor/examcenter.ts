@@ -5,6 +5,7 @@ import mainqueue from "../../../queue";
 import { InternalServerError } from "../../../errors/internal-server-error";
 import { NotAuthorizedError } from "../../../errors/not-authorized-error";
 import { sendAdmitCardMail } from "../../email/admitcardmail";
+import { format } from "date-fns";
 
 const apiKey = "6587ceff-28e9-44ac-8825-e26495ada87c";
 
@@ -57,7 +58,10 @@ export const verifyCandidateSync = async (req, res) => {
     postData["Email"] = applnDetails.examapplication.candidate.email;
     postData["ApplicationNumber"] = `${applnDetails.registrationNo}`;
     postData["ExamMode"] = "SCHEDULE";
-    postData["DOB"] = applnDetails.examapplication.candidate.dob;
+    postData["DOB"] = format(
+      new Date(applnDetails.examapplication.candidate.dob),
+      "yyyy-MM-dd"
+    );
     postData["AadharNumber"] =
       applnDetails.examapplication.candidate.aadhaarnumber;
     postData[
@@ -234,7 +238,10 @@ export const verifyingAllCandidatesWorker = async (data) => {
         postData["Email"] = applnDetails.examapplication.candidate.email;
         postData["ApplicationNumber"] = `${applnDetails.registrationNo}`;
         postData["ExamMode"] = "SCHEDULE";
-        postData["DOB"] = applnDetails.examapplication.candidate.dob;
+        postData["DOB"] = format(
+          new Date(applnDetails.examapplication.candidate.dob),
+          "yyyy-MM-dd"
+        );
         postData["AadharNumber"] =
           applnDetails.examapplication.candidate.aadhaarnumber;
         postData[
