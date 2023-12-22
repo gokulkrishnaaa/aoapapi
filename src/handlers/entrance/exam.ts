@@ -64,7 +64,7 @@ export const checkExamValid = async (req, res) => {
 };
 
 function isOpenForApplication(exam) {
-  return exam.status === "APPLY";
+  return exam.status === "APPLY" || "SLOT";
 }
 
 export const getAllExams = async (req, res) => {
