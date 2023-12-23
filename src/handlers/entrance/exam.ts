@@ -173,9 +173,14 @@ export const examPaymentSuccess = async (req, res) => {
   const { txnid } = req.body;
 
   // production details
-  const key = "ypfBaj";
-  const salt = "aG3tGzBZ";
-  const chkUrl = "https://info.payu.in/merchant/postservice?form=2";
+  //   const key = "ypfBaj";
+  //   const salt = "aG3tGzBZ";
+  //   const chkUrl = "https://info.payu.in/merchant/postservice?form=2";
+
+  // enviornment details
+  const key = process.env.PAYU_KEY;
+  const salt = process.env.PAYU_SALT;
+  const chkUrl = process.env.PAYU_CHKURL;
 
   //development details
   //   const key = "aJ1WVm";
@@ -303,9 +308,13 @@ export const examAgentPaymentSuccess = async (req, res) => {
   const { txnid, udf1: applnno } = req.body;
 
   // production details
-  const key = "ypfBaj";
-  const salt = "aG3tGzBZ";
-  const chkUrl = "https://info.payu.in/merchant/postservice?form=2";
+  //   const key = "ypfBaj";
+  //   const salt = "aG3tGzBZ";
+  //   const chkUrl = "https://info.payu.in/merchant/postservice?form=2";
+
+  const key = process.env.PAYU_KEY;
+  const salt = process.env.PAYU_SALT;
+  const chkUrl = process.env.PAYU_CHKURL;
 
   //development details
   //   const key = "aJ1WVm";
