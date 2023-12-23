@@ -30,8 +30,8 @@ export const getOpenExams = async (req, res) => {
   });
 
   const filteredEntrances = latestExamsByEntrance.filter((entrance) => {
-    const allowedStatus = ["APPLY", "SLOT"];
-    return allowedStatus.includes(entrance.Exam[0].status);
+    const allowedStatus = ["PAUSE", "CLOSED"];
+    return !allowedStatus.includes(entrance.Exam[0].status);
   });
 
   return res.json(filteredEntrances);
@@ -64,7 +64,7 @@ export const checkExamValid = async (req, res) => {
 };
 
 function isOpenForApplication(exam) {
-  return exam.status === "APPLY" || "SLOT";
+  return exam.status != "PAUSE" || "CLOSED";
 }
 
 export const getAllExams = async (req, res) => {
@@ -147,6 +147,12 @@ export const registerForExam = async (req, res) => {
   }
 
   try {
+    console.log("registration details", {
+      examId,
+      examapplicationId,
+      registrationNo,
+    });
+
     const registration = await prisma.registration.create({
       data: {
         examId,
