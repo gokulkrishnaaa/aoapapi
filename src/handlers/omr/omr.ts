@@ -25,6 +25,10 @@ export const handleOmrUpload = (req, res) => {
     const zip = new AdmZip(uploadfilepath);
     zip.extractAllTo(extractedfoldername, true);
 
+    const extractedDir = fs
+      .readdirSync(extractedfoldername, { withFileTypes: true })
+      .find((dir) => dir.isDirectory()).name;
+
     const excelFiles = fs
       .readdirSync(extractedfoldername)
       .filter((file) => file.endsWith(".xlsx") || file.endsWith(".xls"));
@@ -42,8 +46,8 @@ export const handleOmrUpload = (req, res) => {
 
     const files = data.map((row) => {
       const applno = row["Appl_no"];
-      const photopath = `${extractedfoldername}/OMR Image Batch 99/${applno}_photo.jpg`;
-      const signpath = `${extractedfoldername}/OMR Image Batch 99/${applno}_sign.jpg`;
+      const photopath = `${extractedfoldername}/${extractedDir}/${applno}_photo.jpg`;
+      const signpath = `${extractedfoldername}/${extractedDir}/${applno}_sign.jpg`;
 
       return { applno, photopath, signpath };
     });
