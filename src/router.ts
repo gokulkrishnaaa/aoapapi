@@ -224,6 +224,7 @@ import {
   removeVendor,
   vendorSignin,
 } from "./handlers/vendor";
+import { handleOmrUpload } from "./handlers/omr";
 
 const router = Router();
 
@@ -320,7 +321,7 @@ router.delete(
   requireAuth,
   removeCityForEntrance
 );
-router.post("/master/importcity", requireAuth, importlocation);
+router.post("/master/importcity", importlocation);
 
 router.post("/master/entrance/programme", requireAuth, addProgrammeToEntrance);
 router.delete(
@@ -561,5 +562,6 @@ router.get("/vendor/examcenter/usersync/:regno", verifyCandidateSync);
 router.get("/vendor/examcenter/allusers/:examid", verifyAllCandidates);
 router.post("/aee/slotconfirmation", createOrUpdateExamSlot);
 router.post("/aee/examlocation", createOrUpdateAdmitCard);
+router.post("/omr/upload", handleOmrUpload);
 
 export default router;
