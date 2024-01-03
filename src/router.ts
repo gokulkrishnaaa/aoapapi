@@ -224,7 +224,7 @@ import {
   removeVendor,
   vendorSignin,
 } from "./handlers/vendor";
-import { handleOmrUpload } from "./handlers/omr";
+import { handleOmrUpload, handleSyncCandidates } from "./handlers/omr";
 
 const router = Router();
 
@@ -562,6 +562,8 @@ router.get("/vendor/examcenter/usersync/:regno", verifyCandidateSync);
 router.get("/vendor/examcenter/allusers/:examid", verifyAllCandidates);
 router.post("/aee/slotconfirmation", createOrUpdateExamSlot);
 router.post("/aee/examlocation", createOrUpdateAdmitCard);
+
 router.post("/omr/upload", handleOmrUpload);
+router.get("/omr/synccandidates", handleSyncCandidates);
 
 export default router;
