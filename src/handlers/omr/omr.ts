@@ -146,7 +146,12 @@ export const handleOmrUpload = async (req, res) => {
 export const handleSyncCandidates = async (req, res) => {
   // get all candidates from omrmigrate table
 
-  const candidates = await prisma.oMRMigrate.findMany();
+  const candidates = await prisma.oMRMigrate.findMany({
+    where: {
+      candidateId: null,
+      examapplicationId: null,
+    },
+  });
 
   // iterate all candidates
   for (const candidate of candidates) {
@@ -306,7 +311,30 @@ export const handleSyncCandidates = async (req, res) => {
           await updateOMRComment(candidate.id, "Not enough information");
         }
       } else {
-        await updateOMRComment(candidate.id, "Phone already exists");
+        // update the application
+        const exam = await getActiveExamByCode("AEEE");
+        if (exam) {
+          const appln = await createApplication(candidateExists, exam, [
+            candidate.examcity1,
+            candidate.examcity2,
+            candidate.examcity3,
+          ]);
+          if (appln) {
+            await prisma.oMRMigrate.update({
+              where: {
+                id: candidate.id,
+              },
+              data: {
+                examapplicationId: appln.id,
+              },
+            });
+            console.log(appln.id);
+          } else {
+            await updateOMRComment(candidate.id, "Application not created");
+          }
+        } else {
+          await updateOMRComment(candidate.id, "No Exam found");
+        }
       }
     } else {
       await updateOMRComment(candidate.id, "Not enough information");
