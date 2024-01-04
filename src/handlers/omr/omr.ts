@@ -426,5 +426,15 @@ export const completeOMRRegistration = async (req, res) => {
       type: "OMR",
     },
   });
+  if (registration) {
+    await prisma.oMRMigrate.deleteMany({
+      where: {
+        AND: [
+          { candidateId: omr.candidateId },
+          { examapplicationId: omr.examapplicationId },
+        ],
+      },
+    });
+  }
   return res.json({ message: "success" });
 };
