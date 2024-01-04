@@ -168,6 +168,7 @@ export const registerForExam = async (req, res) => {
           examapplicationId: successPayment.examapplication.id,
           registrationNo,
           type: "AGENT",
+          createdAt: successPayment.updatedAt,
         },
       });
     } catch (error) {
@@ -193,11 +194,12 @@ export const registerForExam = async (req, res) => {
     entranceWelcome(successPayment.candidateId);
 
     try {
-      const registration = await prisma.registration.create({
+      await prisma.registration.create({
         data: {
           examId: successPayment.examapplication.exam.id,
           examapplicationId: successPayment.examapplication.id,
           registrationNo,
+          createdAt: successPayment.updatedAt,
         },
       });
     } catch (error) {
