@@ -92,8 +92,8 @@ export const verifyCandidateSync = async (req, res) => {
   try {
     const { data } = await axios.post(apiUrl, postData, { headers });
 
-    console.log("postData", postData);
-    console.log("postData", data);
+    console.log("post Data", postData);
+    console.log("return data", data);
 
     const { StatusCode, StatusMessage } = data;
 
@@ -108,8 +108,19 @@ export const verifyCandidateSync = async (req, res) => {
         },
       });
     }
+    if (!StatusCode || !StatusMessage) {
+      await prisma.registration.updateMany({
+        where: {
+          registrationNo: applnDetails.registrationNo, // Replace with the actual registration number you want to update
+        },
+        data: {
+          centersyncstatus: false,
+          centersynccomment: "Null response received",
+        },
+      });
+    }
 
-    return res.json({ postData, applnDetails });
+    return res.json({ StatusCode, StatusMessage });
   } catch (error) {
     let errorMessage = "Server Error";
 
@@ -175,6 +186,7 @@ export const verifyingAllCandidatesWorker = async (data) => {
     const candidates = await prisma.registration.findMany({
       where: {
         examId,
+        centersyncstatus: false,
       },
       include: {
         examapplication: {
@@ -284,6 +296,17 @@ export const verifyingAllCandidatesWorker = async (data) => {
             data: {
               centersyncstatus: true,
               centersynccomment: "Success",
+            },
+          });
+        }
+        if (!StatusCode || !StatusMessage) {
+          await prisma.registration.updateMany({
+            where: {
+              registrationNo: applnDetails.registrationNo, // Replace with the actual registration number you want to update
+            },
+            data: {
+              centersyncstatus: false,
+              centersynccomment: "Null response received",
             },
           });
         }
