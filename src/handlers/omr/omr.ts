@@ -237,6 +237,7 @@ export const syncingOmrCandidates = async (data) => {
         });
 
         let candidatecreatestatus = true;
+        let creationfailmssg = "Not Enough Information";
 
         let candidatedata = {
           phone: candidate.phone,
@@ -249,25 +250,30 @@ export const syncingOmrCandidates = async (data) => {
           candidatedata["fullname"] = candidate.fullname;
         } else {
           candidatecreatestatus = false;
+          creationfailmssg = "Name missing";
         }
         if (candidatecreatestatus && candidate.dob) {
           candidatedata["dob"] = candidate.dob;
         } else {
           candidatecreatestatus = false;
+          creationfailmssg = "dob missing";
         }
         if (candidatecreatestatus && gender) {
           candidatedata["genderId"] = gender.id;
         } else {
           candidatecreatestatus = false;
+          creationfailmssg = "Gender missing";
         }
         if (candidatecreatestatus && state) {
         } else {
           candidatecreatestatus = false;
+          creationfailmssg = "State missing";
         }
         if (candidatecreatestatus && socialstatus) {
           candidatedata["socialstatusId"] = socialstatus.id;
         } else {
           candidatecreatestatus = false;
+          creationfailmssg = "Category missing";
         }
 
         const photoBuffer = Buffer.from(candidate.photo);
@@ -280,11 +286,13 @@ export const syncingOmrCandidates = async (data) => {
           candidatedata["photoid"] = photoresult["public_id"];
         } else {
           candidatecreatestatus = false;
+          creationfailmssg = "Photo creation failed";
         }
         if (candidatecreatestatus && signresult) {
           candidatedata["signid"] = signresult["public_id"];
         } else {
           candidatecreatestatus = false;
+          creationfailmssg = "Sign creation failed";
         }
 
         // console.log("candidate data", candidatedata);
@@ -358,7 +366,7 @@ export const syncingOmrCandidates = async (data) => {
             await updateOMRComment(candidate.id, "Candidate Creation Failed");
           }
         } else {
-          await updateOMRComment(candidate.id, "Not enough information");
+          await updateOMRComment(candidate.id, creationfailmssg);
         }
       } else {
         // // update the application
@@ -391,7 +399,7 @@ export const syncingOmrCandidates = async (data) => {
         }
       }
     } else {
-      await updateOMRComment(candidate.id, "Not enough information");
+      await updateOMRComment(candidate.id, "Phone or exam city missing");
     }
   }
 };
