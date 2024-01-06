@@ -202,37 +202,39 @@ export const syncingOmrCandidates = async (data) => {
               omrcandidate
             );
             console.log("application", application?.id);
-            if (application && application.status === "PENDING") {
-              const isApplicationJee = await createApplicationJEE(application);
-              if (isApplicationJee) {
-                const isApplicationCities = await createApplicationCities(
-                  application,
-                  omrcandidate
+            if (application) {
+              if (application.status === "PENDING") {
+                const isApplicationJee = await createApplicationJEE(
+                  application
                 );
-                if (isApplicationCities) {
-                  // update application status to applied
-                  await prisma.examApplication.update({
-                    where: {
-                      id: application.id,
-                    },
-                    data: {
-                      status: "APPLIED",
-                    },
-                  });
-                  // update omr with application id
-                  await prisma.oMRMigrate.update({
-                    where: {
-                      id: omrcandidate.id,
-                    },
-                    data: {
-                      examapplicationId: application.id,
-                      comment: null,
-                    },
-                  });
+                if (isApplicationJee) {
+                  const isApplicationCities = await createApplicationCities(
+                    application,
+                    omrcandidate
+                  );
+                  if (isApplicationCities) {
+                    // update application status to applied
+                    await prisma.examApplication.update({
+                      where: {
+                        id: application.id,
+                      },
+                      data: {
+                        status: "APPLIED",
+                      },
+                    });
+                  }
                 }
               }
-            } else {
-              console.log("application status", application.status);
+              // update omr with application id
+              await prisma.oMRMigrate.update({
+                where: {
+                  id: omrcandidate.id,
+                },
+                data: {
+                  examapplicationId: application.id,
+                  comment: null,
+                },
+              });
             }
           }
         }
@@ -438,22 +440,37 @@ const createCanApplication = async (candidate, omrcandidate) => {
   } else {
     const exam = await getActiveExamByCode("AEEE");
     if (exam) {
-      try {
-        const randomNumber = Math.floor(Date.now());
-        let reference = `${exam.entrance.code}-${randomNumber}`;
-        let type = ExamApplicationType.OMR;
-        const applndata = {
-          examId: exam.id,
-          candidateId: candidate.id,
-          reference,
-          type,
-        };
-        let newapplication = await prisma.examApplication.create({
-          data: applndata,
-        });
-        application = newapplication;
-      } catch (error) {
-        await updateOMRComment(omrcandidate.id, "Application creation failed");
+      const candidateapplication = await prisma.examApplication.findUnique({
+        where: {
+          examId_candidateId: {
+            examId: exam.id,
+            candidateId: candidate.id,
+          },
+        },
+      });
+      if (candidateapplication) {
+        application = candidate;
+      } else {
+        try {
+          const randomNumber = Math.floor(Date.now());
+          let reference = `${exam.entrance.code}-${randomNumber}`;
+          let type = ExamApplicationType.OMR;
+          const applndata = {
+            examId: exam.id,
+            candidateId: candidate.id,
+            reference,
+            type,
+          };
+          let newapplication = await prisma.examApplication.create({
+            data: applndata,
+          });
+          application = newapplication;
+        } catch (error) {
+          await updateOMRComment(
+            omrcandidate.id,
+            "Application creation failed"
+          );
+        }
       }
     } else {
       await updateOMRComment(omrcandidate.id, "No Exam found");
