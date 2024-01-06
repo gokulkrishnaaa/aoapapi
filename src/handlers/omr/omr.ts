@@ -201,7 +201,7 @@ export const syncingOmrCandidates = async (data) => {
               candidate,
               omrcandidate
             );
-            console.log("application", application.id);
+            console.log("application", application?.id);
             if (application && application.status === "PENDING") {
               const isApplicationJee = await createApplicationJEE(application);
               if (isApplicationJee) {
