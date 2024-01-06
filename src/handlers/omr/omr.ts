@@ -185,57 +185,63 @@ export const handleSyncCandidates = async (req, res) => {
 };
 
 export const syncingOmrCandidates = async (data) => {
-  const omrcandidates = await prisma.oMRMigrate.findMany();
-  for (const omrcandidate of omrcandidates) {
-    let candidate = await createCandidate(omrcandidate);
-    console.log("candidate", candidate?.fullname);
-    if (candidate) {
-      const isOnboarding = await createOnboarding(candidate);
-      console.log("onboarding", isOnboarding);
-      if (isOnboarding) {
-        const isPlusTwo = await createPlusTwoInfo(candidate, omrcandidate);
-        console.log("isPlusTwo", isPlusTwo);
-        if (isPlusTwo) {
-          const application = await createCanApplication(
-            candidate,
-            omrcandidate
-          );
-          console.log("application", application.id);
-          if (application && application.status === "PENDING") {
-            const isApplicationJee = await createApplicationJEE(application);
-            if (isApplicationJee) {
-              const isApplicationCities = await createApplicationCities(
-                application,
-                omrcandidate
-              );
-              if (isApplicationCities) {
-                // update application status to applied
-                await prisma.examApplication.update({
-                  where: {
-                    id: application.id,
-                  },
-                  data: {
-                    status: "APPLIED",
-                  },
-                });
-                // update omr with application id
-                await prisma.oMRMigrate.update({
-                  where: {
-                    id: omrcandidate.id,
-                  },
-                  data: {
-                    examapplicationId: application.id,
-                    comment: null,
-                  },
-                });
+  try {
+    const omrcandidates = await prisma.oMRMigrate.findMany();
+    for (const omrcandidate of omrcandidates) {
+      let candidate = await createCandidate(omrcandidate);
+      console.log("candidate", candidate?.fullname);
+      if (candidate) {
+        const isOnboarding = await createOnboarding(candidate);
+        console.log("onboarding", isOnboarding);
+        if (isOnboarding) {
+          const isPlusTwo = await createPlusTwoInfo(candidate, omrcandidate);
+          console.log("isPlusTwo", isPlusTwo);
+          if (isPlusTwo) {
+            const application = await createCanApplication(
+              candidate,
+              omrcandidate
+            );
+            console.log("application", application.id);
+            if (application && application.status === "PENDING") {
+              const isApplicationJee = await createApplicationJEE(application);
+              if (isApplicationJee) {
+                const isApplicationCities = await createApplicationCities(
+                  application,
+                  omrcandidate
+                );
+                if (isApplicationCities) {
+                  // update application status to applied
+                  await prisma.examApplication.update({
+                    where: {
+                      id: application.id,
+                    },
+                    data: {
+                      status: "APPLIED",
+                    },
+                  });
+                  // update omr with application id
+                  await prisma.oMRMigrate.update({
+                    where: {
+                      id: omrcandidate.id,
+                    },
+                    data: {
+                      examapplicationId: application.id,
+                      comment: null,
+                    },
+                  });
+                }
               }
+            } else {
+              console.log("application status", application.status);
             }
-          } else {
-            console.log("application status", application.status);
           }
         }
       }
     }
+  } catch (error) {
+    console.error(
+      `Error in worker processing verifyAllCandidates: ${error.message}`
+    );
   }
 };
 
