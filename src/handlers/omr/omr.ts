@@ -449,7 +449,7 @@ const createCanApplication = async (candidate, omrcandidate) => {
         },
       });
       if (candidateapplication) {
-        application = candidate;
+        application = candidateapplication;
       } else {
         try {
           const randomNumber = Math.floor(Date.now());
