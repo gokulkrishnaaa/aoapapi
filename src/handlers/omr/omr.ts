@@ -297,50 +297,63 @@ const createCandidate = async (omrcandidate) => {
           isOMR: true,
           phoneverified: new Date(),
         };
-        if (candidatecreatestatus && omrcandidate.fullname) {
-          candidatedata["fullname"] = omrcandidate.fullname;
-        } else {
-          candidatecreatestatus = false;
-          creationfailmssg = "Name missing";
+        if (candidatecreatestatus) {
+          if (omrcandidate.fullname) {
+            candidatedata["fullname"] = omrcandidate.fullname;
+          } else {
+            candidatecreatestatus = false;
+            creationfailmssg = "Name missing";
+          }
         }
-        if (candidatecreatestatus && omrcandidate.dob) {
-          candidatedata["dob"] = omrcandidate.dob;
-        } else {
-          candidatecreatestatus = false;
-          creationfailmssg = "dob missing";
+        if (candidatecreatestatus) {
+          if (omrcandidate.dob) {
+            candidatedata["dob"] = omrcandidate.dob;
+          } else {
+            candidatecreatestatus = false;
+            creationfailmssg = "dob missing";
+          }
         }
-        if (candidatecreatestatus && gender) {
-          candidatedata["genderId"] = gender.id;
-        } else {
-          candidatecreatestatus = false;
-          creationfailmssg = "Gender missing";
+        if (candidatecreatestatus) {
+          if (gender) {
+            candidatedata["genderId"] = gender.id;
+          } else {
+            candidatecreatestatus = false;
+            creationfailmssg = "Gender missing";
+          }
         }
-        if (candidatecreatestatus && state) {
-        } else {
-          candidatecreatestatus = false;
-          creationfailmssg = "State missing";
+        if (candidatecreatestatus) {
+          if (!state) {
+            candidatecreatestatus = false;
+            creationfailmssg = "State missing";
+          }
         }
-        if (candidatecreatestatus && socialstatus) {
-          candidatedata["socialstatusId"] = socialstatus.id;
-        } else {
-          candidatecreatestatus = false;
-          creationfailmssg = "Category missing";
+        if (candidatecreatestatus) {
+          if (socialstatus) {
+            candidatedata["socialstatusId"] = socialstatus.id;
+          } else {
+            candidatecreatestatus = false;
+            creationfailmssg = "Category missing";
+          }
         }
         const photoBuffer = Buffer.from(omrcandidate.photo);
         const signBuffer = Buffer.from(omrcandidate.sign);
         const photoresult = await uploadToCloudinary(photoBuffer);
         const signresult = await uploadToCloudinary(signBuffer);
-        if (candidatecreatestatus && photoresult) {
-          candidatedata["photoid"] = photoresult["public_id"];
-        } else {
-          candidatecreatestatus = false;
-          creationfailmssg = "Photo creation failed";
+        if (candidatecreatestatus) {
+          if (photoresult) {
+            candidatedata["photoid"] = photoresult["public_id"];
+          } else {
+            candidatecreatestatus = false;
+            creationfailmssg = "Photo creation failed";
+          }
         }
-        if (candidatecreatestatus && signresult) {
-          candidatedata["signid"] = signresult["public_id"];
-        } else {
-          candidatecreatestatus = false;
-          creationfailmssg = "Sign creation failed";
+        if (candidatecreatestatus) {
+          if (signresult) {
+            candidatedata["signid"] = signresult["public_id"];
+          } else {
+            candidatecreatestatus = false;
+            creationfailmssg = "Sign creation failed";
+          }
         }
         if (candidatecreatestatus) {
           try {
@@ -650,6 +663,7 @@ export const completeOMRRegistration = async (req, res) => {
       examapplicationId: omr.examapplicationId,
       registrationNo: omr.registrationNo,
       type: "OMR",
+      createdAt: omr.regDate ? omr.regDate : null,
     },
   });
   if (registration) {
