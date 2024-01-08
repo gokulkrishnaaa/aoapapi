@@ -1,7 +1,7 @@
 import prisma from "../../db";
 
 export const searchApplication = async (req, res) => {
-  const { aeee, jee } = req.body;
+  const { aeee, jee, appno } = req.body;
 
   if (aeee) {
     const applications = await prisma.examApplication.findMany({
@@ -34,6 +34,23 @@ export const searchApplication = async (req, res) => {
       },
     });
 
+    return res.json(applications);
+  }
+
+  if (appno) {
+    const applications = await prisma.examApplication.findMany({
+      where: {
+        reference: {
+          contains: appno,
+          mode: "insensitive",
+        },
+      },
+      include: {
+        candidate: true,
+        Registration: true,
+        EntrancePayments: true,
+      },
+    });
     return res.json(applications);
   }
 
