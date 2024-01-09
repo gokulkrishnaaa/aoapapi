@@ -572,5 +572,12 @@ router.post("/aee/examlocation", createOrUpdateAdmitCard);
 router.post("/omr/upload", handleOmrUpload);
 router.get("/omr/synccandidates", handleSyncCandidates);
 router.post("/omr/completeregisration", completeOMRRegistration);
+router.get("/healthcheck", (req, res) => {
+  res.status(200).json({
+    status: "success",
+    message: "API is running smoothly",
+    timestamp: new Date(),
+  });
+});
 
 export default router;
