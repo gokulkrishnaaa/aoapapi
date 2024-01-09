@@ -1,0 +1,1 @@
+export { invokebulkAPI } from "./lsqbulkAPI";

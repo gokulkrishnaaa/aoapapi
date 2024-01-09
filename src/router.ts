@@ -206,6 +206,9 @@ import {
   getFullAeeeDetailsByCandidateId,
   getFullJeeDetailsByCandidateId,
 } from "./handlers/reports";
+import {
+  invokebulkAPI,
+} from "./handlers/leadsquared";
 import { createCrmSignin } from "./handlers/crm";
 import { getLoggedUser } from "./handlers/user/user";
 import { getUtmSource } from "./handlers/misc";
@@ -572,5 +575,7 @@ router.post("/aee/examlocation", createOrUpdateAdmitCard);
 router.post("/omr/upload", handleOmrUpload);
 router.get("/omr/synccandidates", handleSyncCandidates);
 router.post("/omr/completeregisration", completeOMRRegistration);
+
+router.post("/leadsquared/lsqbulkAPI", invokebulkAPI);
 
 export default router;
