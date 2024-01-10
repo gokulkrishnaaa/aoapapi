@@ -29,29 +29,29 @@ app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-// app.use(
-//   cookieSession({
-//     store: redisStore,
-//     secret: "keyboard cat",
-//     resave: false,
-//     saveUninitialized: true,
-//     cookie: { secure: false, maxAge: 1000 * 60 * 60 },
-//   })
-// );
-console.log("node env", process.env.NODE_ENV);
-
 app.use(
-  session({
+  cookieSession({
     store: redisStore,
-    secret: process.env.SESSION_SECRET, // Use a strong secret in production
+    secret: "keyboard cat",
     resave: false,
     saveUninitialized: true,
-    cookie: {
-      secure: process.env.NODE_ENV === "production", // Set to true in production
-      maxAge: 1000 * 60 * 60, // Adjust as needed
-    },
+    cookie: { secure: false, maxAge: 1000 * 60 * 60 },
   })
 );
+// console.log("node env", process.env.NODE_ENV);
+
+// app.use(
+//   session({
+//     store: redisStore,
+//     secret: process.env.SESSION_SECRET, // Use a strong secret in production
+//     resave: false,
+//     saveUninitialized: true,
+//     cookie: {
+//       secure: process.env.NODE_ENV === "production", // Set to true in production
+//       maxAge: 1000 * 60 * 60, // Adjust as needed
+//     },
+//   })
+// );
 
 app.use(mCurrentUser);
 app.use(
