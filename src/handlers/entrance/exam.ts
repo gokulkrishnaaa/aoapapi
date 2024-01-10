@@ -168,7 +168,7 @@ export const registerForExam = async (req, res) => {
           examapplicationId: successPayment.examapplication.id,
           registrationNo,
           type: "AGENT",
-          createdAt: successPayment.updatedAt,
+          createdAt: successPayment.createdAt,
         },
       });
     } catch (error) {
@@ -199,7 +199,7 @@ export const registerForExam = async (req, res) => {
           examId: successPayment.examapplication.exam.id,
           examapplicationId: successPayment.examapplication.id,
           registrationNo,
-          createdAt: successPayment.updatedAt,
+          createdAt: successPayment.createdAt,
         },
       });
     } catch (error) {
