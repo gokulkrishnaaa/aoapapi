@@ -42,7 +42,12 @@ export const getCandidateById = async (req, res) => {
   return res.json(candidate);
 };
 
+
+
+// Get all candidates details : RG
 export const getAllCandidatesInfo = async (req, res) => {
+
+  
   let candidates = [];
   const options = { day: "2-digit", month: "2-digit", year: "numeric" };
 
@@ -188,6 +193,137 @@ export const getAllCandidatesInfo = async (req, res) => {
     let totalData = { ...jeePayments };
 
     return totalData;
+  });
+
+  //   return res.json(formatted);
+
+  // Create a new workbook
+  const workbook = XLSX.utils.book_new();
+
+  // Add a worksheet to the workbook
+  const worksheet = XLSX.utils.json_to_sheet(formatted);
+
+  // Add the worksheet to the workbook
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+
+  // Set the appropriate headers for the response
+  res.setHeader(
+    "Content-Type",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  );
+  res.setHeader("Content-Disposition", "attachment; filename=excel.xlsx");
+
+  // Send the workbook directly to the response
+  res.end(XLSX.write(workbook, { bookType: "xlsx", type: "buffer" }));
+};
+
+
+// Get all candidates details w.r.t status : AR
+export const getAllCandidatesInfoByStatus = async  (req, res) => {
+  
+
+  // Get status value
+ const  {status}  = req.params;
+
+ // Convert status value to boolean
+ const isStatusTrue = status === 'true';
+
+ 
+  let candidates = [];
+
+  const allCandidates = await prisma.candidate.findMany({
+    where: {
+      Onboarding: {
+        status: isStatusTrue,
+      },
+    },
+
+    include: {
+      state: true,
+      Onboarding: true,
+      ParentInfo: true,    
+    },
+  });
+
+  const formatted = allCandidates.map((row) => {
+    let basic = {
+      Name: row.fullname,
+     /* Gender: row.gender ? row.gender.name : null,*/
+      Email: row.email,
+      Phone: row.phone,
+      State: row.state ? row.state.name : null,
+      ParentName: row.ParentInfo ? row.ParentInfo.fullname : null,
+      ParentEmail: row.ParentInfo ? row.ParentInfo.email : null,
+      ParentPhone: row.ParentInfo ? row.ParentInfo.phone : null,
+     
+    };
+
+    return basic;
+  });
+
+  //   return res.json(formatted);
+
+  // Create a new workbook
+  const workbook = XLSX.utils.book_new();
+
+  // Add a worksheet to the workbook
+  const worksheet = XLSX.utils.json_to_sheet(formatted);
+
+  // Add the worksheet to the workbook
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+
+  // Set the appropriate headers for the response
+  res.setHeader(
+    "Content-Type",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  );
+  res.setHeader("Content-Disposition", "attachment; filename=excel.xlsx");
+
+  // Send the workbook directly to the response
+  res.end(XLSX.write(workbook, { bookType: "xlsx", type: "buffer" }));
+};
+
+
+
+// Get applied candidates details : AR
+export const getAllAppliedCandidatesInfo = async (req, res) => {
+  
+  console.log('In getAllCandidatesInfo');
+ 
+  let candidates = [];
+
+  const allCandidates = await prisma.candidate.findMany({
+    where: {
+      ExamApplication: {
+        some: {
+          status: 'APPLIED',
+        },
+      },
+    },
+
+    include: {
+      state: true,
+      Onboarding: true,
+      ParentInfo: true, 
+      ExamApplication: true,
+
+    },
+  });
+
+  const formatted = allCandidates.map((row) => {
+    let basic = {
+      Name: row.fullname,
+     /* Gender: row.gender ? row.gender.name : null,*/
+      Email: row.email,
+      Phone: row.phone,
+      State: row.state ? row.state.name : null,
+      ParentName: row.ParentInfo ? row.ParentInfo.fullname : null,
+      ParentEmail: row.ParentInfo ? row.ParentInfo.email : null,
+      ParentPhone: row.ParentInfo ? row.ParentInfo.phone : null,
+     
+    };
+
+    return basic;
   });
 
   //   return res.json(formatted);
