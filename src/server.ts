@@ -43,7 +43,7 @@ console.log("node env", process.env.NODE_ENV);
 app.use(
   session({
     store: redisStore,
-    secret: "keyboard cat", // Use a strong secret in production
+    secret: process.env.SESSION_SECRET, // Use a strong secret in production
     resave: false,
     saveUninitialized: true,
     cookie: {
