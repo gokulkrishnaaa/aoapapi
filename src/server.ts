@@ -8,7 +8,7 @@ import cookieSession from "express-session";
 import RedisStore from "connect-redis";
 import { createClient } from "redis";
 import router from "./router";
-
+import session from "express-session";
 import { NotFoundError } from "./errors/not-found-error";
 import { errorHandler } from "./middlewares/error-handler";
 import { mCurrentUser } from "./middlewares/current-user";
@@ -29,13 +29,27 @@ app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+// app.use(
+//   cookieSession({
+//     store: redisStore,
+//     secret: "keyboard cat",
+//     resave: false,
+//     saveUninitialized: true,
+//     cookie: { secure: false, maxAge: 1000 * 60 * 60 },
+//   })
+// );
+console.log("node env", process.env.NODE_ENV);
+
 app.use(
-  cookieSession({
+  session({
     store: redisStore,
-    secret: "keyboard cat",
+    secret: "keyboard cat", // Use a strong secret in production
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false, maxAge: 1000 * 60 * 60 },
+    cookie: {
+      secure: process.env.NODE_ENV === "production", // Set to true in production
+      maxAge: 1000 * 60 * 60, // Adjust as needed
+    },
   })
 );
 
