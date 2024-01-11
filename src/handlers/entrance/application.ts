@@ -308,7 +308,6 @@ export const getProgrammeByApplication = async (req, res) => {
     include: {
       programme: {
         include: {
-          course: true, // Include course details
           campus: true, // Include campus details
         },
       },
