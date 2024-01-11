@@ -283,7 +283,7 @@ model Slot {
   examDate         DateTime
   examTime         String
   selectedCityCode String
-  createdAt   DateTime   @default(now())
+  createdAt        DateTime       @default(now())
 
   @@unique([registrationNo])
 }
@@ -386,8 +386,18 @@ model ExamCity {
 }
 
 model Course {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  Branch    Branch[]
+}
+
+model Branch {
   id         Int          @id @default(autoincrement())
+  course     Course       @relation(fields: [courseId], references: [id])
+  courseId   Int
   name       String       @unique
+  code       String       @unique
   createdAt  DateTime     @default(now())
   Programmes Programmes[]
 }
@@ -395,21 +405,24 @@ model Course {
 model Campus {
   id         Int          @id @default(autoincrement())
   name       String       @unique
+  code       String       @unique
+  createdAt  DateTime     @default(now())
   Programmes Programmes[]
 }
 
 model Programmes {
   id                    Int                     @id @default(autoincrement())
-  course                Course                  @relation(fields: [courseId], references: [id])
-  courseId              Int
+  branch                Branch                  @relation(fields: [branchId], references: [id])
+  branchId              Int
   campus                Campus                  @relation(fields: [campusId], references: [id])
   campusId              Int
+  name                  String                  @unique
   code                  String                  @unique
   createdAt             DateTime                @default(now())
   EntranceProgrammes    EntranceProgrammes[]
   ApplicationProgrammes ApplicationProgrammes[]
 
-  @@unique([courseId, campusId])
+  @@unique([branchId, campusId])
 }
 
 model EntranceProgrammes {
