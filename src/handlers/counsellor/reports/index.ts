@@ -1,0 +1,1 @@
+export { getSlot } from "./slot";

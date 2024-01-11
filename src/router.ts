@@ -199,6 +199,7 @@ import {
   removeCounsellor,
   updateCounsellor,
 } from "./handlers/counsellor";
+import { getSlot } from "./handlers/counsellor/reports";
 import {
   searchApplication,
   searchCandidate,
@@ -499,6 +500,7 @@ router.post(
 router.get("/admin/counsellor/", requireAuth, getCounsellorDetails);
 
 router.post("/counsellor/forgotpassword", forgotCounsellorPassword);
+router.post("/counsellor/reports", getSlot);
 
 // vendor
 router.post("/admin/vendor/currentuser", requireAuth, currentVendorUser);
