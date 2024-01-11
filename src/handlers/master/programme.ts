@@ -13,13 +13,13 @@ export const createProgramme = async (req, res) => {
 
   let item = null;
   try {
-    item = await prisma.programmes.create({
-      data: {
-        courseId,
-        campusId,
-        code,
-      },
-    });
+    // item = await prisma.programmes.create({
+    //   data: {
+    //     courseId,
+    //     campusId,
+    //     code,
+    //   },
+    // });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === "P2002") {
@@ -40,7 +40,6 @@ export const createProgramme = async (req, res) => {
 export const getProgrammes = async (req, res) => {
   const data = await prisma.programmes.findMany({
     include: {
-      course: true,
       campus: true,
       EntranceProgrammes: {
         include: {

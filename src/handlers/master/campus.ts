@@ -13,11 +13,11 @@ export const addCampus = async (req, res) => {
   // create campus
   let item = null;
   try {
-    item = await prisma.campus.create({
-      data: {
-        name,
-      },
-    });
+    // item = await prisma.campus.create({
+    //   data: {
+    //     name,
+    //   },
+    // });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === "P2002") {

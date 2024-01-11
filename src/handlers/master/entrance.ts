@@ -99,7 +99,6 @@ export const getProgrammesByEntrance = async (req, res) => {
     programmes = await prisma.programmes.findMany({
       where,
       include: {
-        course: true, // Include the course details
         campus: true,
       },
     });
