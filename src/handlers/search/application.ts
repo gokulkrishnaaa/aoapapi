@@ -70,9 +70,10 @@ export const searchRegistration = async (req, res) => {
         include: {
           exam: true,
           candidate: true,
-          EntrancePayments: true,
+          EntrancePayments: true,          
         },
       },
+      AdmitCard:true,
     },
   });
 
