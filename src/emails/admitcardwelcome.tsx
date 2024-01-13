@@ -48,7 +48,7 @@ export const AdmitCardWelcome = ({
               AEEE Phase 1 has been released. You can now download and print
               your admit card from the{" "}
               <Link
-                href="https://aoap.heptest.xyz"
+                href="https://aee.amrita.edu"
                 className="text-pink-800 underline"
               >
                 Application Portal
