@@ -2,7 +2,7 @@ import * as dotenv from "dotenv";
 import prisma from "./db";
 dotenv.config();
 
-import app from "./server";
+import bootstrapApp from "./server";
 
 const start = async () => {
   if (!process.env.JWT_SECRET) {
@@ -18,9 +18,16 @@ const start = async () => {
     process.exit(1);
   }
 
-  app.listen(4000, () => {
-    console.log("Listening on port 4000");
-  });
+  try {
+    const app = await bootstrapApp();
+    app.listen(4000, () => {
+      console.log("Listening on port 4000");
+    });
+    console.log("Bootstrap successful");
+  } catch (err) {
+    console.error("Bootstrap Failed:", err.message);
+    process.exit(1);
+  }
 };
 
 start().catch((error) => {
