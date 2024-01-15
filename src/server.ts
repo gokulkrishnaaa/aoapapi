@@ -14,7 +14,9 @@ import { errorHandler } from "./middlewares/error-handler";
 import { mCurrentUser } from "./middlewares/current-user";
 
 const app = express();
-let redisClient = createClient();
+let redisClient = createClient({
+  url: process.env.REDIS_URL,
+});
 redisClient.connect().catch(console.error);
 
 // Initialize store.
