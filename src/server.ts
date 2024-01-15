@@ -8,32 +8,20 @@ import cookieSession from "express-session";
 import RedisStore from "connect-redis";
 import { createClient } from "redis";
 import router from "./router";
-import session from "express-session";
 import { NotFoundError } from "./errors/not-found-error";
 import { errorHandler } from "./middlewares/error-handler";
 import { mCurrentUser } from "./middlewares/current-user";
 
-// Asynchronous function to establish Redis connection
-async function connectRedis() {
+const bootstrapApp = async () => {
+  const app = express();
+
   let redisClient = createClient({
     url: process.env.REDIS_URL,
   });
 
-  try {
-    await redisClient.connect();
-    console.log("Connected to Redis");
-    return redisClient;
-  } catch (error) {
-    console.error("Redis connection error:", error.message);
-    process.exit(1);
-  }
-}
+  await redisClient.connect();
 
-// Initialize express app
-const app = express();
-
-// Call the function and continue with the setup once Redis is connected
-connectRedis().then((redisClient) => {
+  // Initialize store.
   let redisStore = new RedisStore({
     client: redisClient,
     prefix: "aoap:",
@@ -45,12 +33,10 @@ connectRedis().then((redisClient) => {
   app.use(morgan("dev"));
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
-
-  // Improved session configuration
   app.use(
-    session({
+    cookieSession({
       store: redisStore,
-      secret: process.env.SESSION_SECRET || "m@1ns3cr3t",
+      secret: process.env.SESSION_SECRET || "gr3@ts3cr3t",
       resave: false,
       saveUninitialized: true,
       cookie: {
@@ -61,30 +47,20 @@ connectRedis().then((redisClient) => {
   );
 
   app.use(mCurrentUser);
-
   app.use(
     fileUpload({
       createParentPath: true,
     })
   );
-
   app.use("/api", router);
 
-  // Handling not found errors
-  app.all("*", async (req, res, next) => {
-    next(new NotFoundError());
+  app.all("*", async (req, res) => {
+    throw new NotFoundError();
   });
 
-  // Centralized error handling middleware
-  app.use((err, req, res, next) => {
-    console.error("Unhandled error:", err);
-    errorHandler(err, req, res, next);
-  });
+  app.use(errorHandler);
 
-  // Start the server
-  app.listen(4000, () => {
-    console.log("Listening on port 4000");
-  });
-});
+  return app;
+};
 
-export default app;
+export default bootstrapApp;
