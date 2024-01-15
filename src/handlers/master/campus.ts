@@ -6,18 +6,19 @@ import { InternalServerError } from "../../errors/internal-server-error";
 
 export const addCampus = async (req, res) => {
   // check for empty string throw bad request error
-  const { name } = req.body;
-  if (!name) {
-    throw new BadRequestError("Name is invalid");
+  const { name, code } = req.body;
+  if (!name || !code) {
+    throw new BadRequestError("Name or Code is invalid");
   }
   // create campus
   let item = null;
   try {
-    // item = await prisma.campus.create({
-    //   data: {
-    //     name,
-    //   },
-    // });
+    item = await prisma.campus.create({
+      data: {
+        name,
+        code,
+      },
+    });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === "P2002") {
@@ -36,7 +37,7 @@ export const addCampus = async (req, res) => {
 export const getCampus = async (req, res) => {
   const data = await prisma.campus.findMany({
     orderBy: {
-      id: "asc", // Sort by 'id' field in descending order
+      name: "asc", // Sort by 'id' field in descending order
     },
   });
   res.json(data);
@@ -45,14 +46,12 @@ export const getCampus = async (req, res) => {
 export const updateCampus = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name } = req.body;
-    const updatedGender = await prisma.campus.update({
+    const data = req.body;
+    const updated = await prisma.campus.update({
       where: { id: parseInt(id) },
-      data: {
-        name,
-      },
+      data,
     });
-    return res.json(updatedGender);
+    return res.json(updated);
   } catch (error) {
     throw new InternalServerError("Error updating Campus");
   }
@@ -61,10 +60,10 @@ export const updateCampus = async (req, res) => {
 export const removeCampus = async (req, res) => {
   try {
     const { id } = req.params;
-    const deletedGender = await prisma.campus.delete({
+    const deleted = await prisma.campus.delete({
       where: { id: parseInt(id) },
     });
-    return res.json(deletedGender);
+    return res.json(deleted);
   } catch (error) {
     throw new InternalServerError("Error deleting Campus");
   }
