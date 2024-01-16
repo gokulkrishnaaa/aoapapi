@@ -2,6 +2,7 @@ import { Row } from "@react-email/components";
 import prisma from "../../db";
 import XLSX from "xlsx";
 import { application } from "express";
+import { Prisma } from "@prisma/client";
 
 export const getCandidate = async (req, res) => {
   const { id } = req.currentUser;
@@ -346,4 +347,285 @@ export const getAllAppliedCandidatesInfo = async (req, res) => {
 
   // Send the workbook directly to the response
   res.end(XLSX.write(workbook, { bookType: "xlsx", type: "buffer" }));
+};
+
+
+/* OMR Candidates Section*/
+
+// Get applied Pending details : AR
+export const getOMRPendingList = async (req, res) => {
+  
+  console.log('In getOMRPendingList');
+ 
+  let candidates = [];
+
+  const allCandidates = await prisma.oMRMigrate.findMany({
+    where: {   
+          candidate:null,
+    },
+    
+  });
+
+  const formatted = allCandidates.map((row) => {
+    let basic = {
+      Name: row.fullname,
+      RegistrationNo: row.registrationNo,
+      Phone: row.phone,      
+    };
+
+    return basic;
+  });
+
+  //   return res.json(formatted);
+
+  // Create a new workbook
+  const workbook = XLSX.utils.book_new();
+
+  // Add a worksheet to the workbook
+  const worksheet = XLSX.utils.json_to_sheet(formatted);
+
+  // Add the worksheet to the workbook
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+
+  // Set the appropriate headers for the response
+  res.setHeader(
+    "Content-Type",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  );
+  res.setHeader("Content-Disposition", "attachment; filename=excel.xlsx");
+
+  // Send the workbook directly to the response
+  res.end(XLSX.write(workbook, { bookType: "xlsx", type: "buffer" }));
+};
+
+
+
+// Get applied Pending details : AR
+export const getOMRDuplicateList = async (req, res) => {
+  
+  console.log('In getOMRDuplicateList');
+ 
+  let candidates = [];
+
+  const allCandidates = await prisma.oMRMigrate.findMany({
+    where: {   
+          comment:"Candidate already exists",
+    },
+    
+  });
+
+  const formatted = allCandidates.map((row) => {
+    let basic = {
+      Name: row.fullname,
+      RegistrationNo: row.registrationNo,
+      Phone: row.phone,      
+    };
+
+    return basic;
+  });
+
+  //   return res.json(formatted);
+
+  // Create a new workbook
+  const workbook = XLSX.utils.book_new();
+
+  // Add a worksheet to the workbook
+  const worksheet = XLSX.utils.json_to_sheet(formatted);
+
+  // Add the worksheet to the workbook
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+
+  // Set the appropriate headers for the response
+  res.setHeader(
+    "Content-Type",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  );
+  res.setHeader("Content-Disposition", "attachment; filename=excel.xlsx");
+
+  // Send the workbook directly to the response
+  res.end(XLSX.write(workbook, { bookType: "xlsx", type: "buffer" }));
+};
+
+
+// Get applied Onboarded details : AR
+export const getOMROnboardedList = async (req, res) => {
+  
+  console.log('In getAllOMRCandidatesList');
+ 
+  let candidates = [];
+
+  const allCandidates = await prisma.candidate.findMany({
+    where: {
+      Onboarding: {
+           status: true,
+          },
+      isOMR:true,
+    },
+
+    include: {
+      state: true,
+      Onboarding: true,
+      ExamApplication: true,
+
+    },
+  });
+
+  const formatted = allCandidates.map((row) => {
+    let basic = {
+      Name: row.fullname,
+      Email: row.email,
+      Phone: row.phone,      
+    };
+
+    return basic;
+  });
+
+  //   return res.json(formatted);
+
+  // Create a new workbook
+  const workbook = XLSX.utils.book_new();
+
+  // Add a worksheet to the workbook
+  const worksheet = XLSX.utils.json_to_sheet(formatted);
+
+  // Add the worksheet to the workbook
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+
+  // Set the appropriate headers for the response
+  res.setHeader(
+    "Content-Type",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  );
+  res.setHeader("Content-Disposition", "attachment; filename=excel.xlsx");
+
+  // Send the workbook directly to the response
+  res.end(XLSX.write(workbook, { bookType: "xlsx", type: "buffer" }));
+};
+
+
+
+
+// Get applied slot booked details : AR
+export const getOMRBookedList = async (req, res) => {
+  
+  console.log('In getOMRBookedList');
+ 
+  let candidates = [];
+
+  let allCandidates = await prisma.slot.findMany({
+    where: {
+      registration: {
+            examapplication: {
+                           candidate: {
+                                     isOMR:true,
+                },   
+       },
+  },
+    },
+    include: {
+        registration: {
+            include: {
+                examapplication: {
+                    include: {
+                        candidate: true,
+                    },
+                },
+            },
+        },
+    },
+});
+
+
+  const formatted = allCandidates.map((row) => {
+    let basic = {
+      Name: row.registration.examapplication.candidate.fullname,
+      Email: row.registration.examapplication.candidate.email,
+      Phone: row.registration.examapplication.candidate.phone,
+      City: row.selectedCityCode,
+      RegistrationNo: row.registrationNo,
+      ExamDate: row.examDate,
+      ExamTime: row.examTime,
+      ExamMode: row.examMode ,   
+    };
+
+    return basic;
+  });
+
+  //   return res.json(formatted);
+
+  // Create a new workbook
+  const workbook = XLSX.utils.book_new();
+
+  // Add a worksheet to the workbook
+  const worksheet = XLSX.utils.json_to_sheet(formatted);
+
+  // Add the worksheet to the workbook
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+
+  // Set the appropriate headers for the response
+  res.setHeader(
+    "Content-Type",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  );
+  res.setHeader("Content-Disposition", "attachment; filename=excel.xlsx");
+
+  // Send the workbook directly to the response
+  res.end(XLSX.write(workbook, { bookType: "xlsx", type: "buffer" }));
+};
+
+
+// Get applied slot not booked details : AR
+export const getOMRNotBookedList = async (req, res) => {
+  
+  console.log('In getOMRNotBookedList');
+ 
+  let candidates = [];
+
+  let queryString = Prisma.sql`SELECT C.fullname,C.email,C.phone,R."registrationNo" FROM "Registration" R
+  LEFT JOIN "ExamApplication" E on R."examapplicationId" = E.id
+  LEFT JOIN "Candidate" C on E."candidateId" = C.id
+  WHERE C."isOMR" = true  AND R."registrationNo" NOT IN ( SELECT "registrationNo" FROM "Slot")`;
+
+  const candidateCounts = await prisma.$queryRaw(queryString);
+
+  const allCandidates = candidateCounts as any[];
+
+
+  console.log('In allCandidates',allCandidates);
+// Check if allCandidates is an array
+if (Array.isArray(allCandidates)) {
+
+  const formatted = allCandidates.map((row) => {
+    let basic = {
+      Name: row.fullname,
+      Email: row.email,
+      Phone: row.phone,
+      RegistrationNo: row.registrationNo,
+    };
+
+    return basic;
+  });
+
+
+  //   return res.json(formatted);
+
+  // Create a new workbook
+  const workbook = XLSX.utils.book_new();
+
+  // Add a worksheet to the workbook
+  const worksheet = XLSX.utils.json_to_sheet(formatted);
+
+  // Add the worksheet to the workbook
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+
+  // Set the appropriate headers for the response
+  res.setHeader(
+    "Content-Type",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  );
+  res.setHeader("Content-Disposition", "attachment; filename=excel.xlsx");
+
+  // Send the workbook directly to the response
+  res.end(XLSX.write(workbook, { bookType: "xlsx", type: "buffer" }));
+}
 };

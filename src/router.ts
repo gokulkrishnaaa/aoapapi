@@ -60,6 +60,11 @@ import {
   createJeeApplication,
   createOtp,
   currentUser,
+  getOMROnboardedList,
+  getOMRPendingList,
+  getOMRDuplicateList,
+  getOMRBookedList,
+  getOMRNotBookedList,
   getAllCandidatesInfo,
   getAllCandidatesInfoByStatus,
   getAllAppliedCandidatesInfo,
@@ -272,6 +277,11 @@ router.put("/candidate/:id/plustwo", requireAuth, updateCandidatePlustwoById);
 router.get("/candidates", getAllCandidatesInfo);
 router.get("/candidatefilter/:status",  getAllCandidatesInfoByStatus);
 router.get("/candidateapplied",  getAllAppliedCandidatesInfo);
+router.get("/omrcandidates/onboarded", getOMROnboardedList);
+router.get("/omrcandidates/pending", getOMRPendingList);
+router.get("/omrcandidates/duplicate", getOMRDuplicateList);
+router.get("/omrcandidates/slotbooked", getOMRBookedList);
+router.get("/omrcandidates/slotnotbooked", getOMRNotBookedList);
 
 //master data
 router.get("/master/gender", requireAuth, getGender);

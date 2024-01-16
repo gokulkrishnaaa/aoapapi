@@ -11,6 +11,11 @@ export {
   getAllCandidatesInfo,
   getAllCandidatesInfoByStatus,
   getAllAppliedCandidatesInfo,
+  getOMROnboardedList,
+  getOMRBookedList,
+  getOMRNotBookedList,
+  getOMRPendingList,
+  getOMRDuplicateList,
 } from "./getCandidate";
 export { signout } from "./signout";
 export { signin } from "./signin";

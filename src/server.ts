@@ -8,63 +8,59 @@ import cookieSession from "express-session";
 import RedisStore from "connect-redis";
 import { createClient } from "redis";
 import router from "./router";
-import session from "express-session";
 import { NotFoundError } from "./errors/not-found-error";
 import { errorHandler } from "./middlewares/error-handler";
 import { mCurrentUser } from "./middlewares/current-user";
 
-const app = express();
-let redisClient = createClient();
-redisClient.connect().catch(console.error);
+const bootstrapApp = async () => {
+  const app = express();
 
-// Initialize store.
-let redisStore = new RedisStore({
-  client: redisClient,
-  prefix: "aoap:",
-});
+  let redisClient = createClient({
+    url: process.env.REDIS_URL,
+  });
 
-app.set("trust proxy", 1);
+  await redisClient.connect();
 
-app.use(cors());
-app.use(morgan("dev"));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(
-  cookieSession({
-    store: redisStore,
-    secret: "keyboard cat",
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false, maxAge: 1000 * 60 * 60 },
-  })
-);
-// console.log("node env", process.env.NODE_ENV);
+  // Initialize store.
+  let redisStore = new RedisStore({
+    client: redisClient,
+    prefix: "aoap:",
+  });
 
-// app.use(
-//   session({
-//     store: redisStore,
-//     secret: process.env.SESSION_SECRET, // Use a strong secret in production
-//     resave: false,
-//     saveUninitialized: true,
-//     cookie: {
-//       secure: process.env.NODE_ENV === "production", // Set to true in production
-//       maxAge: 1000 * 60 * 60, // Adjust as needed
-//     },
-//   })
-// );
+  app.set("trust proxy", 1);
 
-app.use(mCurrentUser);
-app.use(
-  fileUpload({
-    createParentPath: true,
-  })
-);
-app.use("/api", router);
+  app.use(cors());
+  app.use(morgan("dev"));
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
+  app.use(
+    cookieSession({
+      store: redisStore,
+      secret: process.env.SESSION_SECRET || "gr3@ts3cr3t",
+      resave: false,
+      saveUninitialized: true,
+      cookie: {
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 1000 * 60 * 60,
+      },
+    })
+  );
 
-app.all("*", async (req, res) => {
-  throw new NotFoundError();
-});
+  app.use(mCurrentUser);
+  app.use(
+    fileUpload({
+      createParentPath: true,
+    })
+  );
+  app.use("/api", router);
 
-app.use(errorHandler);
+  app.all("*", async (req, res) => {
+    throw new NotFoundError();
+  });
 
-export default app;
+  app.use(errorHandler);
+
+  return app;
+};
+
+export default bootstrapApp;
