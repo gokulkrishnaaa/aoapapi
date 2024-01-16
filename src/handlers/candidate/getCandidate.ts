@@ -229,6 +229,12 @@ export const getAllCandidatesInfoByStatus = async  (req, res) => {
  // Convert status value to boolean
  const isStatusTrue = status === 'true';
 
+
+ // Get isOMR value
+ const { isOMR = 'false' } = req.params;
+ // Convert status value to boolean
+ const isOMRTrue = isOMR === 'true';
+
  
   let candidates = [];
 
@@ -237,6 +243,7 @@ export const getAllCandidatesInfoByStatus = async  (req, res) => {
       Onboarding: {
         status: isStatusTrue,
       },
+      isOMR:isOMRTrue,
     },
 
     include: {
@@ -293,13 +300,21 @@ export const getAllAppliedCandidatesInfo = async (req, res) => {
  
   let candidates = [];
 
+
+  // Get isOMR value
+ const { isOMR = 'false' } = req.params;
+ // Convert status value to boolean
+ const isOMRTrue = isOMR === 'true';
+
+
   const allCandidates = await prisma.candidate.findMany({
     where: {
       ExamApplication: {
         some: {
           status: 'APPLIED',
-        },
+        },        
       },
+      isOMR:isOMRTrue,
     },
 
     include: {
