@@ -644,3 +644,135 @@ if (Array.isArray(allCandidates)) {
   res.end(XLSX.write(workbook, { bookType: "xlsx", type: "buffer" }));
 }
 };
+
+
+
+// Get OMR Statewise lsit
+export const getStateOMRCandidates = async (req, res) => {
+  
+
+ 
+  let candidates = [];
+
+  let queryString = Prisma.sql` WITH CandidateCounts AS (
+    SELECT S."name" as state, count(*) as count
+    FROM "Candidate" C
+    LEFT JOIN "State" S ON C."stateId" = S.id
+    WHERE C."isOMR" = true
+    GROUP BY S."name"
+),
+
+OMRMigrateCounts AS (
+    SELECT ST."name" as state, count(*) as countpend
+    FROM "OMRMigrate" O
+    LEFT JOIN "State" ST ON O."state" = ST.code
+    GROUP BY ST."name"
+)
+
+SELECT COALESCE(C.state, O.state) as state, COALESCE(C.count, 0) as count, COALESCE(O.countpend, 0) as countpend
+FROM CandidateCounts C
+FULL OUTER JOIN OMRMigrateCounts O ON C.state = O.state
+ORDER BY COALESCE(C.state, O.state);
+`;
+
+  const candidateCounts = await prisma.$queryRaw(queryString);
+
+  const allCandidates = candidateCounts as any[];
+
+
+
+// Check if allCandidates is an array
+if (Array.isArray(allCandidates)) {
+
+  const formatted = allCandidates.map((row) => {
+    let basic = {
+      State: row.state,
+      AppliedCount: Number(row.count), 
+      PendingCount: Number(row.countpend), 
+    };
+
+    return basic;
+  });
+
+
+  //   return res.json(formatted);
+
+  // Create a new workbook
+  const workbook = XLSX.utils.book_new();
+
+  // Add a worksheet to the workbook
+  const worksheet = XLSX.utils.json_to_sheet(formatted);
+
+  // Add the worksheet to the workbook
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+
+  // Set the appropriate headers for the response
+  res.setHeader(
+    "Content-Type",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  );
+  res.setHeader("Content-Disposition", "attachment; filename=excel.xlsx");
+
+  // Send the workbook directly to the response
+  res.end(XLSX.write(workbook, { bookType: "xlsx", type: "buffer" }));
+}
+};
+
+
+
+// Get OMR Datewise lsit
+export const getDateOMRCandidates = async (req, res) => {
+  
+ 
+  let candidates = [];
+// Get date values
+const { fromDate, toDate } = req.params;
+
+const allCandidates = await prisma.candidate.groupBy({
+  by: ['createdAt'],
+  where: {
+    isOMR: true,
+    createdAt: {
+      gte: new Date(fromDate),
+      lte: new Date(toDate),
+    },
+  },
+  _count: {
+    createdAt: true,
+  },
+  orderBy: {
+    createdAt: 'asc',
+  },
+});
+
+// Format the result as an array of objects
+const formatted = allCandidates.map((entry) => ({
+  Date: entry.createdAt,
+  CandidateCount: entry._count.createdAt,
+}));
+
+  //   return res.json(formatted);
+
+  // Create a new workbook
+  const workbook = XLSX.utils.book_new();
+
+  // Add a worksheet to the workbook
+  const worksheet = XLSX.utils.json_to_sheet(formatted);
+
+  // Add the worksheet to the workbook
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+
+  // Set the appropriate headers for the response
+  res.setHeader(
+    "Content-Type",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  );
+  res.setHeader("Content-Disposition", "attachment; filename=excel.xlsx");
+
+  // Send the workbook directly to the response
+  res.end(XLSX.write(workbook, { bookType: "xlsx", type: "buffer" }));
+
+};
+
+
+

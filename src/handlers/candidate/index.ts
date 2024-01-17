@@ -14,6 +14,8 @@ export {
   getOMROnboardedList,
   getOMRBookedList,
   getOMRNotBookedList,
+  getStateOMRCandidates,
+  getDateOMRCandidates,
   getOMRPendingList,
   getOMRDuplicateList,
 } from "./getCandidate";

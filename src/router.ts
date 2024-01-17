@@ -65,6 +65,8 @@ import {
   getOMRDuplicateList,
   getOMRBookedList,
   getOMRNotBookedList,
+  getStateOMRCandidates,
+  getDateOMRCandidates,
   getAllCandidatesInfo,
   getAllCandidatesInfoByStatus,
   getAllAppliedCandidatesInfo,
@@ -288,6 +290,11 @@ router.get("/omrcandidates/pending", getOMRPendingList);
 router.get("/omrcandidates/duplicate", getOMRDuplicateList);
 router.get("/omrcandidates/slotbooked", getOMRBookedList);
 router.get("/omrcandidates/slotnotbooked", getOMRNotBookedList);
+router.get("/omrcandidates/state", getStateOMRCandidates);
+router.get("/omrcandidates/date/:fromDate/:toDate",  getDateOMRCandidates);
+
+
+
 
 //master data
 router.get("/master/gender", requireAuth, getGender);
