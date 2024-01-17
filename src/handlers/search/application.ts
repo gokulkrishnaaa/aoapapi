@@ -75,7 +75,7 @@ export const searchRegistration = async (req, res) => {
   });
 
   const results = registrationDetails.filter(entry =>
-    entry.registrationNo.toString().startsWith(regno.toString())
+    entry.registrationNo.toString().includes(regno.toString())
   );
 
   return res.json(results);
