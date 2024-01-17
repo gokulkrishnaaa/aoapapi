@@ -2,6 +2,23 @@ import prisma from "../../db";
 import { BadRequestError } from "../../errors/bad-request-error";
 import { InternalServerError } from "../../errors/internal-server-error";
 
+export const addBranch = async (req, res) => {
+  try {
+    const { courseId, name, code } = req.body;
+
+    const item = await prisma.branch.create({
+      data: {
+        courseId,
+        name,
+        code: code.toUpperCase(),
+      },
+    });
+    return res.json(item);
+  } catch (error) {
+    throw new InternalServerError("Error adding Branch");
+  }
+};
+
 export const getBranchesFromCourse = async (req, res) => {
   const courseId = parseInt(req.params.courseid);
 
@@ -27,19 +44,18 @@ export const getBranchesFromCourse = async (req, res) => {
   }
 };
 
-export const addBranch = async (req, res) => {
+export const getAllBranches = async (req, res) => {
   try {
-    const { courseId, name, code } = req.body;
-
-    const item = await prisma.branch.create({
-      data: {
-        courseId,
-        name,
-        code: code.toUpperCase(),
+    const result = await prisma.branch.findMany({
+      orderBy: {
+        name: "asc", // 'asc' for ascending order, 'desc' for descending
       },
     });
-    return res.json(item);
+    return res.json(result);
   } catch (error) {
-    throw new InternalServerError("Error adding Branch");
+    console.log(error);
+    throw new BadRequestError("Request cannot be processed");
+  } finally {
+    await prisma.$disconnect();
   }
 };

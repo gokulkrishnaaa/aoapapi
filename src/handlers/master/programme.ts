@@ -6,20 +6,36 @@ import { InternalServerError } from "../../errors/internal-server-error";
 
 export const createProgramme = async (req, res) => {
   // check for empty string throw bad request error
-  const { campusId, courseId, code } = req.body;
-  if (!courseId || !campusId || !code) {
+  const { branchId, campusId } = req.body;
+
+  let branch = await prisma.branch.findUnique({
+    where: {
+      id: branchId,
+    },
+  });
+
+  let campus = await prisma.campus.findUnique({
+    where: {
+      id: campusId,
+    },
+  });
+
+  if (!branch || !campus) {
     throw new BadRequestError("Input is invalid");
   }
 
-  let item = null;
+  let code = `${campus.code}${branch.code}`;
+  let name = `${branch.name}, ${campus.name}`;
   try {
-    // item = await prisma.programmes.create({
-    //   data: {
-    //     courseId,
-    //     campusId,
-    //     code,
-    //   },
-    // });
+    const item = await prisma.programmes.create({
+      data: {
+        branchId,
+        campusId,
+        name,
+        code,
+      },
+    });
+    return res.json(item);
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === "P2002") {
@@ -33,19 +49,13 @@ export const createProgramme = async (req, res) => {
       throw new BadRequestError("Cannot process the request");
     }
   }
-
-  return res.json(item);
 };
 
 export const getProgrammes = async (req, res) => {
   const data = await prisma.programmes.findMany({
     include: {
       campus: true,
-      EntranceProgrammes: {
-        include: {
-          entrance: true,
-        },
-      },
+      branch: true,
     },
   });
   res.json(data);

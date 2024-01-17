@@ -13,6 +13,7 @@ import {
   addSocialStatus,
   addState,
   createProgramme,
+  getAllBranches,
   getBranchesFromCourse,
   getCampus,
   getCities,
@@ -326,7 +327,8 @@ router.post("/master/district/", requireAuth, addDistrict);
 router.put("/master/district/:id", requireAuth, updateDistrict);
 router.delete("/master/district/:id", requireAuth, removeDistrict);
 router.post("/master/branch/", requireAuth, addBranch);
-router.get("/master/branch/:courseid", requireAuth, getBranchesFromCourse);
+router.get("/master/branches/", requireAuth, getAllBranches);
+router.get("/master/branches/:courseid", requireAuth, getBranchesFromCourse);
 
 router.get("/master/city/:districtId", requireAuth, getCityFromDistrict);
 router.get("/master/city/state/:stateId", requireAuth, getCityFromState);
