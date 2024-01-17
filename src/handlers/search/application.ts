@@ -58,13 +58,10 @@ export const searchApplication = async (req, res) => {
 };
 
 export const searchRegistration = async (req, res) => {
+
   const { regno } = req.body;
+
   const registrationDetails = await prisma.registration.findMany({
-    where: {
-      registrationNo: {
-        equals: parseInt(regno),
-      },
-    },
     include: {
       examapplication: {
         include: {
@@ -77,5 +74,9 @@ export const searchRegistration = async (req, res) => {
     },
   });
 
-  return res.json(registrationDetails);
+  const results = registrationDetails.filter(entry =>
+    entry.registrationNo.toString().startsWith(regno.toString())
+  );
+
+  return res.json(results);
 };
