@@ -141,6 +141,9 @@ import {
   createEntranceTransaction,
   getTransactionsByApplication,
   getTransactionsByCandidate,
+  getFailedTransaction,
+  getExcessTransaction,
+  getDoubleTransaction,
 } from "./handlers/entrance/transactions";
 
 import { importlocation, downloadExcel } from "./handlers/master";
@@ -209,6 +212,7 @@ import {
   searchApplication,
   searchCandidate,
   searchRegistration,
+  searchTransactionById,
 } from "./handlers/search";
 import {
   getFullAeeeDetailsByCandidateId,
@@ -276,7 +280,9 @@ router.put("/candidate/:id/parent", requireAuth, updateCandidateParentById);
 router.put("/candidate/:id/plustwo", requireAuth, updateCandidatePlustwoById);
 router.get("/candidates", getAllCandidatesInfo);
 router.get("/candidatefilter/:status",  getAllCandidatesInfoByStatus);
+router.get("/candidatefilter/:status/:isOMR",  getAllCandidatesInfoByStatus);
 router.get("/candidateapplied",  getAllAppliedCandidatesInfo);
+router.get("/candidateapplied/:isOMR",  getAllAppliedCandidatesInfo);
 router.get("/omrcandidates/onboarded", getOMROnboardedList);
 router.get("/omrcandidates/pending", getOMRPendingList);
 router.get("/omrcandidates/duplicate", getOMRDuplicateList);
@@ -426,6 +432,9 @@ router.get(
 
 router.post("/transactions/entrance/", requireAuth, createEntranceTransaction);
 router.get("/transactions/entrance/", requireAuth, getTransactionsByCandidate);
+router.post("/transactions/entrance/failed/",requireAuth,  getFailedTransaction);
+router.post("/transactions/entrance/excess/",requireAuth,  getExcessTransaction);
+router.post("/transactions/entrance/double/",requireAuth,  getDoubleTransaction);
 
 router.get(
   "/transactions/jee/application/:id",
@@ -539,6 +548,7 @@ router.put("/candidate/jee/application/:id", updateJeeApplication);
 router.post("/search/candidate", searchCandidate);
 router.post("/search/application", searchApplication);
 router.post("/search/registration", searchRegistration);
+router.post("/search/transaction", searchTransactionById);
 
 // agent reports
 router.post("/agent/reports/utm/:source", getCandidatesByUtmSource);
