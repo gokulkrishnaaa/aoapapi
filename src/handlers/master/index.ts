@@ -1,3 +1,4 @@
+export { getBranchesFromCourse, addBranch } from "./branch";
 import { createJee, updateJee, getAllJee, getActiveJee } from "./jee";
 
 export { importlocation, downloadExcel } from "./import";

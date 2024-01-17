@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  addBranch,
   addCampus,
   addCity,
   addCityForEntrance,
@@ -12,6 +13,7 @@ import {
   addSocialStatus,
   addState,
   createProgramme,
+  getBranchesFromCourse,
   getCampus,
   getCities,
   getCityForExam,
@@ -218,9 +220,7 @@ import {
   getFullAeeeDetailsByCandidateId,
   getFullJeeDetailsByCandidateId,
 } from "./handlers/reports";
-import {
-  invokebulkAPI,
-} from "./handlers/leadsquared";
+import { invokebulkAPI } from "./handlers/leadsquared";
 import { createCrmSignin } from "./handlers/crm";
 import { getLoggedUser } from "./handlers/user/user";
 import { getUtmSource } from "./handlers/misc";
@@ -279,10 +279,10 @@ router.put("/candidate/:id", requireAuth, putCandidateById);
 router.put("/candidate/:id/parent", requireAuth, updateCandidateParentById);
 router.put("/candidate/:id/plustwo", requireAuth, updateCandidatePlustwoById);
 router.get("/candidates", getAllCandidatesInfo);
-router.get("/candidatefilter/:status",  getAllCandidatesInfoByStatus);
-router.get("/candidatefilter/:status/:isOMR",  getAllCandidatesInfoByStatus);
-router.get("/candidateapplied",  getAllAppliedCandidatesInfo);
-router.get("/candidateapplied/:isOMR",  getAllAppliedCandidatesInfo);
+router.get("/candidatefilter/:status", getAllCandidatesInfoByStatus);
+router.get("/candidatefilter/:status/:isOMR", getAllCandidatesInfoByStatus);
+router.get("/candidateapplied", getAllAppliedCandidatesInfo);
+router.get("/candidateapplied/:isOMR", getAllAppliedCandidatesInfo);
 router.get("/omrcandidates/onboarded", getOMROnboardedList);
 router.get("/omrcandidates/pending", getOMRPendingList);
 router.get("/omrcandidates/duplicate", getOMRDuplicateList);
@@ -325,6 +325,8 @@ router.get("/master/district/:stateId", requireAuth, getDistrictsFromState);
 router.post("/master/district/", requireAuth, addDistrict);
 router.put("/master/district/:id", requireAuth, updateDistrict);
 router.delete("/master/district/:id", requireAuth, removeDistrict);
+router.post("/master/branch/", requireAuth, addBranch);
+router.get("/master/branch/:courseid", requireAuth, getBranchesFromCourse);
 
 router.get("/master/city/:districtId", requireAuth, getCityFromDistrict);
 router.get("/master/city/state/:stateId", requireAuth, getCityFromState);
@@ -432,9 +434,21 @@ router.get(
 
 router.post("/transactions/entrance/", requireAuth, createEntranceTransaction);
 router.get("/transactions/entrance/", requireAuth, getTransactionsByCandidate);
-router.post("/transactions/entrance/failed/",requireAuth,  getFailedTransaction);
-router.post("/transactions/entrance/excess/",requireAuth,  getExcessTransaction);
-router.post("/transactions/entrance/double/",requireAuth,  getDoubleTransaction);
+router.post(
+  "/transactions/entrance/failed/",
+  requireAuth,
+  getFailedTransaction
+);
+router.post(
+  "/transactions/entrance/excess/",
+  requireAuth,
+  getExcessTransaction
+);
+router.post(
+  "/transactions/entrance/double/",
+  requireAuth,
+  getDoubleTransaction
+);
 
 router.get(
   "/transactions/jee/application/:id",
