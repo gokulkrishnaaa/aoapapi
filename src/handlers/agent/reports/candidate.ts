@@ -168,14 +168,14 @@ export const getApplicationsByAgent = async (req, res) => {
   }
 
   let applicationsByAgentId;
-
+  
   if (search && search.searchBy) {
     const { searchBy, searchTerm } = search;
     applicationsByAgentId = await prisma.examApplication.findMany({
       where: {
         type: "AGENT",
         candidate: {
-          agentId: 18,
+          agentId: agent.id,
         },
         exam: {
           entrance: {
