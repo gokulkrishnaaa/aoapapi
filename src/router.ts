@@ -67,6 +67,7 @@ import {
   getOMRNotBookedList,
   getStateOMRCandidates,
   getDateOMRCandidates,
+  getDateWiseCandidatesCount,
   getAllCandidatesInfo,
   getAllCandidatesInfoByStatus,
   getAllAppliedCandidatesInfo,
@@ -285,6 +286,7 @@ router.get("/candidatefilter/:status",  getAllCandidatesInfoByStatus);
 router.get("/candidatefilter/:status/:isOMR",  getAllCandidatesInfoByStatus);
 router.get("/candidateapplied",  getAllAppliedCandidatesInfo);
 router.get("/candidateapplied/:isOMR",  getAllAppliedCandidatesInfo);
+router.get("/candidates/consolidated/date/:fromDate/:toDate",  getDateWiseCandidatesCount);
 router.get("/omrcandidates/onboarded", getOMROnboardedList);
 router.get("/omrcandidates/pending", getOMRPendingList);
 router.get("/omrcandidates/duplicate", getOMRDuplicateList);

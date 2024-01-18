@@ -365,6 +365,122 @@ export const getAllAppliedCandidatesInfo = async (req, res) => {
 };
 
 
+// Get  Datewise Candidates Count
+export const getDateWiseCandidatesCount = async (req, res) => {
+  try {
+    const { fromDate, toDate } = req.params;
+
+    const candidateCounts = await prisma.candidate.groupBy({
+      by: ['createdAt'],
+      where: {
+        createdAt: {
+          gte: new Date(fromDate),
+          lte: new Date(toDate),
+        },
+      },
+      _count: {
+        createdAt: true,
+      },
+      orderBy: {
+        createdAt: 'asc',
+      },
+    });
+
+    const onboardingCounts = await prisma.onboarding.groupBy({
+      by: ['createdAt'],
+      where: {
+        status: true,
+        createdAt: {
+          gte: new Date(fromDate),
+          lte: new Date(toDate),
+        },
+      },
+      _count: {
+        createdAt: true,
+      },
+      orderBy: {
+        createdAt: 'asc',
+      },
+    });
+
+    const examApplicationCounts = await prisma.examApplication.groupBy({
+      by: ['createdAt'],
+      where: {
+        createdAt: {
+          gte: new Date(fromDate),
+          lte: new Date(toDate),
+        },
+      },
+      _count: {
+        createdAt: true,
+      },
+      orderBy: {
+        createdAt: 'asc',
+      },
+    });
+
+    const registrationCounts = await prisma.registration.groupBy({
+      by: ['createdAt'],
+      where: {
+        createdAt: {
+          gte: new Date(fromDate),
+          lte: new Date(toDate),
+        },
+      },
+      _count: {
+        createdAt: true,
+      },
+      orderBy: {
+        createdAt: 'asc',
+      },
+    });
+
+    const dateMap = new Map();
+
+   const updateCounts = (date, countKey, count) => {
+      const formattedDate = new Date(date).toLocaleDateString('en-GB'); // Format date to dd-mm-yyyy
+      const entry = dateMap.get(formattedDate) || { Date: formattedDate, SignedUp: 0, ProfileCompleted: 0, Applied: 0, Registered: 0 };
+      entry[countKey] += count;
+      dateMap.set(formattedDate, entry);
+    };
+
+    candidateCounts.forEach((candidateEntry) => {
+      updateCounts(candidateEntry.createdAt.toISOString().split('T')[0], 'SignedUp', candidateEntry._count.createdAt);
+    });
+
+    onboardingCounts.forEach((onboardingEntry) => {
+      updateCounts(onboardingEntry.createdAt.toISOString().split('T')[0], 'ProfileCompleted', onboardingEntry._count.createdAt);
+    });
+
+    examApplicationCounts.forEach((examApplicationEntry) => {
+      updateCounts(examApplicationEntry.createdAt.toISOString().split('T')[0], 'Applied', examApplicationEntry._count.createdAt);
+    });
+
+    registrationCounts.forEach((registrationEntry) => {
+      updateCounts(registrationEntry.createdAt.toISOString().split('T')[0], 'Registered', registrationEntry._count.createdAt);
+    });
+
+    const formatted = Array.from(dateMap.values());
+
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(formatted);
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Report');
+
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename=excel.xlsx');
+    res.end(XLSX.write(workbook, { bookType: 'xlsx', type: 'buffer' }));
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+
+
+
+
+
+
 /* OMR Candidates Section*/
 
 // Get applied Pending details : AR

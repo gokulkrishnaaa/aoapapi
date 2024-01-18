@@ -11,6 +11,7 @@ export {
   getAllCandidatesInfo,
   getAllCandidatesInfoByStatus,
   getAllAppliedCandidatesInfo,
+  getDateWiseCandidatesCount,
   getOMROnboardedList,
   getOMRBookedList,
   getOMRNotBookedList,
