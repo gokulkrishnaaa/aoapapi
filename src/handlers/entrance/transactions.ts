@@ -112,8 +112,8 @@ export const getFailedTransaction = async (req, res) => {
         Name: row.candidate?.fullname,
         Email: row.candidate?.email,
         Phone: row.candidate?.phone,
-        ApplicationNo : row.examapplication.reference,
-        RegistrationNo : row.examapplication.Registration[0].registrationNo,
+        ApplicationNo : row.examapplication.reference ? row.examapplication.reference:null,
+        RegistrationNo : row.examapplication.Registration[0]?.registrationNo,
         Transactions : row.examapplication.EntrancePayments?.length, 
       }));
       //   return res.json(formatted);
@@ -186,15 +186,14 @@ export const getExcessTransaction = async (req, res) => {
   // console.log('Entrance Payments:', entrancepayments);
 
   if (download) {
-        const formatted = entrancepayments.map((row) => ({  
-          Name: row.candidate?.fullname,
-          Email: row.candidate?.email,
-          Phone: row.candidate?.phone,
-          ApplicationNo : row.examapplication.reference,
-          RegistrationNo : row.examapplication.Registration[0].registrationNo,
-          Transactions : row.examapplication.EntrancePayments?.length, 
-
-        }));
+    const formatted = entrancepayments.map((row) => ({     
+      Name: row.candidate?.fullname,
+      Email: row.candidate?.email,
+      Phone: row.candidate?.phone,
+      ApplicationNo : row.examapplication.reference ? row.examapplication.reference:null,
+      RegistrationNo : row.examapplication.Registration[0]?.registrationNo,
+      Transactions : row.examapplication.EntrancePayments?.length, 
+    }));
       //   return res.json(formatted);
       console.log('Formatted Data:', formatted);
       // Create a new workbook
@@ -257,13 +256,13 @@ export const getDoubleTransaction = async (req, res) => {
   });
 
   if (download) {
-    const formatted = doublePayments.map((row) => ({     
-        Name: row.candidate?.fullname,
-        Email: row.candidate?.email,
-        Phone: row.candidate?.phone,
-        ApplicationNo : row.examapplication.reference,
-        RegistrationNo : row.examapplication.Registration[0].registrationNo,
-        Transactions : row.examapplication.EntrancePayments?.length,   
+    const formatted = entrancepayments.map((row) => ({     
+      Name: row.candidate?.fullname,
+      Email: row.candidate?.email,
+      Phone: row.candidate?.phone,
+      ApplicationNo : row.examapplication.reference ? row.examapplication.reference:null,
+      RegistrationNo : row.examapplication.Registration[0]?.registrationNo,
+      Transactions : row.examapplication.EntrancePayments?.length, 
     }));
 
     //   return res.json(formatted);
