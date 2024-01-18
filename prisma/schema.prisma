@@ -566,3 +566,19 @@ model Counsellor {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+enum NonScholarshipIntakeStatus {
+  PAUSE
+  APPLY
+  CLOSE
+}
+
+model NonScholarship {
+  id          String                     @id @default(cuid())
+  name        String
+  description String
+  status      NonScholarshipIntakeStatus @default(PAUSE)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
