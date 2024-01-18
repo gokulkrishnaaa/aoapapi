@@ -148,10 +148,14 @@ export const getExcessTransaction = async (req, res) => {
   
  const {amount} = req.params;
   
-  const product = await prisma.products.findFirst({
-    where: {
-      amount,
-    },
+ const product = await prisma.products.findFirst({
+      where: {
+        amount,
+        name : {
+          contains :"aeee",
+          mode: "insensitive"
+        }
+      },
   });
 
   if (!product) {
