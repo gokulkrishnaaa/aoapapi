@@ -604,6 +604,8 @@ model NonScholarshipApplication {
   createdAt                   DateTime                      @default(now())
   updatedAt                   DateTime                      @updatedAt
   NonSchApplicationProgrammes NonSchApplicationProgrammes[]
+
+  @@unique([candidateId, nonscholarshipId])
 }
 
 model NonSchApplicationProgrammes {

@@ -250,7 +250,10 @@ import {
 import {
   createNonSchApplication,
   createNonSchIntake,
+  getNonSchAppnlByCandidateId,
+  getNonSchAppnlById,
   getNonSchIntake,
+  updateNonSchApplication,
 } from "./handlers/nonscholarship";
 
 const router = Router();
@@ -480,6 +483,12 @@ router.post("/jee/paymentfailure", jeePaymentFailure);
 router.post("/nonscholarship/application", createNonSchApplication);
 router.post("/nonscholarship/intake", requireAuth, createNonSchIntake);
 router.get("/nonscholarship/intake", requireAuth, getNonSchIntake);
+router.get(
+  "/nonscholarship/application/:candidateid/:intakeid",
+  getNonSchAppnlByCandidateId
+);
+router.get("/nonscholarship/application/:id", getNonSchAppnlById);
+router.put("/nonscholarship/application/:id", updateNonSchApplication);
 
 router.post("/email/otp", sendEmailOtp);
 router.get("/email/welcome", requireAuth, sendWelcomeMail);
