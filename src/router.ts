@@ -43,6 +43,7 @@ import {
   removeProgramme,
   removeSocialStatus,
   removeState,
+  searchProgrammes,
   updateCampus,
   updateCity,
   updateCityForEntrance,
@@ -246,6 +247,11 @@ import {
   handleOmrUpload,
   handleSyncCandidates,
 } from "./handlers/omr";
+import {
+  createNonSchApplication,
+  createNonSchIntake,
+  getNonSchIntake,
+} from "./handlers/nonscholarship";
 
 const router = Router();
 
@@ -338,6 +344,7 @@ router.put("/master/city/:id", requireAuth, updateCity);
 router.delete("/master/city/:id", requireAuth, removeCity);
 
 router.post("/master/programme/", requireAuth, createProgramme);
+router.post("/master/search/programme", requireAuth, searchProgrammes);
 router.get("/master/programme/", requireAuth, getProgrammes);
 router.delete("/master/programme/:id", requireAuth, removeProgramme);
 
@@ -468,6 +475,11 @@ router.post("/transactions/verify", verifyTransaction);
 
 router.post("/jee/paymentsuccess", jeePaymentSuccess);
 router.post("/jee/paymentfailure", jeePaymentFailure);
+
+// non shcolarship
+router.post("/nonscholarship/application", createNonSchApplication);
+router.post("/nonscholarship/intake", requireAuth, createNonSchIntake);
+router.get("/nonscholarship/intake", requireAuth, getNonSchIntake);
 
 router.post("/email/otp", sendEmailOtp);
 router.get("/email/welcome", requireAuth, sendWelcomeMail);

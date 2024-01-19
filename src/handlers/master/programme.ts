@@ -61,6 +61,33 @@ export const getProgrammes = async (req, res) => {
   res.json(data);
 };
 
+export const searchProgrammes = async (req, res) => {
+  const { searchkey, cityid } = req.body;
+
+  const whereclause = {
+    name: {
+      contains: searchkey,
+      mode: Prisma.QueryMode.insensitive,
+    },
+    campusId: 0,
+  };
+  if (cityid > 0) {
+    whereclause.campusId = cityid;
+  } else {
+    delete whereclause.campusId;
+  }
+
+  const data = await prisma.programmes.findMany({
+    where: whereclause,
+    include: {
+      campus: true,
+      branch: true,
+    },
+  });
+
+  res.json(data);
+};
+
 export const removeProgramme = async (req, res) => {
   try {
     const { id } = req.params;

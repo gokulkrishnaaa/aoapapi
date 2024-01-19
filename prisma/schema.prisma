@@ -120,11 +120,12 @@ model Candidate {
   JEEApplication   JEEApplication[]
   JEEPayments      JEEPayments[]
 
-  isOMR      Boolean      @default(false)
-  agentId    Int?
-  agent      Agent?       @relation(fields: [agentId], references: [id])
-  LSQ        LSQ?
-  OMRMigrate OMRMigrate[]
+  isOMR                     Boolean                    @default(false)
+  agentId                   Int?
+  agent                     Agent?                     @relation(fields: [agentId], references: [id])
+  LSQ                       LSQ?
+  OMRMigrate                OMRMigrate[]
+  NonScholarshipApplication NonScholarshipApplication?
 }
 
 model ParentInfo {
@@ -411,16 +412,17 @@ model Campus {
 }
 
 model Programmes {
-  id                    Int                     @id @default(autoincrement())
-  branch                Branch                  @relation(fields: [branchId], references: [id])
-  branchId              Int
-  campus                Campus                  @relation(fields: [campusId], references: [id])
-  campusId              Int
-  name                  String                  @unique
-  code                  String                  @unique
-  createdAt             DateTime                @default(now())
-  EntranceProgrammes    EntranceProgrammes[]
-  ApplicationProgrammes ApplicationProgrammes[]
+  id                          Int                           @id @default(autoincrement())
+  branch                      Branch                        @relation(fields: [branchId], references: [id])
+  branchId                    Int
+  campus                      Campus                        @relation(fields: [campusId], references: [id])
+  campusId                    Int
+  name                        String                        @unique
+  code                        String                        @unique
+  createdAt                   DateTime                      @default(now())
+  EntranceProgrammes          EntranceProgrammes[]
+  ApplicationProgrammes       ApplicationProgrammes[]
+  NonSchApplicationProgrammes NonSchApplicationProgrammes[]
 
   @@unique([branchId, campusId])
 }
@@ -581,4 +583,38 @@ model NonScholarship {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  NonScholarshipApplication NonScholarshipApplication[]
+}
+
+enum NonScholarshipApplicationStatus {
+  PENDING
+  APPLIED
+}
+
+model NonScholarshipApplication {
+  id               String                          @id @default(cuid())
+  candidate        Candidate                       @relation(fields: [candidateId], references: [id])
+  candidateId      String                          @unique
+  nonscholarship   NonScholarship                  @relation(fields: [nonscholarshipId], references: [id])
+  nonscholarshipId String
+  reference        String
+  status           NonScholarshipApplicationStatus @default(PENDING)
+
+  createdAt                   DateTime                      @default(now())
+  updatedAt                   DateTime                      @updatedAt
+  NonSchApplicationProgrammes NonSchApplicationProgrammes[]
+}
+
+model NonSchApplicationProgrammes {
+  id                          Int                       @id @default(autoincrement())
+  nonscholarshipapplication   NonScholarshipApplication @relation(fields: [nonscholarshipapplicationId], references: [id])
+  nonscholarshipapplicationId String
+  programmes                  Programmes                @relation(fields: [programmesId], references: [id])
+  programmesId                Int
+  order                       Int
+  createdAt                   DateTime                  @default(now())
+  updatedAt                   DateTime                  @updatedAt
+
+  @@unique([nonscholarshipapplicationId, programmesId])
 }
