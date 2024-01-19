@@ -861,11 +861,18 @@ const allCandidates = await prisma.candidate.groupBy({
   },
 });
 
-// Format the result as an array of objects
-const formatted = allCandidates.map((entry) => ({
-  Date: entry.createdAt,
-  CandidateCount: entry._count.createdAt,
-}));
+    // Group by date and sum up the counts
+    const groupedByDate = allCandidates.reduce((result, entry) => {
+      const date = entry.createdAt.toISOString().split('T')[0];
+      result[date] = (result[date] || 0) + entry._count.createdAt;
+      return result;
+    }, {});
+
+    // Format the result as an array of objects
+    const formatted = Object.keys(groupedByDate).map(date => ({
+      Date: date,
+      CandidateCount: groupedByDate[date],
+    }));
 
   //   return res.json(formatted);
 
