@@ -157,7 +157,6 @@ import {
   getExamCityReport,
   getExamCityStateReport,
   getExamRegisteredReport,
-  getAEEEJEECount,
   getRefererReport,
   getRegisteredUsersByExam,
   getStateWiseReport,
@@ -503,7 +502,6 @@ router.get(
   requireAuth,
   getExamRegisteredReport
 );
-router.get("/admin/reports/aeeejeecount", getAEEEJEECount);
 router.get("/admin/reports/referer", requireAuth, getRefererReport);
 router.post("/analytics/referer", addReferer);
 
