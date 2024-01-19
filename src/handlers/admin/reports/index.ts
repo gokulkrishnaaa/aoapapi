@@ -4,6 +4,7 @@ export { getApplicationReport, getRegisteredUsersByExam } from "./application";
 export { getStateWiseReport } from "./state";
 export { getDistrictWiseReport } from "./district";
 export { getExamRegisteredReport } from "./exam";
+export { getAEEEJEECount } from "./exam";
 export { getRefererReport } from "./referer";
 export {
   getExamCityReport,

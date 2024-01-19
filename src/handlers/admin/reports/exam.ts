@@ -34,3 +34,28 @@ export const getExamRegisteredReport = async (req, res) => {
     throw new BadRequestError("Request cannot be processed");
   }
 };
+
+export const getAEEEJEECount = async (req, res) => {
+  try {
+    const resultRows = await prisma.$queryRaw`
+    SELECT
+    (SELECT COUNT(*) FROM "ExamApplication") AS aeecount,
+    (SELECT COUNT(*) FROM "JEEApplication") AS jeecount,
+    (SELECT COUNT(*) FROM "ExamApplication") + (SELECT COUNT(*) FROM "JEEApplication") AS totalcount`;
+
+    const resultArr = resultRows as any[];
+
+    // Convert BigInt to regular numbers
+    const formattedCounts = resultArr.map((row) => ({
+      aeecount: Number(row.aeecount),
+      jeecount: Number(row.jeecount),
+      totalcount: Number(row.totalcount),   
+    }));
+
+    return res.json(formattedCounts);
+  } catch (error) {
+    console.log(error);
+    throw new BadRequestError("Request cannot be processed");
+  }
+};
+
