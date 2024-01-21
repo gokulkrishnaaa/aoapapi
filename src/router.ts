@@ -90,6 +90,7 @@ import {
   updateCandidateParentById,
   updateCandidatePlustwoById,
   updateJeeApplication,
+  checkCandidateRegistered,
 } from "./handlers/candidate";
 import { requireAuth } from "./middlewares/require-auth";
 import {
@@ -266,6 +267,11 @@ router.post("/candiate/createotp", createOtp);
 router.post("/candidate/signin", signin);
 router.post("/candidate/signout", requireAuth, signout);
 router.post("/candidate/currentuser", requireAuth, currentUser);
+router.get(
+  "/candidate/isregistered/:id",
+  requireAuth,
+  checkCandidateRegistered
+);
 router.get("/candidate", requireAuth, requireCandidate, getCandidate);
 router.post("/candidate", requireAuth, createCandidate);
 router.put("/candidate", requireAuth, putCandidate);
