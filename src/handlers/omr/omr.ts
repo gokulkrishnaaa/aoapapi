@@ -666,6 +666,14 @@ export const completeOMRRegistration = async (req, res) => {
       createdAt: omr.regDate ? omr.regDate : null,
     },
   });
+  await prisma.examApplication.update({
+    where: {
+      id: omr.examapplicationId,
+    },
+    data: {
+      status: "REGISTERED",
+    },
+  });
   if (registration) {
     await prisma.oMRMigrate.deleteMany({
       where: {

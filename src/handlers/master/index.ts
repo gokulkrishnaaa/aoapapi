@@ -1,3 +1,4 @@
+export { getBranchesFromCourse, addBranch, getAllBranches } from "./branch";
 import { createJee, updateJee, getAllJee, getActiveJee } from "./jee";
 
 export { importlocation, downloadExcel } from "./import";
@@ -47,7 +48,12 @@ export {
 } from "./examcity";
 export { getCourses, addCourse, updateCourse, removeCourse } from "./course";
 export { addCampus, getCampus, removeCampus, updateCampus } from "./campus";
-export { createProgramme, getProgrammes, removeProgramme } from "./programme";
+export {
+  createProgramme,
+  getProgrammes,
+  removeProgramme,
+  searchProgrammes,
+} from "./programme";
 export {
   addProgrammeToEntrance,
   getProgrammesByEntrance,

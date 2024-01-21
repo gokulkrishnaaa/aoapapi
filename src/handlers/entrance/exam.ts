@@ -171,6 +171,14 @@ export const registerForExam = async (req, res) => {
           createdAt: successPayment.createdAt,
         },
       });
+      await prisma.examApplication.update({
+        where: {
+          id: successPayment.examapplication.id,
+        },
+        data: {
+          status: "REGISTERED",
+        },
+      });
     } catch (error) {
       console.log(error);
       throw new BadRequestError("Registration Unsuccessful");
@@ -200,6 +208,14 @@ export const registerForExam = async (req, res) => {
           examapplicationId: successPayment.examapplication.id,
           registrationNo,
           createdAt: successPayment.createdAt,
+        },
+      });
+      await prisma.examApplication.update({
+        where: {
+          id: successPayment.examapplication.id,
+        },
+        data: {
+          status: "REGISTERED",
         },
       });
     } catch (error) {
@@ -319,6 +335,14 @@ export const examPaymentSuccess = async (req, res) => {
           examId: transactionDetails.examapplication.exam.id,
           examapplicationId: transactionDetails.examapplication.id,
           registrationNo,
+        },
+      });
+      await prisma.examApplication.update({
+        where: {
+          id: transactionDetails.examapplication.id,
+        },
+        data: {
+          status: "REGISTERED",
         },
       });
       return res.redirect("/applications/payment/success");
@@ -446,12 +470,20 @@ export const examAgentPaymentSuccess = async (req, res) => {
 
     entranceWelcomeAgent(updatedTransaction.candidateId, registrationNo);
     try {
-      const registration = await prisma.registration.create({
+      await prisma.registration.create({
         data: {
           examId: transactionDetails.examapplication.exam.id,
           examapplicationId: transactionDetails.examapplication.id,
           registrationNo,
           type: "AGENT",
+        },
+      });
+      await prisma.examApplication.update({
+        where: {
+          id: transactionDetails.examapplication.id,
+        },
+        data: {
+          status: "REGISTERED",
         },
       });
       return res.redirect(`/agent/candidate/payment/${applnno}/success`);

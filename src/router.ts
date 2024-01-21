@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  addBranch,
   addCampus,
   addCity,
   addCityForEntrance,
@@ -12,6 +13,8 @@ import {
   addSocialStatus,
   addState,
   createProgramme,
+  getAllBranches,
+  getBranchesFromCourse,
   getCampus,
   getCities,
   getCityForExam,
@@ -40,6 +43,7 @@ import {
   removeProgramme,
   removeSocialStatus,
   removeState,
+  searchProgrammes,
   updateCampus,
   updateCity,
   updateCityForEntrance,
@@ -89,6 +93,7 @@ import {
   updateCandidateParentById,
   updateCandidatePlustwoById,
   updateJeeApplication,
+  checkCandidateRegistered,
 } from "./handlers/candidate";
 import { requireAuth } from "./middlewares/require-auth";
 import {
@@ -222,9 +227,7 @@ import {
   getFullAeeeDetailsByCandidateId,
   getFullJeeDetailsByCandidateId,
 } from "./handlers/reports";
-import {
-  invokebulkAPI,
-} from "./handlers/leadsquared";
+import { invokebulkAPI } from "./handlers/leadsquared";
 import { createCrmSignin } from "./handlers/crm";
 import { getLoggedUser } from "./handlers/user/user";
 import { getUtmSource } from "./handlers/misc";
@@ -249,6 +252,14 @@ import {
   handleOmrUpload,
   handleSyncCandidates,
 } from "./handlers/omr";
+import {
+  createNonSchApplication,
+  createNonSchIntake,
+  getNonSchAppnlByCandidateId,
+  getNonSchAppnlById,
+  getNonSchIntake,
+  updateNonSchApplication,
+} from "./handlers/nonscholarship";
 
 const router = Router();
 
@@ -260,6 +271,11 @@ router.post("/candiate/createotp", createOtp);
 router.post("/candidate/signin", signin);
 router.post("/candidate/signout", requireAuth, signout);
 router.post("/candidate/currentuser", requireAuth, currentUser);
+router.get(
+  "/candidate/isregistered/:id",
+  requireAuth,
+  checkCandidateRegistered
+);
 router.get("/candidate", requireAuth, requireCandidate, getCandidate);
 router.post("/candidate", requireAuth, createCandidate);
 router.put("/candidate", requireAuth, putCandidate);
@@ -283,21 +299,21 @@ router.put("/candidate/:id", requireAuth, putCandidateById);
 router.put("/candidate/:id/parent", requireAuth, updateCandidateParentById);
 router.put("/candidate/:id/plustwo", requireAuth, updateCandidatePlustwoById);
 router.get("/candidates", getAllCandidatesInfo);
-router.get("/candidatefilter/:status",  getAllCandidatesInfoByStatus);
-router.get("/candidatefilter/:status/:isOMR",  getAllCandidatesInfoByStatus);
-router.get("/candidateapplied",  getAllAppliedCandidatesInfo);
-router.get("/candidateapplied/:isOMR",  getAllAppliedCandidatesInfo);
-router.get("/candidates/consolidated/date/:fromDate/:toDate",  getDateWiseCandidatesCount);
+router.get("/candidatefilter/:status", getAllCandidatesInfoByStatus);
+router.get("/candidatefilter/:status/:isOMR", getAllCandidatesInfoByStatus);
+router.get("/candidateapplied", getAllAppliedCandidatesInfo);
+router.get("/candidateapplied/:isOMR", getAllAppliedCandidatesInfo);
+router.get(
+  "/candidates/consolidated/date/:fromDate/:toDate",
+  getDateWiseCandidatesCount
+);
 router.get("/omrcandidates/onboarded", getOMROnboardedList);
 router.get("/omrcandidates/pending", getOMRPendingList);
 router.get("/omrcandidates/duplicate", getOMRDuplicateList);
 router.get("/omrcandidates/slotbooked", getOMRBookedList);
 router.get("/omrcandidates/slotnotbooked", getOMRNotBookedList);
 router.get("/omrcandidates/state", getStateOMRCandidates);
-router.get("/omrcandidates/date/:fromDate/:toDate",  getDateOMRCandidates);
-
-
-
+router.get("/omrcandidates/date/:fromDate/:toDate", getDateOMRCandidates);
 
 //master data
 router.get("/master/gender", requireAuth, getGender);
@@ -335,6 +351,9 @@ router.get("/master/district/:stateId", requireAuth, getDistrictsFromState);
 router.post("/master/district/", requireAuth, addDistrict);
 router.put("/master/district/:id", requireAuth, updateDistrict);
 router.delete("/master/district/:id", requireAuth, removeDistrict);
+router.post("/master/branch/", requireAuth, addBranch);
+router.get("/master/branches/", requireAuth, getAllBranches);
+router.get("/master/branches/:courseid", requireAuth, getBranchesFromCourse);
 
 router.get("/master/city/:districtId", requireAuth, getCityFromDistrict);
 router.get("/master/city/state/:stateId", requireAuth, getCityFromState);
@@ -344,6 +363,7 @@ router.put("/master/city/:id", requireAuth, updateCity);
 router.delete("/master/city/:id", requireAuth, removeCity);
 
 router.post("/master/programme/", requireAuth, createProgramme);
+router.post("/master/search/programme", requireAuth, searchProgrammes);
 router.get("/master/programme/", requireAuth, getProgrammes);
 router.delete("/master/programme/:id", requireAuth, removeProgramme);
 
@@ -442,9 +462,21 @@ router.get(
 
 router.post("/transactions/entrance/", requireAuth, createEntranceTransaction);
 router.get("/transactions/entrance/", requireAuth, getTransactionsByCandidate);
-router.post("/transactions/entrance/failed/",requireAuth,  getFailedTransaction);
-router.post("/transactions/entrance/excess/",requireAuth,  getExcessTransaction);
-router.post("/transactions/entrance/double/",requireAuth,  getDoubleTransaction);
+router.post(
+  "/transactions/entrance/failed/",
+  requireAuth,
+  getFailedTransaction
+);
+router.post(
+  "/transactions/entrance/excess/",
+  requireAuth,
+  getExcessTransaction
+);
+router.post(
+  "/transactions/entrance/double/",
+  requireAuth,
+  getDoubleTransaction
+);
 
 router.get(
   "/transactions/jee/application/:id",
@@ -462,6 +494,17 @@ router.post("/transactions/verify", verifyTransaction);
 
 router.post("/jee/paymentsuccess", jeePaymentSuccess);
 router.post("/jee/paymentfailure", jeePaymentFailure);
+
+// non shcolarship
+router.post("/nonscholarship/application", createNonSchApplication);
+router.post("/nonscholarship/intake", requireAuth, createNonSchIntake);
+router.get("/nonscholarship/intake", requireAuth, getNonSchIntake);
+router.get(
+  "/nonscholarship/application/:candidateid/:intakeid",
+  getNonSchAppnlByCandidateId
+);
+router.get("/nonscholarship/application/:id", getNonSchAppnlById);
+router.put("/nonscholarship/application/:id", updateNonSchApplication);
 
 router.post("/email/otp", sendEmailOtp);
 router.get("/email/welcome", requireAuth, sendWelcomeMail);

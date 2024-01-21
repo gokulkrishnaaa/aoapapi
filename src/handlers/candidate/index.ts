@@ -1,3 +1,5 @@
+export { checkCandidateRegistered } from "./registration";
+
 export {
   createJeeApplication,
   getJeeApplicationByJeeId,
