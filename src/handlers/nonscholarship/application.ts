@@ -1,6 +1,7 @@
 import prisma from "../../db";
 import { BadRequestError } from "../../errors/bad-request-error";
 import { InternalServerError } from "../../errors/internal-server-error";
+import { sendNonSchWelcome } from "../email/nonschwelcome";
 
 export const createNonSchApplication = async (req, res) => {
   const { candidateId, nonscholarshipId, programmes } = req.body;
@@ -84,6 +85,9 @@ export const updateNonSchApplication = async (req, res) => {
     where: {
       id,
     },
+    include: {
+      candidate: true,
+    },
   });
   if (!application) {
     throw new BadRequestError("Application not found");
@@ -118,6 +122,9 @@ export const updateNonSchApplication = async (req, res) => {
         status, // Replace with the new status
       },
     });
+    if (status === "APPLIED") {
+      sendNonSchWelcome(application.candidate);
+    }
   }
 
   return res.json(application);
