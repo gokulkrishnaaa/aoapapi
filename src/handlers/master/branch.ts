@@ -19,6 +19,32 @@ export const addBranch = async (req, res) => {
   }
 };
 
+export const updateBranch = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = req.body;
+    const updated = await prisma.branch.update({
+      where: { id: parseInt(id) },
+      data,
+    });
+    return res.json(updated);
+  } catch (error) {
+    throw new InternalServerError("Error updating Branch");
+  }
+};
+
+export const removeBranch = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleted = await prisma.branch.delete({
+      where: { id: parseInt(id) },
+    });
+    return res.json(deleted);
+  } catch (error) {
+    throw new InternalServerError("Error deleting Branch");
+  }
+};
+
 export const getBranchesFromCourse = async (req, res) => {
   const courseId = parseInt(req.params.courseid);
 

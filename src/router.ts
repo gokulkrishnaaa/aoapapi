@@ -31,6 +31,7 @@ import {
   getProgrammesByEntrance,
   getSocialStatus,
   getStates,
+  removeBranch,
   removeCampus,
   removeCity,
   removeCityForEntrance,
@@ -44,6 +45,7 @@ import {
   removeSocialStatus,
   removeState,
   searchProgrammes,
+  updateBranch,
   updateCampus,
   updateCity,
   updateCityForEntrance,
@@ -255,6 +257,7 @@ import {
 import {
   createNonSchApplication,
   createNonSchIntake,
+  getCurrentNonSchIntake,
   getNonSchAppnlByCandidateId,
   getNonSchAppnlById,
   getNonSchIntake,
@@ -353,6 +356,8 @@ router.put("/master/district/:id", requireAuth, updateDistrict);
 router.delete("/master/district/:id", requireAuth, removeDistrict);
 router.post("/master/branch/", requireAuth, addBranch);
 router.get("/master/branches/", requireAuth, getAllBranches);
+router.put("/master/branch/:id", requireAuth, updateBranch);
+router.delete("/master/branch/:id", requireAuth, removeBranch);
 router.get("/master/branches/:courseid", requireAuth, getBranchesFromCourse);
 
 router.get("/master/city/:districtId", requireAuth, getCityFromDistrict);
@@ -499,6 +504,11 @@ router.post("/jee/paymentfailure", jeePaymentFailure);
 router.post("/nonscholarship/application", createNonSchApplication);
 router.post("/nonscholarship/intake", requireAuth, createNonSchIntake);
 router.get("/nonscholarship/intake", requireAuth, getNonSchIntake);
+router.get(
+  "/nonscholarship/currentintake",
+  requireAuth,
+  getCurrentNonSchIntake
+);
 router.get(
   "/nonscholarship/application/:candidateid/:intakeid",
   getNonSchAppnlByCandidateId

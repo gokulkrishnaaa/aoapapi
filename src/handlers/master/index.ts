@@ -1,4 +1,10 @@
-export { getBranchesFromCourse, addBranch, getAllBranches } from "./branch";
+export {
+  getBranchesFromCourse,
+  addBranch,
+  getAllBranches,
+  updateBranch,
+  removeBranch,
+} from "./branch";
 import { createJee, updateJee, getAllJee, getActiveJee } from "./jee";
 
 export { importlocation, downloadExcel } from "./import";
