@@ -29,3 +29,12 @@ export const getNonSchIntake = async (req, res) => {
   });
   return res.json(intake);
 };
+
+export const getCurrentNonSchIntake = async (req, res) => {
+  const intake = await prisma.nonScholarship.findFirst({
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+  return res.json(intake);
+};

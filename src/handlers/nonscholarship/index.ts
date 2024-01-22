@@ -1,4 +1,8 @@
-export { createNonSchIntake, getNonSchIntake } from "./intake";
+export {
+  createNonSchIntake,
+  getNonSchIntake,
+  getCurrentNonSchIntake,
+} from "./intake";
 export {
   createNonSchApplication,
   getNonSchAppnlByCandidateId,
