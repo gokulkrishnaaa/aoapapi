@@ -27,6 +27,33 @@ export const updateBranch = async (req, res) => {
       where: { id: parseInt(id) },
       data,
     });
+    // get all programmes with this campus id
+    const programmes = await prisma.programmes.findMany({
+      where: {
+        branchId: parseInt(id), // Replace YOUR_CAMPUS_ID with the actual campus ID
+      },
+      include: {
+        campus: true, // Include the related campus data
+        branch: true, // Include the related branch data
+      },
+    });
+    // iterate and upate the name
+    // Iterate through each programme and update its name and code
+    for (let programme of programmes) {
+      const updatedProgrammeName = `${programme.branch.name}, ${programme.campus.name}`;
+      const updatedProgrammeCode = `${programme.campus.code}${programme.branch.code}`;
+
+      // Update the programme in the database
+      await prisma.programmes.update({
+        where: {
+          id: programme.id,
+        },
+        data: {
+          name: updatedProgrammeName,
+          code: updatedProgrammeCode,
+        },
+      });
+    }
     return res.json(updated);
   } catch (error) {
     throw new InternalServerError("Error updating Branch");
