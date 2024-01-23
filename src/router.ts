@@ -495,7 +495,7 @@ router.get(
   requireAuth,
   getJeeTransactionsByCandidate
 );
-router.post("/transactions/verify", verifyTransaction);
+router.post("/transactions/verify", requireAuth, verifyTransaction);
 
 router.post("/jee/paymentsuccess", jeePaymentSuccess);
 router.post("/jee/paymentfailure", jeePaymentFailure);
