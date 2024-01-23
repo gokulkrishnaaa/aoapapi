@@ -260,7 +260,7 @@ export const getDoubleTransaction = async (req, res) => {
   });
 
   if (download) {
-    const formatted = entrancepayments.map((row) => ({     
+    const formatted = doublePayments.map((row) => ({     
       Name: row.candidate?.fullname,
       Email: row.candidate?.email,
       Phone: row.candidate?.phone,
