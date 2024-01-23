@@ -577,18 +577,14 @@ export const verifyTransaction = async (req, res) => {
         ? "FAILED"
         : transactionDetails.status;
 
-    const data = { status: txnstatus };
-    let txndate = new Date(txndetails.addedon);
-    if (!isNaN(txndate.getTime())) {
-      data["updatedAt"] = txndate;
+    if (txnstatus != transactionDetails.status) {
+      await prisma.entrancePayments.update({
+        where: {
+          txnid,
+        },
+        data: { status: txnstatus },
+      });
     }
-
-    await prisma.entrancePayments.update({
-      where: {
-        txnid,
-      },
-      data,
-    });
   }
 
   return res.json({ chkResponseData });
