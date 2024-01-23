@@ -519,9 +519,13 @@ export const verifyTransaction = async (req, res) => {
   const { txnid } = req.body;
 
   // production details
-  const key = "ypfBaj";
-  const salt = "aG3tGzBZ";
-  const chkUrl = "https://info.payu.in/merchant/postservice?form=2";
+  //   const key = "ypfBaj";
+  //   const salt = "aG3tGzBZ";
+  //   const chkUrl = "https://info.payu.in/merchant/postservice?form=2";
+
+  const key = process.env.PAYU_KEY;
+  const salt = process.env.PAYU_SALT;
+  const chkUrl = process.env.PAYU_CHKURL;
 
   //development details
   //   const key = "aJ1WVm";
@@ -534,18 +538,11 @@ export const verifyTransaction = async (req, res) => {
     where: {
       txnid,
     },
-    include: {
-      examapplication: {
-        include: {
-          exam: {
-            include: {
-              entrance: true,
-            },
-          },
-        },
-      },
-    },
   });
+
+  if (!transactionDetails) {
+    throw new BadRequestError("Transaction not found");
+  }
 
   const chkHeaders = {
     accept: "application/json",
@@ -562,35 +559,37 @@ export const verifyTransaction = async (req, res) => {
   formData.append("var1", txnid);
   formData.append("hash", hash);
 
-  console.log(formData);
-
   const chkResponse = await fetch(chkUrl, {
     method: "POST",
     headers: chkHeaders,
     body: formData,
   });
   const chkResponseData = await chkResponse.json();
-  if (!transactionDetails) {
-    throw new BadRequestError("Transaction not found");
-  }
 
   // get all details and ssave to db
 
-  let txnstatus =
-    (chkResponseData as any).transaction_details[txnid].status === "success"
-      ? "SUCCESS"
-      : (chkResponseData as any).transaction_details[txnid].status === "failure"
-      ? "FAILED"
-      : transactionDetails.status;
+  let txndetails = (chkResponseData as any).transaction_details[txnid];
+  if (txndetails) {
+    let txnstatus =
+      txndetails.status === "success"
+        ? "SUCCESS"
+        : txndetails.status === "failure"
+        ? "FAILED"
+        : transactionDetails.status;
 
-  //   const updatedTransaction = await prisma.entrancePayments.update({
-  //     where: {
-  //       txnid,
-  //     },
-  //     data: {
-  //       status: txnstatus,
-  //     },
-  //   });
+    const data = { status: txnstatus };
+    let txndate = new Date(txndetails.addedon);
+    if (!isNaN(txndate.getTime())) {
+      data["updatedAt"] = txndate;
+    }
+
+    await prisma.entrancePayments.update({
+      where: {
+        txnid,
+      },
+      data,
+    });
+  }
 
   return res.json({ chkResponseData });
 };
