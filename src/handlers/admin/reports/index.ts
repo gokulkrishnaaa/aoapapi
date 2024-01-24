@@ -10,3 +10,4 @@ export {
   getExamCityStateReport,
   getExamCityCityReport,
 } from "./examcity";
+export { getAllNonScholarshipReport, getProgramNonSchReport, getBranchNonSchReport, getCampusNonSchReport } from "./nonscholarship";

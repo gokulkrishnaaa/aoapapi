@@ -170,6 +170,10 @@ import {
   getStateWiseReport,
   getUTMReport,
   getUTMReportBySource,
+  getAllNonScholarshipReport,
+  getProgramNonSchReport,
+  getBranchNonSchReport,
+  getCampusNonSchReport,
 } from "./handlers/admin/reports";
 import { addReferer } from "./handlers/analytics";
 import {
@@ -559,6 +563,10 @@ router.get(
 router.get("/admin/reports/referer", requireAuth, getRefererReport);
 router.get("/admin/reports/aeeejeecount", getAEEEJEECount);
 router.post("/analytics/referer", addReferer);
+router.get("/admin/reports/nonscholarship/all",getAllNonScholarshipReport );
+router.get("/admin/reports/nonscholarship/program",getProgramNonSchReport );
+router.get("/admin/reports/nonscholarship/branch",getBranchNonSchReport );
+router.get("/admin/reports/nonscholarship/campus",getCampusNonSchReport );
 
 //agent
 router.post("/admin/agent/create", createAgentUser);
