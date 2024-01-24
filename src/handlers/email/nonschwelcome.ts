@@ -25,11 +25,14 @@ async function sendMail(options) {
 
 export const sendNonSchWelcome = async (candidate) => {
   try {
-    const emailHtml = render(NonSchWelcome({ name: candidate.fullname }));
+    const emailHtml = render(
+      NonSchWelcome({ name: candidate.fullname, baseurl: process.env.BASE_URL })
+    );
     var options = {
       from: '"Directorate of Admissions - Amrita Vishwa Vidyapeetham" <noreply@amrita.edu>',
       to: candidate.email,
-      subject: "Welcome to the Amrita Entrance Examination - Engineering 2024",
+      subject:
+        "Admission for B.TECH 2024 – Regular Fee (Non-Scholarship Category)",
       html: emailHtml,
     };
     sendMail(options);
