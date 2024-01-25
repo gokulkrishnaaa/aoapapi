@@ -22,19 +22,26 @@ export const getAllNonScholarshipReport = async (req, res) => {
 export const getBranchNonSchReport = async (req, res) => {
     try{
       const resultRows = await prisma.$queryRaw`  
-        SELECT B.name as name, COUNT(*) AS appcount
-        FROM "NonScholarshipApplication" NA
-        LEFT JOIN "NonSchApplicationProgrammes" NP ON NA.id = NP."nonscholarshipapplicationId"
-        LEFT JOIN "Programmes" P ON P.id = NP."programmesId"
-        LEFT JOIN "Branch" B ON B.id = P."branchId"
-        WHERE NA.status = 'APPLIED'
-        GROUP BY B.name
-        ORDER BY B.name; `;
+      SELECT
+      b.id AS branch_id,
+      b.name AS branch_name,
+      COUNT(nsa.id) AS application_count
+      FROM
+      "Branch" b
+      LEFT JOIN "Programmes" p ON b.id = p."branchId"
+      LEFT JOIN "NonSchApplicationProgrammes" nsap ON p.id =
+      nsap."programmesId"
+      LEFT JOIN "NonScholarshipApplication" nsa ON
+      nsap."nonscholarshipapplicationId" = nsa.id
+      GROUP BY
+      b.id
+      ORDER BY
+      b.id; `;
      
       const resultArr = resultRows as any[];
       const formattedCounts = resultArr.map((row) => ({
-        name: row.name,
-        totalcount: Number(row.appcount),   
+        name: row.branch_name,
+        totalcount: Number(row.application_count),   
       }));
   
       return res.json(formattedCounts);
@@ -46,19 +53,26 @@ export const getBranchNonSchReport = async (req, res) => {
 
   export const getProgramNonSchReport = async (req, res) => {
     try{
-      const resultRows = await prisma.$queryRaw`  
-        SELECT P.name as name, COUNT(*) AS appcount
-        FROM "NonScholarshipApplication" NA
-        LEFT JOIN "NonSchApplicationProgrammes" NP ON NA.id = NP."nonscholarshipapplicationId"
-        INNER JOIN "Programmes" P ON P.id = NP."programmesId"
-        WHERE NA.status = 'APPLIED'
-        GROUP BY P.name 
-        ORDER BY P.name;`;
+      const resultRows = await prisma.$queryRaw` 
+      SELECT 
+      p.id AS programme_id,
+      p.name AS programme_name,
+      COUNT(nsa.id) AS application_count
+      FROM
+      "Programmes" p
+      LEFT JOIN "NonSchApplicationProgrammes" nsap ON p.id =
+      nsap."programmesId"
+      LEFT JOIN "NonScholarshipApplication" nsa ON
+      nsap."nonscholarshipapplicationId" = nsa.id
+      GROUP BY
+      p.id
+      ORDER BY
+      p.id;`;
      
       const resultArr = resultRows as any[];
       const formattedCounts = resultArr.map((row) => ({
-        name: row.name,
-        totalcount: Number(row.appcount),   
+        name: row.programme_name,
+        totalcount: Number(row.application_count),   
       }));
   
       return res.json(formattedCounts);
@@ -71,19 +85,26 @@ export const getBranchNonSchReport = async (req, res) => {
   export const getCampusNonSchReport = async (req, res) => {
     try{
       const resultRows = await prisma.$queryRaw`  
-      SELECT C.name as name, COUNT(*) AS appcount
-      FROM "NonScholarshipApplication" NA
-      LEFT JOIN "NonSchApplicationProgrammes" NP ON NA.id = NP."nonscholarshipapplicationId"
-      LEFT JOIN "Programmes" P ON P.id = NP."programmesId"
-      LEFT JOIN "Campus" C ON C.id = P."campusId"
-      WHERE NA.status = 'APPLIED'
-      GROUP BY C.name
-      ORDER BY C.name;`;
+      SELECT
+      c.id AS campus_id,
+      c.name AS campus_name,
+      COUNT(nsa.id) AS application_count
+      FROM
+      "Campus" c
+      LEFT JOIN "Programmes" p ON c.id = p."campusId"
+      LEFT JOIN "NonSchApplicationProgrammes" nsap ON p.id =
+      nsap."programmesId"
+      LEFT JOIN "NonScholarshipApplication" nsa ON
+      nsap."nonscholarshipapplicationId" = nsa.id
+      GROUP BY
+      c.id
+      ORDER BY
+      c.id;`;
      
       const resultArr = resultRows as any[];
       const formattedCounts = resultArr.map((row) => ({
-        name: row.name,
-        totalcount: Number(row.appcount),   
+        name: row.campus_name,
+        totalcount: Number(row.application_count),   
       }));
     
       return res.json(formattedCounts);
