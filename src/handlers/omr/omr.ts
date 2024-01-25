@@ -129,7 +129,11 @@ export const handleOmrUpload = async (req, res) => {
 
       try {
         await prisma.oMRMigrate.upsert({
-          where: { registrationNo },
+          where: {
+            registrationNo: registrationNo,
+            candidateId: null,
+            examapplicationId: null,
+          },
           update: dbData,
           create: dbData,
         });
