@@ -36,7 +36,7 @@ export const getBranchNonSchReport = async (req, res) => {
       GROUP BY
       b.id
       ORDER BY
-      b.id; `;
+      b.name; `;
      
       const resultArr = resultRows as any[];
       const formattedCounts = resultArr.map((row) => ({
@@ -67,7 +67,7 @@ export const getBranchNonSchReport = async (req, res) => {
       GROUP BY
       p.id
       ORDER BY
-      p.id;`;
+      p.name;`;
      
       const resultArr = resultRows as any[];
       const formattedCounts = resultArr.map((row) => ({
@@ -99,7 +99,7 @@ export const getBranchNonSchReport = async (req, res) => {
       GROUP BY
       c.id
       ORDER BY
-      c.id;`;
+      c.name;`;
      
       const resultArr = resultRows as any[];
       const formattedCounts = resultArr.map((row) => ({
