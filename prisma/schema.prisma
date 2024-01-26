@@ -620,3 +620,12 @@ model NonSchApplicationProgrammes {
 
   @@unique([nonscholarshipapplicationId, programmesId])
 }
+
+model TransactionLog {
+  id        String   @id @default(cuid())
+  txnid     String   @unique
+  log       Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

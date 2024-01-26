@@ -4,6 +4,7 @@ import { InternalServerError } from "../../errors/internal-server-error";
 import crypto from "crypto";
 import { entranceWelcome } from "../email";
 import { entranceWelcomeAgent } from "../email/entrancewelcome";
+import { logTransaction } from "../utils/transactions";
 
 export const createExam = async (req, res) => {
   const data = req.body;
@@ -228,8 +229,6 @@ export const registerForExam = async (req, res) => {
 };
 
 export const examPaymentSuccess = async (req, res) => {
-  console.log("payment success");
-  console.log(req.body);
   const { txnid } = req.body;
 
   // production details
@@ -345,6 +344,7 @@ export const examPaymentSuccess = async (req, res) => {
           status: "REGISTERED",
         },
       });
+      await logTransaction(txnid, chkResponseData);
       return res.redirect("/applications/payment/success");
     } catch (error) {
       console.log(error);
@@ -486,6 +486,7 @@ export const examAgentPaymentSuccess = async (req, res) => {
           status: "REGISTERED",
         },
       });
+      await logTransaction(txnid, chkResponseData);
       return res.redirect(`/agent/candidate/payment/${applnno}/success`);
     } catch (error) {
       console.log(error);
@@ -585,6 +586,83 @@ export const verifyTransaction = async (req, res) => {
         data: { status: txnstatus },
       });
     }
+    await logTransaction(txnid, chkResponseData);
+  }
+
+  return res.json({ chkResponseData });
+};
+
+export const verifyJeeTransaction = async (req, res) => {
+  const { txnid } = req.body;
+
+  // production details
+  //   const key = "ypfBaj";
+  //   const salt = "aG3tGzBZ";
+  //   const chkUrl = "https://info.payu.in/merchant/postservice?form=2";
+
+  const key = process.env.PAYU_KEY;
+  const salt = process.env.PAYU_SALT;
+  const chkUrl = process.env.PAYU_CHKURL;
+
+  //development details
+  //   const key = "aJ1WVm";
+  //   const salt = "hKmYSMBAzg5QOw64IV9MFtcu6BKaIyYA";
+  //   const chkUrl = "https://test.payu.in/merchant/postservice?form=2";
+
+  const command = "verify_payment";
+
+  const transactionDetails = await prisma.jEEPayments.findUnique({
+    where: {
+      txnid,
+    },
+  });
+
+  if (!transactionDetails) {
+    throw new BadRequestError("Transaction not found");
+  }
+
+  const chkHeaders = {
+    accept: "application/json",
+    "Content-Type": "application/x-www-form-urlencoded",
+  };
+
+  const hashString = `${key}|${command}|${txnid}|${salt}`;
+
+  const hash = sha512(hashString);
+
+  const formData = new URLSearchParams();
+  formData.append("key", key);
+  formData.append("command", "verify_payment");
+  formData.append("var1", txnid);
+  formData.append("hash", hash);
+
+  const chkResponse = await fetch(chkUrl, {
+    method: "POST",
+    headers: chkHeaders,
+    body: formData,
+  });
+  const chkResponseData = await chkResponse.json();
+
+  // get all details and ssave to db
+
+  let txndetails = (chkResponseData as any).transaction_details[txnid];
+  if (txndetails) {
+    let txnstatus =
+      txndetails.status === "success"
+        ? "SUCCESS"
+        : txndetails.status === "failure"
+        ? "FAILED"
+        : transactionDetails.status;
+
+    if (txnstatus != transactionDetails.status) {
+      await prisma.jEEPayments.update({
+        where: {
+          txnid,
+        },
+        data: { status: txnstatus },
+      });
+    }
+    await logTransaction(txnid, chkResponseData);
   }
 
   return res.json({ chkResponseData });
