@@ -55,6 +55,7 @@ export const getJeeApplicationById = async (req, res) => {
     include: {
       jee: true, // Include details of the associated Jee
       candidate: true,
+      JEEPayments: true,
     },
   });
 

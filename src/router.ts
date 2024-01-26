@@ -121,6 +121,7 @@ import {
   getExamByEntrance,
   getExamsByEntrance,
   registerForExam,
+  verifyJeeTransaction,
   verifyTransaction,
 } from "./handlers/entrance/exam";
 import {
@@ -499,7 +500,8 @@ router.get(
   requireAuth,
   getJeeTransactionsByCandidate
 );
-router.post("/transactions/verify", requireAuth, verifyTransaction);
+router.post("/transactions/verify", verifyTransaction);
+router.post("/transactions/jeeverify", verifyJeeTransaction);
 
 router.post("/jee/paymentsuccess", jeePaymentSuccess);
 router.post("/jee/paymentfailure", jeePaymentFailure);
@@ -563,10 +565,10 @@ router.get(
 router.get("/admin/reports/referer", requireAuth, getRefererReport);
 router.get("/admin/reports/aeeejeecount", getAEEEJEECount);
 router.post("/analytics/referer", addReferer);
-router.get("/admin/reports/nonscholarship/all",getAllNonScholarshipReport );
-router.get("/admin/reports/nonscholarship/program",getProgramNonSchReport );
-router.get("/admin/reports/nonscholarship/branch",getBranchNonSchReport );
-router.get("/admin/reports/nonscholarship/campus",getCampusNonSchReport );
+router.get("/admin/reports/nonscholarship/all", getAllNonScholarshipReport);
+router.get("/admin/reports/nonscholarship/program", getProgramNonSchReport);
+router.get("/admin/reports/nonscholarship/branch", getBranchNonSchReport);
+router.get("/admin/reports/nonscholarship/campus", getCampusNonSchReport);
 
 //agent
 router.post("/admin/agent/create", createAgentUser);

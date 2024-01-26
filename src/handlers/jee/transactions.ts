@@ -3,6 +3,7 @@ import prisma from "../../db";
 import { BadRequestError } from "../../errors/bad-request-error";
 import { CannotProcessError } from "../../errors/cannot-process-error";
 import crypto from "crypto";
+import { logTransaction } from "../utils/transactions";
 
 export const getJeeTransactionsByApplication = async (req, res) => {
   const jeeapplicationId = req.params.id;
@@ -66,8 +67,6 @@ export const createJeeTransaction = async (req, res) => {
 };
 
 export const jeePaymentSuccess = async (req, res) => {
-  console.log("payment success");
-  console.log("payment success details", req.body);
   const { txnid } = req.body;
 
   // production details
@@ -129,7 +128,7 @@ export const jeePaymentSuccess = async (req, res) => {
       ? "FAILED"
       : transactionDetails.status;
 
-  const updatedTransaction = await prisma.jEEPayments.update({
+  await prisma.jEEPayments.update({
     where: {
       txnid,
     },
@@ -138,7 +137,7 @@ export const jeePaymentSuccess = async (req, res) => {
     },
   });
 
-  const updatedJee = await prisma.jEEApplication.update({
+  await prisma.jEEApplication.update({
     where: {
       id: transactionDetails.jeeapplicationId,
     },
@@ -146,7 +145,7 @@ export const jeePaymentSuccess = async (req, res) => {
       status: "REGISTERED",
     },
   });
-
+  await logTransaction(txnid, chkResponseData);
   return res.redirect("/jee/payment/success");
 };
 

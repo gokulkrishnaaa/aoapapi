@@ -36,4 +36,5 @@ export {
   examAgentPaymentSuccess,
   examAgentPaymentFailure,
   verifyTransaction,
+  verifyJeeTransaction,
 } from "./exam";
