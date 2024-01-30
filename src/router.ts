@@ -175,6 +175,7 @@ import {
   getProgramNonSchReport,
   getBranchNonSchReport,
   getCampusNonSchReport,
+  getExcelNonSchReport,
 } from "./handlers/admin/reports";
 import { addReferer } from "./handlers/analytics";
 import {
@@ -569,6 +570,7 @@ router.get("/admin/reports/nonscholarship/all", getAllNonScholarshipReport);
 router.get("/admin/reports/nonscholarship/program", getProgramNonSchReport);
 router.get("/admin/reports/nonscholarship/branch", getBranchNonSchReport);
 router.get("/admin/reports/nonscholarship/campus", getCampusNonSchReport);
+router.get("/admin/reports/nonscholarship", getExcelNonSchReport);
 
 //agent
 router.post("/admin/agent/create", createAgentUser);

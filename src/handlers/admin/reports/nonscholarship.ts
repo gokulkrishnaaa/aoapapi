@@ -1,5 +1,6 @@
 import prisma from "../../../db";
 import { BadRequestError } from "../../../errors/bad-request-error";
+import XLSX from "xlsx";
 
 export const getAllNonScholarshipReport = async (req, res) => {
     try{
@@ -36,7 +37,7 @@ export const getBranchNonSchReport = async (req, res) => {
       GROUP BY
       b.id
       ORDER BY
-      b.name; `;
+      application_count DESC; `;
      
       const resultArr = resultRows as any[];
       const formattedCounts = resultArr.map((row) => ({
@@ -67,7 +68,7 @@ export const getBranchNonSchReport = async (req, res) => {
       GROUP BY
       p.id
       ORDER BY
-      p.name;`;
+      application_count DESC; `;
      
       const resultArr = resultRows as any[];
       const formattedCounts = resultArr.map((row) => ({
@@ -99,7 +100,7 @@ export const getBranchNonSchReport = async (req, res) => {
       GROUP BY
       c.id
       ORDER BY
-      c.name;`;
+      application_count DESC; `;
      
       const resultArr = resultRows as any[];
       const formattedCounts = resultArr.map((row) => ({
@@ -114,4 +115,147 @@ export const getBranchNonSchReport = async (req, res) => {
     }
   };
 
+  export const getExcelNonSchReport = async (req, res) => {
+    
+    let excelreport = await prisma.nonScholarshipApplication.findMany({
+      
+      include: {
+        candidate:{
+          include:{
+            gender:true,
+            state: true,
+            district: true,
+            city: true,
+            ParentInfo: true,
+            PlusTwoInfo: {
+              include: {
+                state: true,
+              },
+            },
+            ExamApplication: {
+              include:{
+                Registration: {
+                  select: {
+                    registrationNo: true
+                  }
+                },
+              }
+            },
+            JEEApplication:true,
+          }
+          
+        },
+        NonSchApplicationProgrammes:{
+          include:{
+            programmes:{
+              include:{
+                campus:true,
+                branch:true,
+              }
+            }
+          }
+        }
+      },
+    });
+   
 
+    const formatted = excelreport.map((row) => {
+
+      const submittedDate = new Date(row.createdAt);
+      const formattedSubmittedDate = `${submittedDate.toLocaleDateString("en-US", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      })} ${submittedDate.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      })}`;
+
+      interface ExamApplication {
+        reference: string;
+        Registration?: {
+          registrationNo: number;
+        }[];
+      }
+
+      interface JEEApplication {
+        reference: string;
+      }
+
+      let basic = {
+        SubmittedDateAndTime: formattedSubmittedDate,
+        Registered_Email: row.candidate.email ? row.candidate.email : null,
+        Name: row.candidate.fullname ? row.candidate.fullname : null,
+        Gender: row.candidate.gender ? row.candidate.gender.name : null,
+        DateOfBirth: new Date(row.candidate.dob).toLocaleDateString("en-US", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        }),
+        Parent_Name: row.candidate.ParentInfo ? row.candidate.ParentInfo.fullname : null,
+        District: row.candidate.district.name ? row.candidate.district.name : null,
+        State: row.candidate.state ? row.candidate.state.name : null,
+        Parent_Number: row.candidate.ParentInfo ? row.candidate.ParentInfo.phone : null,
+        Candidate_Number: row.candidate.phone ? row.candidate.phone: null,
+        PlusTwoState: row.candidate.PlusTwoInfo
+        ? row.candidate.PlusTwoInfo.state
+          ? row.candidate.PlusTwoInfo.state.name
+          : row.candidate.PlusTwoInfo.otherState
+          ? row.candidate.PlusTwoInfo.otherState
+          : null
+        : null,
+        ApplicationNo_AEEE2024: (row.candidate.ExamApplication as ExamApplication[])[0]?.reference ?? null,
+        RegistrationNo: (row.candidate.ExamApplication as ExamApplication[])[0]?.Registration[0]?.registrationNo ?? null,
+        AppliactionNo_JEEMains2024: (row.candidate.JEEApplication as JEEApplication[])[0]?.reference?? null,
+      };
+  
+      let preferences;
+      let campusPreferences = [];
+      let branchPreferences = [];
+    
+      row.NonSchApplicationProgrammes.slice(0, 5).forEach((appln) => {
+        if (appln.programmes.branch && appln.programmes.campus) {
+          // Add campus and branch preferences to their respective arrays
+          branchPreferences.push(appln.programmes.branch.name);
+          campusPreferences.push(appln.programmes.campus.name);
+        }
+      });
+
+      preferences = {
+        ...basic,
+      };
+
+      for (let i = 0; i < 5; i++) {
+        preferences[`Campus_Preference_${i + 1}`] = campusPreferences[i] || null;
+      }
+
+      for (let i = 0; i < 5; i++) {
+        preferences[`Branch_Preference_${i + 1}`] = branchPreferences[i] || null;
+      }
+
+      return {
+        ...preferences,
+      };
+    });
+    //   return res.json(formatted);
+  
+    // Create a new workbook
+    const workbook = XLSX.utils.book_new();
+  
+    // Add a worksheet to the workbook
+    const worksheet = XLSX.utils.json_to_sheet(formatted);
+  
+    // Add the worksheet to the workbook
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+  
+    // Set the appropriate headers for the response
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    res.setHeader("Content-Disposition", "attachment; filename=excel.xlsx");
+  
+    // Send the workbook directly to the response
+    res.end(XLSX.write(workbook, { bookType: "xlsx", type: "buffer" }));
+  };
