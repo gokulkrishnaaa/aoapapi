@@ -11,15 +11,18 @@ import router from "./router";
 import { NotFoundError } from "./errors/not-found-error";
 import { errorHandler } from "./middlewares/error-handler";
 import { mCurrentUser } from "./middlewares/current-user";
+import Redis from "ioredis";
 
 const bootstrapApp = async () => {
   const app = express();
 
-  let redisClient = createClient({
-    url: process.env.REDIS_URL,
-  });
+  //   let redisClient = createClient({
+  //     url: process.env.REDIS_URL,
+  //   });
 
-  await redisClient.connect();
+  let redisClient = new Redis(process.env.REDIS_URL);
+
+  //   await redisClient.connect();
 
   // Initialize store.
   let redisStore = new RedisStore({
