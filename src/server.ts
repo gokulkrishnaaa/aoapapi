@@ -19,8 +19,6 @@ const bootstrapApp = async () => {
   //     url: process.env.REDIS_URL,
   //   });
 
-  console.log(process.env.REDIS_URL);
-
   let redisClient = createCluster({
     rootNodes: [
       {
