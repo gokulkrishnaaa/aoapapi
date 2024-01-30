@@ -6,7 +6,7 @@ import fileUpload from "express-fileupload";
 // import cookieSession from "cookie-session";
 import cookieSession from "express-session";
 import RedisStore from "connect-redis";
-import { createClient, createCluster } from "redis";
+import { createClient } from "redis";
 import router from "./router";
 import { NotFoundError } from "./errors/not-found-error";
 import { errorHandler } from "./middlewares/error-handler";
@@ -15,17 +15,8 @@ import { mCurrentUser } from "./middlewares/current-user";
 const bootstrapApp = async () => {
   const app = express();
 
-  //   let redisClient = createClient({
-  //     url: process.env.REDIS_URL,
-  //   });
-
-  let redisClient = createCluster({
-    rootNodes: [
-      {
-        url: process.env.REDIS_URL,
-      },
-    ],
-    // You may need additional cluster-specific options here
+  let redisClient = createClient({
+    url: process.env.REDIS_URL,
   });
 
   await redisClient.connect();

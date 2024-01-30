@@ -10,8 +10,6 @@ const start = async () => {
     process.exit(1); // Exit with a failure code
   }
 
-  console.log(process.env.REDIS_URL);
-
   try {
     await prisma.$connect();
     console.log("Connected to Database");
