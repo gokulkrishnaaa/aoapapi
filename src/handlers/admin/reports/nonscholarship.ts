@@ -34,6 +34,8 @@ export const getBranchNonSchReport = async (req, res) => {
       nsap."programmesId"
       LEFT JOIN "NonScholarshipApplication" nsa ON
       nsap."nonscholarshipapplicationId" = nsa.id
+      WHERE
+      nsa.status = 'APPLIED'
       GROUP BY
       b.id
       ORDER BY
@@ -65,6 +67,8 @@ export const getBranchNonSchReport = async (req, res) => {
       nsap."programmesId"
       LEFT JOIN "NonScholarshipApplication" nsa ON
       nsap."nonscholarshipapplicationId" = nsa.id
+      WHERE
+      nsa.status = 'APPLIED'
       GROUP BY
       p.id
       ORDER BY
@@ -97,6 +101,8 @@ export const getBranchNonSchReport = async (req, res) => {
       nsap."programmesId"
       LEFT JOIN "NonScholarshipApplication" nsa ON
       nsap."nonscholarshipapplicationId" = nsa.id
+      WHERE
+      nsa.status = 'APPLIED'
       GROUP BY
       c.id
       ORDER BY
