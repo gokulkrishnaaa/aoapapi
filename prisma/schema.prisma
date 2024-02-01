@@ -469,10 +469,44 @@ model ApplicationCities {
 }
 
 model AdminUser {
-  id        Int      @id @default(autoincrement())
-  username  String   @unique
+  id        Int        @id @default(autoincrement())
+  username  String     @unique
   password  String
-  createdAt DateTime @default(now())
+  createdAt DateTime   @default(now())
+  UserRole  UserRole[]
+}
+
+model Role {
+  roleId         Int              @id @default(autoincrement())
+  name           String           @unique
+  createdAt      DateTime         @default(now())
+  UserRole       UserRole[]
+  RolePermission RolePermission[]
+}
+
+model Permission {
+  permissionId   Int              @id @default(autoincrement())
+  name           String           @unique
+  createdAt      DateTime         @default(now())
+  RolePermission RolePermission[]
+}
+
+model UserRole {
+  userId Int
+  roleId Int
+  user   AdminUser @relation(fields: [userId], references: [id])
+  role   Role      @relation(fields: [roleId], references: [roleId])
+
+  @@id([userId, roleId]) // Composite primary key
+}
+
+model RolePermission {
+  roleId       Int
+  permissionId Int
+  role         Role       @relation(fields: [roleId], references: [roleId])
+  permission   Permission @relation(fields: [permissionId], references: [permissionId])
+
+  @@id([roleId, permissionId]) // Composite primary key
 }
 
 model Products {
@@ -622,9 +656,9 @@ model NonSchApplicationProgrammes {
 }
 
 model TransactionLog {
-  id        String   @id @default(cuid())
-  txnid     String   @unique
-  log       Json
+  id    String @id @default(cuid())
+  txnid String @unique
+  log   Json
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
