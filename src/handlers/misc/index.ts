@@ -1,5 +1,2 @@
-export {
-  handleAeeTransactionSync,
-  syncingAeeTransactions,
-} from "./transactions";
+export { handleTransactionSync, syncingTransactions } from "./transactions";
 export { getUtmSource } from "./utm";

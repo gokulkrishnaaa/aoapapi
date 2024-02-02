@@ -2,7 +2,7 @@ import {
   sendingSlotBulkMail,
   verifyingAllCandidatesWorker,
 } from "./handlers/admin/vendor";
-import { syncingAeeTransactions } from "./handlers/misc";
+import { syncingTransactions } from "./handlers/misc";
 import { syncingOmrCandidates } from "./handlers/omr";
 
 export const worker = async (job) => {
@@ -16,6 +16,6 @@ export const worker = async (job) => {
     syncingOmrCandidates(job.data);
   }
   if (job.name === "syncingTransactions") {
-    syncingAeeTransactions(job.data);
+    syncingTransactions(job.data);
   }
 };
