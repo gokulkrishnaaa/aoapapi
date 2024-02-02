@@ -23,23 +23,34 @@ export const getAllNonScholarshipReport = async (req, res) => {
 export const getBranchNonSchReport = async (req, res) => {
     try{
       const resultRows = await prisma.$queryRaw`  
-      SELECT
-      b.id AS branch_id,
-      b.name AS branch_name,
-      COUNT(nsa.id) AS application_count
-      FROM
-      "Branch" b
-      LEFT JOIN "Programmes" p ON b.id = p."branchId"
-      LEFT JOIN "NonSchApplicationProgrammes" nsap ON p.id =
-      nsap."programmesId"
-      LEFT JOIN "NonScholarshipApplication" nsa ON
-      nsap."nonscholarshipapplicationId" = nsa.id
-      WHERE
-      nsa.status = 'APPLIED'
-      GROUP BY
-      b.id
-      ORDER BY
-      application_count DESC; `;
+      WITH FirstPreference AS (
+        SELECT
+            nsap."programmesId",
+            MIN(nsap."order") AS min_order
+        FROM
+            "NonSchApplicationProgrammes" nsap
+        WHERE
+            nsap."order" = 1
+        GROUP BY
+            nsap."programmesId"
+    )
+    SELECT
+        b.id AS branch_id,
+        b.name AS branch_name,
+        COUNT(DISTINCT nsa.id) AS application_count
+        FROM
+        "Branch" b
+        LEFT JOIN "Programmes" p ON b.id = p."branchId"
+        LEFT JOIN FirstPreference fp ON p.id = fp."programmesId"
+        LEFT JOIN "NonSchApplicationProgrammes" nsap ON p.id = nsap."programmesId" AND nsap."order" = fp.min_order
+        LEFT JOIN "NonScholarshipApplication" nsa ON nsap."nonscholarshipapplicationId" = nsa.id
+        WHERE
+        nsa.status = 'APPLIED' AND
+        fp."programmesId" IS NOT NULL
+        GROUP BY
+        b.id, b.name
+        ORDER BY
+        application_count DESC; `;
      
       const resultArr = resultRows as any[];
       const formattedCounts = resultArr.map((row) => ({
@@ -57,22 +68,33 @@ export const getBranchNonSchReport = async (req, res) => {
   export const getProgramNonSchReport = async (req, res) => {
     try{
       const resultRows = await prisma.$queryRaw` 
-      SELECT 
-      p.id AS programme_id,
-      p.name AS programme_name,
-      COUNT(nsa.id) AS application_count
-      FROM
-      "Programmes" p
-      LEFT JOIN "NonSchApplicationProgrammes" nsap ON p.id =
-      nsap."programmesId"
-      LEFT JOIN "NonScholarshipApplication" nsa ON
-      nsap."nonscholarshipapplicationId" = nsa.id
-      WHERE
-      nsa.status = 'APPLIED'
-      GROUP BY
-      p.id
-      ORDER BY
-      application_count DESC; `;
+      WITH FirstPreference AS (
+        SELECT
+            nsap."programmesId",
+            MIN(nsap."order") AS min_order
+        FROM
+            "NonSchApplicationProgrammes" nsap
+        WHERE
+            nsap."order" = 1
+        GROUP BY
+            nsap."programmesId"
+    )
+    SELECT
+        p.id AS programme_id,
+        p.name AS programme_name,
+        COUNT(DISTINCT nsa.id) AS application_count
+        FROM
+        "Programmes" p
+        LEFT JOIN FirstPreference fp ON p.id = fp."programmesId"
+        LEFT JOIN "NonSchApplicationProgrammes" nsap ON p.id = nsap."programmesId" AND nsap."order" = fp.min_order
+        LEFT JOIN "NonScholarshipApplication" nsa ON nsap."nonscholarshipapplicationId" = nsa.id
+        WHERE
+        nsa.status = 'APPLIED' AND
+        fp."programmesId" IS NOT NULL
+        GROUP BY
+        p.id, p.name
+        ORDER BY
+        application_count DESC; `;
      
       const resultArr = resultRows as any[];
       const formattedCounts = resultArr.map((row) => ({
@@ -90,23 +112,34 @@ export const getBranchNonSchReport = async (req, res) => {
   export const getCampusNonSchReport = async (req, res) => {
     try{
       const resultRows = await prisma.$queryRaw`  
-      SELECT
-      c.id AS campus_id,
-      c.name AS campus_name,
-      COUNT(nsa.id) AS application_count
-      FROM
-      "Campus" c
-      LEFT JOIN "Programmes" p ON c.id = p."campusId"
-      LEFT JOIN "NonSchApplicationProgrammes" nsap ON p.id =
-      nsap."programmesId"
-      LEFT JOIN "NonScholarshipApplication" nsa ON
-      nsap."nonscholarshipapplicationId" = nsa.id
-      WHERE
-      nsa.status = 'APPLIED'
-      GROUP BY
-      c.id
-      ORDER BY
-      application_count DESC; `;
+      WITH FirstPreference AS (
+        SELECT
+            nsap."programmesId",
+            MIN(nsap."order") AS min_order
+        FROM
+            "NonSchApplicationProgrammes" nsap
+        WHERE
+            nsap."order" = 1
+        GROUP BY
+            nsap."programmesId"
+    )
+    SELECT
+        c.id AS campus_id,
+        c.name AS campus_name,
+        COUNT(DISTINCT nsa.id) AS application_count
+        FROM
+        "Campus" c
+        LEFT JOIN "Programmes" p ON c.id = p."campusId"
+        LEFT JOIN FirstPreference fp ON p.id = fp."programmesId"
+        LEFT JOIN "NonSchApplicationProgrammes" nsap ON p.id = nsap."programmesId" AND nsap."order" = fp.min_order
+        LEFT JOIN "NonScholarshipApplication" nsa ON nsap."nonscholarshipapplicationId" = nsa.id
+        WHERE
+        nsa.status = 'APPLIED' AND
+        fp."programmesId" IS NOT NULL
+        GROUP BY
+        c.id, c.name
+        ORDER BY
+        application_count DESC; `;
      
       const resultArr = resultRows as any[];
       const formattedCounts = resultArr.map((row) => ({
