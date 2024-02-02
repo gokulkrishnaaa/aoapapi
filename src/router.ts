@@ -239,7 +239,7 @@ import { invokeAPI } from "./handlers/leadsquared";
 import { invokebulkAPI } from "./handlers/leadsquared";
 import { createCrmSignin } from "./handlers/crm";
 import { getLoggedUser } from "./handlers/user/user";
-import { getUtmSource } from "./handlers/misc";
+import { getUtmSource, handleTransactionSync } from "./handlers/misc";
 import { getEmailOtp, getNumberOtp } from "./handlers/utils/utils";
 import {
   createOrUpdateAdmitCard,
@@ -504,6 +504,7 @@ router.get(
 );
 router.post("/transactions/verify", verifyTransaction);
 router.post("/transactions/jeeverify", verifyJeeTransaction);
+router.post("/transactions/synctransactionlog", handleTransactionSync);
 
 router.post("/jee/paymentsuccess", jeePaymentSuccess);
 router.post("/jee/paymentfailure", jeePaymentFailure);
@@ -678,6 +679,7 @@ router.post("/aee/examlocation", createOrUpdateAdmitCard);
 router.post("/omr/upload", handleOmrUpload);
 router.get("/omr/synccandidates", handleSyncCandidates);
 router.post("/omr/completeregisration", completeOMRRegistration);
+
 router.get("/healthcheck", (req, res) => {
   res.status(200).json({
     status: "success",
