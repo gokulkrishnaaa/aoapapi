@@ -5,6 +5,7 @@ import crypto from "crypto";
 import { entranceWelcome } from "../email";
 import { entranceWelcomeAgent } from "../email/entrancewelcome";
 import { logTransaction } from "../utils/transactions";
+import { invokepaymentAPI } from "../leadsquared/paymentapirequest";
 
 export const createExam = async (req, res) => {
   const data = req.body;
@@ -325,6 +326,22 @@ export const examPaymentSuccess = async (req, res) => {
       const lastRegNo = lastEntry.registrationNo;
       registrationNo = lastRegNo + 1;
     }
+
+    const candidate = await prisma.candidate.findUnique({
+      where: {
+        id: updatedTransaction.candidateId,
+      },
+    });
+
+const candid = candidate.id;
+const uname = candidate.fullname;
+let uphone = candidate.phone;
+let email = candidate.email;
+let source = "";
+const section = "App Fee Payment";
+const paystatus = "Paid";
+invokepaymentAPI({email: email,name: uname, phone: uphone, section: section, paystatus: paystatus,source: source,candid: candid},res);
+
 
     entranceWelcome(updatedTransaction.candidateId);
 

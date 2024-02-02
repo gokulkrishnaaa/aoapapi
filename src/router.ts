@@ -235,6 +235,7 @@ import {
   getFullAeeeDetailsByCandidateId,
   getFullJeeDetailsByCandidateId,
 } from "./handlers/reports";
+import { invokeAPI } from "./handlers/leadsquared";
 import { invokebulkAPI } from "./handlers/leadsquared";
 import { createCrmSignin } from "./handlers/crm";
 import { getLoggedUser } from "./handlers/user/user";
@@ -686,5 +687,6 @@ router.get("/healthcheck", (req, res) => {
 });
 
 router.post("/leadsquared/lsqbulkAPI", invokebulkAPI);
+router.post("/leadsquared/apirequest", invokeAPI);
 
 export default router;
