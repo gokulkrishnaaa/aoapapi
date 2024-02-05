@@ -248,29 +248,27 @@ export const getBranchNonSchReport = async (req, res) => {
         RegistrationNo: (row.candidate.ExamApplication as ExamApplication[])[0]?.Registration[0]?.registrationNo ?? null,
         AppliactionNo_JEEMains2024: (row.candidate.JEEApplication as JEEApplication[])[0]?.reference?? null,
       };
-  
-      let preferences;
-      let campusPreferences = [];
-      let branchPreferences = [];
-    
-      row.NonSchApplicationProgrammes.slice(0, 5).forEach((appln) => {
-        if (appln.programmes.branch && appln.programmes.campus) {
-          // Add campus and branch preferences to their respective arrays
-          branchPreferences.push(appln.programmes.branch.name);
-          campusPreferences.push(appln.programmes.campus.name);
-        }
-      });
 
-      preferences = {
+      let preferences = {
         ...basic,
       };
+
+      let campusPreferences = [];
+      let branchPreferences = [];
+
+      row.NonSchApplicationProgrammes.slice(0, 5).forEach((appln) => {
+        if (appln.programmes.branch && appln.programmes.campus) {         
+          const order = appln.order;
+          campusPreferences[order - 1] = appln.programmes.campus.name; 
+          branchPreferences[order - 1] = appln.programmes.branch.name; 
+        }
+      });
 
       for (let i = 0; i < 5; i++) {
         preferences[`Campus_Preference_${i + 1}`] = campusPreferences[i] || null;
       }
-
       for (let i = 0; i < 5; i++) {
-        preferences[`Branch_Preference_${i + 1}`] = branchPreferences[i] || null;
+      preferences[`Branch_Preference_${i + 1}`] = branchPreferences[i] || null;
       }
 
       return {
