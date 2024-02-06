@@ -5,6 +5,7 @@ export {
   getFailedTransaction,
   getExcessTransaction,
   getDoubleTransaction,
+  getTransactionLog,
 } from "./transactions";
 
 export {

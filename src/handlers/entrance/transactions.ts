@@ -294,3 +294,16 @@ export const getDoubleTransaction = async (req, res) => {
      return res.json(doublePayments); 
   }
 };
+
+export const getTransactionLog = async (req, res) => {
+  
+  const { txnid } = req.params;
+
+    const transactionLog = await prisma.transactionLog.findMany({
+      where: {
+        txnid,
+      },
+    });
+
+  return res.json(transactionLog);
+};

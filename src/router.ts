@@ -155,6 +155,7 @@ import {
   getFailedTransaction,
   getExcessTransaction,
   getDoubleTransaction,
+  getTransactionLog,
 } from "./handlers/entrance/transactions";
 
 import { importlocation, downloadExcel } from "./handlers/master";
@@ -488,6 +489,11 @@ router.post(
   "/transactions/entrance/double/",
   requireAuth,
   getDoubleTransaction
+);
+router.get(
+  "/transactions/entrance/:txnid",
+  requireAuth,
+  getTransactionLog
 );
 
 router.get(
