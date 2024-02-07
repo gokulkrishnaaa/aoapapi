@@ -157,7 +157,9 @@ export const getBranchNonSchReport = async (req, res) => {
   export const getExcelNonSchReport = async (req, res) => {
     
     let excelreport = await prisma.nonScholarshipApplication.findMany({
-      
+      where:{
+        status:"APPLIED"
+      }, 
       include: {
         candidate:{
           include:{
