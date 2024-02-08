@@ -333,15 +333,25 @@ export const examPaymentSuccess = async (req, res) => {
       },
     });
 
-const candid = candidate.id;
-const uname = candidate.fullname;
-let uphone = candidate.phone;
-let email = candidate.email;
-let source = "";
-const section = "App Fee Payment";
-const paystatus = "Paid";
-invokepaymentAPI({email: email,name: uname, phone: uphone, section: section, paystatus: paystatus,source: source,candid: candid},res);
-
+    const candid = candidate.id;
+    const uname = candidate.fullname;
+    let uphone = candidate.phone;
+    let email = candidate.email;
+    let source = "";
+    const section = "App Fee Payment";
+    const paystatus = "Paid";
+    invokepaymentAPI(
+      {
+        email: email,
+        name: uname,
+        phone: uphone,
+        section: section,
+        paystatus: paystatus,
+        source: source,
+        candid: candid,
+      },
+      res
+    );
 
     entranceWelcome(updatedTransaction.candidateId);
 
