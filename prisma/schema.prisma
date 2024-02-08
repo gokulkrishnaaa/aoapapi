@@ -380,6 +380,7 @@ model EntrancePayments {
   description       String?
   status            PaymentStatus   @default(STARTED)
   type              ExamPaymentType @default(ONLINE)
+  reattempt         Boolean         @default(false)
   amount            Decimal
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt

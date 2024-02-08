@@ -31,7 +31,7 @@ export const getTransactionsByApplication = async (req, res) => {
       createdAt: "desc", // Sort by createdAt in descending order (latest to oldest)
     },
     include: {
-      examapplication: true, 
+      examapplication: true,
     },
   });
 
@@ -55,8 +55,14 @@ export const getTransactionsByCandidate = async (req, res) => {
 };
 
 export const createEntranceTransaction = async (req, res) => {
-  const { candidateId, examapplicationId, description, amount, type } =
-    req.body;
+  const {
+    candidateId,
+    examapplicationId,
+    description,
+    amount,
+    type,
+    reattempt,
+  } = req.body;
   const randomNumber = Math.floor(Date.now());
 
   const reference = `AEEE-${candidateId
@@ -73,6 +79,7 @@ export const createEntranceTransaction = async (req, res) => {
         examapplicationId,
         description,
         amount,
+        reattempt: reattempt ? reattempt : false,
         type: type ? type : "ONLINE",
       },
     });
@@ -84,91 +91,89 @@ export const createEntranceTransaction = async (req, res) => {
 };
 
 export const getFailedTransaction = async (req, res) => {
-
-  const  download  = req.body.download;
+  const download = req.body.download;
 
   let entrancepayments = await prisma.entrancePayments.findMany({
     where: {
-      status: 'FAILED',
+      status: "FAILED",
     },
     include: {
       candidate: true,
       examapplication: {
-          include: {
-            exam: true,
-            Registration: {
-              select: {
-                registrationNo: true
-              }
+        include: {
+          exam: true,
+          Registration: {
+            select: {
+              registrationNo: true,
             },
-            EntrancePayments: true,
           },
+          EntrancePayments: true,
         },
+      },
     },
   });
 
   if (download) {
-      const formatted = entrancepayments.map((row) => ({     
-        Name: row.candidate?.fullname,
-        Email: row.candidate?.email,
-        Phone: row.candidate?.phone,
-        ApplicationNo : row.examapplication.reference ? row.examapplication.reference:null,
-        RegistrationNo : row.examapplication.Registration[0]?.registrationNo,
-        Transactions : row.examapplication.EntrancePayments?.length, 
-      }));
-      //   return res.json(formatted);
-      console.log("Failed Payment", formatted);
+    const formatted = entrancepayments.map((row) => ({
+      Name: row.candidate?.fullname,
+      Email: row.candidate?.email,
+      Phone: row.candidate?.phone,
+      ApplicationNo: row.examapplication.reference
+        ? row.examapplication.reference
+        : null,
+      RegistrationNo: row.examapplication.Registration[0]?.registrationNo,
+      Transactions: row.examapplication.EntrancePayments?.length,
+    }));
+    //   return res.json(formatted);
+    console.log("Failed Payment", formatted);
 
+    // Create a new workbook
+    const workbook = XLSX.utils.book_new();
 
-      // Create a new workbook
-      const workbook = XLSX.utils.book_new();
+    // Add a worksheet to the workbook
+    const worksheet = XLSX.utils.json_to_sheet(formatted);
 
-      // Add a worksheet to the workbook
-      const worksheet = XLSX.utils.json_to_sheet(formatted);
+    // Add the worksheet to the workbook
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
 
-      // Add the worksheet to the workbook
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+    // Set the appropriate headers for the response
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    res.setHeader("Content-Disposition", "attachment; filename=excel.xlsx");
 
-      // Set the appropriate headers for the response
-      res.setHeader(
-        "Content-Type",
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-      );
-      res.setHeader("Content-Disposition", "attachment; filename=excel.xlsx");
-
-      // Send the workbook directly to the response
-      res.end(XLSX.write(workbook, { bookType: "xlsx", type: "buffer" }));
+    // Send the workbook directly to the response
+    res.end(XLSX.write(workbook, { bookType: "xlsx", type: "buffer" }));
+  } else {
+    return res.json(entrancepayments);
   }
-    else{       
-      return res.json(entrancepayments);
-    }
 };
 
 export const getExcessTransaction = async (req, res) => {
-  
- const {amount} = req.params;
-  
- const product = await prisma.products.findFirst({
-      where: {
-        amount,
-        name : {
-          contains :"aeee",
-          mode: "insensitive"
-        }
+  const { amount } = req.params;
+
+  const product = await prisma.products.findFirst({
+    where: {
+      amount,
+      name: {
+        contains: "aeee",
+        mode: "insensitive",
       },
+    },
   });
 
   if (!product) {
     return res.status(404).json({ error: "Product not found" });
   }
 
-  const excessAmount = product.amount; 
-  const  download  = req.body.download;
+  const excessAmount = product.amount;
+  const download = req.body.download;
 
   let entrancepayments = await prisma.entrancePayments.findMany({
     where: {
       amount: {
-        gt: excessAmount, 
+        gt: excessAmount,
       },
     },
     include: {
@@ -178,8 +183,8 @@ export const getExcessTransaction = async (req, res) => {
           exam: true,
           Registration: {
             select: {
-              registrationNo: true
-            }
+              registrationNo: true,
+            },
           },
           EntrancePayments: true,
         },
@@ -190,83 +195,82 @@ export const getExcessTransaction = async (req, res) => {
   // console.log('Entrance Payments:', entrancepayments);
 
   if (download) {
-    const formatted = entrancepayments.map((row) => ({     
+    const formatted = entrancepayments.map((row) => ({
       Name: row.candidate?.fullname,
       Email: row.candidate?.email,
       Phone: row.candidate?.phone,
-      ApplicationNo : row.examapplication.reference ? row.examapplication.reference:null,
-      RegistrationNo : row.examapplication.Registration[0]?.registrationNo,
-      Transactions : row.examapplication.EntrancePayments?.length, 
+      ApplicationNo: row.examapplication.reference
+        ? row.examapplication.reference
+        : null,
+      RegistrationNo: row.examapplication.Registration[0]?.registrationNo,
+      Transactions: row.examapplication.EntrancePayments?.length,
     }));
-      //   return res.json(formatted);
-      console.log('Formatted Data:', formatted);
-      // Create a new workbook
-      const workbook = XLSX.utils.book_new();
+    //   return res.json(formatted);
+    console.log("Formatted Data:", formatted);
+    // Create a new workbook
+    const workbook = XLSX.utils.book_new();
 
-      // Add a worksheet to the workbook
-      const worksheet = XLSX.utils.json_to_sheet(formatted);
+    // Add a worksheet to the workbook
+    const worksheet = XLSX.utils.json_to_sheet(formatted);
 
-      // Add the worksheet to the workbook
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+    // Add the worksheet to the workbook
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
 
-      // Set the appropriate headers for the response
-      res.setHeader(
-        "Content-Type",
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-      );
-      res.setHeader("Content-Disposition", "attachment; filename=excel.xlsx");
+    // Set the appropriate headers for the response
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    res.setHeader("Content-Disposition", "attachment; filename=excel.xlsx");
 
-      // Send the workbook directly to the response
-      res.end(XLSX.write(workbook, { bookType: "xlsx", type: "buffer" }));
-  }
-  
-  else{    
-       
+    // Send the workbook directly to the response
+    res.end(XLSX.write(workbook, { bookType: "xlsx", type: "buffer" }));
+  } else {
     return res.json(entrancepayments);
   }
 };
 
 export const getDoubleTransaction = async (req, res) => {
-
-  const  download  = req.body.download;
+  const download = req.body.download;
 
   let entrancepayments = await prisma.entrancePayments.findMany({
-
     where: {
-      status: 'SUCCESS', 
+      status: "SUCCESS",
     },
     include: {
       candidate: true,
       examapplication: {
-          include: {
-            exam: true,
-            Registration: {
-              select: {
-                registrationNo: true
-              }
+        include: {
+          exam: true,
+          Registration: {
+            select: {
+              registrationNo: true,
             },
-            EntrancePayments: true,
           },
+          EntrancePayments: true,
         },
+      },
     },
   });
 
   const doublePayments = entrancepayments.filter((payment, index, self) => {
     return (
       self.findIndex(
-        (p) => p.candidateId === payment.candidateId && p.status === 'SUCCESS'
+        (p) => p.candidateId === payment.candidateId && p.status === "SUCCESS"
       ) !== index
     );
   });
 
   if (download) {
-    const formatted = doublePayments.map((row) => ({     
+    const formatted = doublePayments.map((row) => ({
       Name: row.candidate?.fullname,
       Email: row.candidate?.email,
       Phone: row.candidate?.phone,
-      ApplicationNo : row.examapplication.reference ? row.examapplication.reference:null,
-      RegistrationNo : row.examapplication.Registration[0]?.registrationNo,
-      Transactions : row.examapplication.EntrancePayments?.length, 
+      ApplicationNo: row.examapplication.reference
+        ? row.examapplication.reference
+        : null,
+      RegistrationNo: row.examapplication.Registration[0]?.registrationNo,
+      Transactions: row.examapplication.EntrancePayments?.length,
     }));
 
     //   return res.json(formatted);
@@ -289,21 +293,19 @@ export const getDoubleTransaction = async (req, res) => {
 
     // Send the workbook directly to the response
     res.end(XLSX.write(workbook, { bookType: "xlsx", type: "buffer" }));
-  }
-  else{
-     return res.json(doublePayments); 
+  } else {
+    return res.json(doublePayments);
   }
 };
 
 export const getTransactionLog = async (req, res) => {
-  
   const { txnid } = req.params;
 
-    const transactionLog = await prisma.transactionLog.findMany({
-      where: {
-        txnid,
-      },
-    });
+  const transactionLog = await prisma.transactionLog.findMany({
+    where: {
+      txnid,
+    },
+  });
 
   return res.json(transactionLog);
 };

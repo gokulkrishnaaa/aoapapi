@@ -118,6 +118,7 @@ export const getApplication = async (req, res) => {
         include: {
           Slot: true,
           AdmitCard: true,
+          Reattempt: true,
         },
       },
 

@@ -118,6 +118,8 @@ import {
   checkExamValid,
   examAgentPaymentFailure,
   examAgentPaymentSuccess,
+  examReattemptPaymentFailure,
+  examReattemptPaymentSuccess,
   getExamByEntrance,
   getExamsByEntrance,
   registerForExam,
@@ -425,7 +427,9 @@ router.post("/exam/check/:id", requireAuth, checkExamValid);
 router.get("/exam/open", requireAuth, getOpenExams);
 router.post("/exam/register", requireAuth, registerForExam);
 router.post("/exam/paymentsuccess", examPaymentSuccess);
+router.post("/exam/paymentreattemptsuccess", examReattemptPaymentSuccess);
 router.post("/exam/paymentfailure", examPaymentFailure);
+router.post("/exam/paymentreattemptfailure", examReattemptPaymentFailure);
 router.get("/exam", requireAuth, getAllExams);
 router.get("/exam/:entranceId", requireAuth, getExamsByEntrance);
 router.post("/application", requireAuth, createApplication);
