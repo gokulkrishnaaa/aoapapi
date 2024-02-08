@@ -1,13 +1,11 @@
 import prisma from "../../db";
 
 export const createReattempt = async (req, res) => {
-  const { registrationno, phaseno } = req.body;
+  const { registrationno } = req.body;
   const registrationNo = parseInt(registrationno);
-  const phaseNo = parseInt(phaseno);
 
   const data = {
     registrationNo: registrationNo,
-    phaseno: phaseNo,
   };
 
   try {
