@@ -333,15 +333,25 @@ export const examPaymentSuccess = async (req, res) => {
       },
     });
 
-const candid = candidate.id;
-const uname = candidate.fullname;
-let uphone = candidate.phone;
-let email = candidate.email;
-let source = "";
-const section = "App Fee Payment";
-const paystatus = "Paid";
-invokepaymentAPI({email: email,name: uname, phone: uphone, section: section, paystatus: paystatus,source: source,candid: candid},res);
-
+    const candid = candidate.id;
+    const uname = candidate.fullname;
+    let uphone = candidate.phone;
+    let email = candidate.email;
+    let source = "";
+    const section = "App Fee Payment";
+    const paystatus = "Paid";
+    invokepaymentAPI(
+      {
+        email: email,
+        name: uname,
+        phone: uphone,
+        section: section,
+        paystatus: paystatus,
+        source: source,
+        candid: candid,
+      },
+      res
+    );
 
     entranceWelcome(updatedTransaction.candidateId);
 
@@ -586,26 +596,31 @@ export const verifyTransaction = async (req, res) => {
 
   // get all details and ssave to db
 
-  let txndetails = (chkResponseData as any).transaction_details[txnid];
-  if (txndetails) {
-    let txnstatus =
-      txndetails.status === "success"
-        ? "SUCCESS"
-        : txndetails.status === "failure"
-        ? "FAILED"
-        : transactionDetails.status;
+  const fetchedStatus = chkResponseData["status"];
 
-    if (txnstatus != transactionDetails.status) {
-      await prisma.entrancePayments.update({
-        where: {
-          txnid,
-        },
-        data: { status: txnstatus },
-      });
+  console.log("fetched status", fetchedStatus);
+
+  if (fetchedStatus) {
+    let txndetails = (chkResponseData as any).transaction_details[txnid];
+    if (txndetails) {
+      let txnstatus =
+        txndetails.status === "success"
+          ? "SUCCESS"
+          : txndetails.status === "failure"
+          ? "FAILED"
+          : transactionDetails.status;
+
+      if (txnstatus != transactionDetails.status) {
+        await prisma.entrancePayments.update({
+          where: {
+            txnid,
+          },
+          data: { status: txnstatus },
+        });
+      }
+      await logTransaction(txnid, chkResponseData);
     }
-    await logTransaction(txnid, chkResponseData);
   }
-
   return res.json({ chkResponseData });
 };
 
@@ -662,24 +677,30 @@ export const verifyJeeTransaction = async (req, res) => {
 
   // get all details and ssave to db
 
-  let txndetails = (chkResponseData as any).transaction_details[txnid];
-  if (txndetails) {
-    let txnstatus =
-      txndetails.status === "success"
-        ? "SUCCESS"
-        : txndetails.status === "failure"
-        ? "FAILED"
-        : transactionDetails.status;
+  const fetchedStatus = chkResponseData["status"];
 
-    if (txnstatus != transactionDetails.status) {
-      await prisma.jEEPayments.update({
-        where: {
-          txnid,
-        },
-        data: { status: txnstatus },
-      });
+  console.log("fetched status", fetchedStatus);
+
+  if (fetchedStatus) {
+    let txndetails = (chkResponseData as any).transaction_details[txnid];
+    if (txndetails) {
+      let txnstatus =
+        txndetails.status === "success"
+          ? "SUCCESS"
+          : txndetails.status === "failure"
+          ? "FAILED"
+          : transactionDetails.status;
+
+      if (txnstatus != transactionDetails.status) {
+        await prisma.jEEPayments.update({
+          where: {
+            txnid,
+          },
+          data: { status: txnstatus },
+        });
+      }
+      await logTransaction(txnid, chkResponseData);
     }
-    await logTransaction(txnid, chkResponseData);
   }
 
   return res.json({ chkResponseData });
