@@ -123,6 +123,7 @@ import {
   getExamByEntrance,
   getExamsByEntrance,
   registerForExam,
+  registerForExamReattempt,
   verifyJeeTransaction,
   verifyTransaction,
 } from "./handlers/entrance/exam";
@@ -426,6 +427,7 @@ router.put("/exam/:id", requireAuth, updateExam);
 router.post("/exam/check/:id", requireAuth, checkExamValid);
 router.get("/exam/open", requireAuth, getOpenExams);
 router.post("/exam/register", requireAuth, registerForExam);
+router.post("/exam/reattempt", requireAuth, registerForExamReattempt);
 router.post("/exam/paymentsuccess", examPaymentSuccess);
 router.post("/exam/paymentreattemptsuccess", examReattemptPaymentSuccess);
 router.post("/exam/paymentfailure", examPaymentFailure);

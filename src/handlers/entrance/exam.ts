@@ -229,6 +229,42 @@ export const registerForExam = async (req, res) => {
   return res.json({ message: "done" });
 };
 
+export const registerForExamReattempt = async (req, res) => {
+  const { examapplicationId } = req.body;
+
+  const successPayment = await prisma.entrancePayments.findFirst({
+    where: {
+      examapplicationId,
+      status: "SUCCESS",
+      reattempt: true,
+    },
+    include: {
+      examapplication: {
+        include: {
+          Registration: true,
+        },
+      },
+    },
+  });
+
+  if (!successPayment) {
+    throw new BadRequestError("Payment Pending");
+  }
+
+  try {
+    await prisma.reattempt.create({
+      data: {
+        registrationNo:
+          successPayment.examapplication.Registration[0].registrationNo,
+      },
+    });
+  } catch (error) {
+    throw new InternalServerError("Reattempt Failed");
+  }
+
+  return res.json({ message: "done" });
+};
+
 export const examPaymentSuccess = async (req, res) => {
   const { txnid } = req.body;
 

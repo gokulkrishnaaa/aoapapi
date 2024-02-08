@@ -32,6 +32,7 @@ export {
   getExamsByEntrance,
   getExamByEntrance,
   registerForExam,
+  registerForExamReattempt,
   examPaymentSuccess,
   examPaymentFailure,
   examAgentPaymentSuccess,
