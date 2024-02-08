@@ -240,11 +240,17 @@ import { invokeAPI } from "./handlers/leadsquared";
 import { invokebulkAPI } from "./handlers/leadsquared";
 import { createCrmSignin } from "./handlers/crm";
 import { getLoggedUser } from "./handlers/user/user";
-import { getUtmSource, handleTransactionSync } from "./handlers/misc";
+import {
+  createOrUpdateRank,
+  createReattempt,
+  getUtmSource,
+  handleTransactionSync,
+} from "./handlers/misc";
 import { getEmailOtp, getNumberOtp } from "./handlers/utils/utils";
 import {
   createOrUpdateAdmitCard,
   createOrUpdateExamSlot,
+  handleRankUpload,
   sendSlotMailBulk,
   verifyAllCandidates,
   verifyCandidateSync,
@@ -490,11 +496,7 @@ router.post(
   requireAuth,
   getDoubleTransaction
 );
-router.get(
-  "/transactions/entrance/:txnid",
-  requireAuth,
-  getTransactionLog
-);
+router.get("/transactions/entrance/:txnid", requireAuth, getTransactionLog);
 
 router.get(
   "/transactions/jee/application/:id",
@@ -681,6 +683,7 @@ router.get("/vendor/examcenter/allusers/:examid", verifyAllCandidates);
 router.get("/vendor/examcenter/slotmail", sendSlotMailBulk);
 router.post("/aee/slotconfirmation", createOrUpdateExamSlot);
 router.post("/aee/examlocation", createOrUpdateAdmitCard);
+router.post("/aee/rankimport", handleRankUpload);
 
 router.post("/omr/upload", handleOmrUpload);
 router.get("/omr/synccandidates", handleSyncCandidates);
@@ -696,5 +699,9 @@ router.get("/healthcheck", (req, res) => {
 
 router.post("/leadsquared/lsqbulkAPI", invokebulkAPI);
 router.post("/leadsquared/apirequest", invokeAPI);
+
+// test apis
+router.post("/aee/reattempt", createReattempt);
+router.post("/aee/rankcreate", createOrUpdateRank);
 
 export default router;

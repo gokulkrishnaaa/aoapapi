@@ -197,9 +197,10 @@ model Exam {
   entranceId      String
   description     String
   status          ExamStatus        @default(PAUSE)
-  phaseno         Int               @default(0)
+  phaseno         Int               @default(1)
   phaseenddate    DateTime?
   slotstatus      Boolean           @default(false)
+  rankpublish     Boolean           @default(false)
   ExamApplication ExamApplication[]
   Registration    Registration[]
 }
@@ -257,12 +258,24 @@ model Registration {
   centersyncstatus  Boolean             @default(false)
   centersynccomment String?
   createdAt         DateTime            @default(now())
-  Slot              Slot?
-  AdmitCard         AdmitCard?
+  Slot              Slot[]
+  AdmitCard         AdmitCard[]
   SlotMailStatus    SlotMailStatus?
+  Rank              Rank[]
+  Reattempt         Reattempt[]
 
   @@unique([examId, examapplicationId])
   @@unique([examId, registrationNo])
+}
+
+model Reattempt {
+  id             Int          @id @default(autoincrement())
+  registration   Registration @relation(fields: [registrationNo], references: [registrationNo])
+  registrationNo Int
+
+  createdAt DateTime @default(now())
+
+  @@unique([registrationNo])
 }
 
 model SlotMailStatus {
@@ -280,13 +293,14 @@ model Slot {
   id               Int            @id @default(autoincrement())
   registration     Registration   @relation(fields: [registrationNo], references: [registrationNo])
   registrationNo   Int
+  phaseno          Int            @default(1)
   examMode         ExamCenterMode
   examDate         DateTime
   examTime         String
   selectedCityCode String
   createdAt        DateTime       @default(now())
 
-  @@unique([registrationNo])
+  @@unique([registrationNo, phaseno])
 }
 
 model OMRMigrate {
@@ -319,6 +333,7 @@ model AdmitCard {
   id              Int            @id @default(autoincrement())
   registration    Registration   @relation(fields: [registrationNo], references: [registrationNo])
   registrationNo  Int
+  phaseno         Int            @default(1)
   examMode        ExamCenterMode
   locationName    String
   examDate        DateTime // Updated to DateTime type
@@ -327,8 +342,20 @@ model AdmitCard {
   pincode         String
   qrcode          String?
   phoneNumber     String?
+  createdAt       DateTime       @default(now())
 
-  @@unique([registrationNo])
+  @@unique([registrationNo, phaseno])
+}
+
+model Rank {
+  id             Int          @id @default(autoincrement())
+  registration   Registration @relation(fields: [registrationNo], references: [registrationNo])
+  registrationNo Int
+  phaseno        Int          @default(1)
+  percentile     Float
+  createdAt      DateTime     @default(now())
+
+  @@unique([registrationNo, phaseno])
 }
 
 enum PaymentStatus {

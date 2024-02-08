@@ -1,5 +1,6 @@
 import {
   sendingSlotBulkMail,
+  storeAeeeRankWorker,
   verifyingAllCandidatesWorker,
 } from "./handlers/admin/vendor";
 import { syncingTransactions } from "./handlers/misc";
@@ -17,5 +18,8 @@ export const worker = async (job) => {
   }
   if (job.name === "syncingTransactions") {
     syncingTransactions(job.data);
+  }
+  if (job.name === "storeAeeeRankWorker") {
+    storeAeeeRankWorker(job.data);
   }
 };

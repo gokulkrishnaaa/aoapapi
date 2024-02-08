@@ -153,6 +153,8 @@ export const getApplicationByExam = async (req, res) => {
         include: {
           Slot: true,
           AdmitCard: true,
+          Rank: true,
+          Reattempt: true,
         },
       },
 

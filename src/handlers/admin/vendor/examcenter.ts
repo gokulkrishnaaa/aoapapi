@@ -10,6 +10,9 @@ import {
   sendSlotBookBulkMail,
   sendSlotBookMail,
 } from "../../email/slotbookmail";
+import path from "path";
+import xlsx from "xlsx";
+import fs from "fs";
 
 const apiKey = "6587ceff-28e9-44ac-8825-e26495ada87c";
 
@@ -351,8 +354,18 @@ export const createOrUpdateExamSlot = async (req, res) => {
     req.body;
   const registrationNo = parseInt(ApplicationNumber);
 
+  const registration = await prisma.registration.findUnique({
+    where: {
+      registrationNo,
+    },
+    include: {
+      exam: true,
+    },
+  });
+
   const data = {
     registrationNo: registrationNo,
+    phaseno: registration.exam.phaseno,
     examMode: ExamMode,
     examDate: new Date(ExamDate),
     examTime: ExamTime,
@@ -362,7 +375,10 @@ export const createOrUpdateExamSlot = async (req, res) => {
   try {
     await prisma.slot.upsert({
       where: {
-        registrationNo: registrationNo,
+        registrationNo_phaseno: {
+          registrationNo: registrationNo,
+          phaseno: registration.exam.phaseno,
+        },
       },
       update: data,
       create: data,
@@ -403,8 +419,18 @@ export const createOrUpdateAdmitCard = async (req, res) => {
   } = req.body;
   const registrationNo = parseInt(ApplicationNumber);
 
+  const registration = await prisma.registration.findUnique({
+    where: {
+      registrationNo,
+    },
+    include: {
+      exam: true,
+    },
+  });
+
   const data = {
     registrationNo: registrationNo,
+    phaseno: registration.exam.phaseno,
     examMode: ExamMode,
     locationName: LocationName,
     examDate: new Date(ExamDate),
@@ -418,7 +444,10 @@ export const createOrUpdateAdmitCard = async (req, res) => {
   try {
     await prisma.admitCard.upsert({
       where: {
-        registrationNo: registrationNo,
+        registrationNo_phaseno: {
+          registrationNo: registrationNo,
+          phaseno: registration.exam.phaseno,
+        },
       },
       update: data,
       create: data,
@@ -439,6 +468,121 @@ export const createOrUpdateAdmitCard = async (req, res) => {
       statusCode: "FAILED",
       message: "Exam location processing failed",
     });
+  }
+};
+
+export const handleRankUpload = async (req, res) => {
+  if (req.headers["x-api-key"] !== apiKey) {
+    throw new NotAuthorizedError();
+  }
+  if (!req.files || Object.keys(req.files).length === 0) {
+    return res.status(400).send("No files were uploaded.");
+  }
+
+  let uploadedFile = req.files.file;
+  let uploadbasefolder = "./uploads/";
+
+  // Extract the file extension from the uploaded file
+  let fileExtension = path.extname(uploadedFile.name);
+  // Ensure the file extension is in the expected format (.xls, .xlsx, .csv, etc.)
+  if (![".xlsx"].includes(fileExtension.toLowerCase())) {
+    return res.status(400).send("Invalid file format.");
+  }
+
+  let uploadfilename = `rank_${Date.now()}${fileExtension}`; // Use the extracted file extension
+
+  let uploadfilepath = `${uploadbasefolder}${uploadfilename}`;
+  // Use the mv() method to place the file in upload directory
+  uploadedFile.mv(uploadfilepath, async function (err) {
+    if (err) return res.status(500).send(err);
+    try {
+      // Check if a similar job is already in the queue
+      const jobs = await mainqueue.getJobs([
+        "waiting",
+        "active",
+        "delayed",
+        "paused",
+      ]);
+
+      console.log(jobs);
+
+      const isJobAlreadyQueued = jobs.some(
+        (job) =>
+          job.name === "storeAeeeRankWorker" && job.data.file === uploadfilepath
+      );
+
+      console.log("job already queued", isJobAlreadyQueued);
+
+      if (isJobAlreadyQueued) {
+        return res.status(400).json({
+          message:
+            "A rank import job for this exam is already queued or in progress.",
+        });
+      }
+
+      // Enqueue a single job for verifying all candidates
+      await mainqueue.add("storeAeeeRankWorker", { file: uploadfilepath });
+
+      return res.json({
+        message: "Rank import job for exam enqueued",
+      });
+    } catch (error) {
+      console.error(`Error in rank import: ${error.message}`);
+      throw new InternalServerError("Error in Rank Import");
+    }
+  });
+};
+
+export const storeAeeeRankWorker = async (data) => {
+  const { file } = data;
+  const aeeexam = await prisma.exam.findFirst({
+    where: {
+      entrance: {
+        code: "AEEE",
+      },
+      status: {
+        notIn: ["CLOSED", "PAUSE"],
+      },
+    },
+  });
+
+  if (!aeeexam) {
+    return new BadRequestError("exam not found");
+  }
+
+  const phaseno = aeeexam.phaseno;
+
+  try {
+    const workbook = xlsx.readFile(file);
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    const rankdata = xlsx.utils.sheet_to_json(sheet);
+
+    for (const row of rankdata) {
+      const data = {
+        registrationNo: row["LoginName"],
+        phaseno,
+        percentile: parseFloat(row["Percentile"].toFixed(7)),
+      };
+
+      console.log(data);
+
+      await prisma.rank.upsert({
+        where: {
+          registrationNo_phaseno: {
+            registrationNo: data.registrationNo,
+            phaseno,
+          },
+        },
+        update: data,
+        create: data,
+      });
+    }
+
+    fs.unlinkSync(file);
+  } catch (error) {
+    fs.unlinkSync(file);
+    console.log("import failed", error);
   }
 };
 

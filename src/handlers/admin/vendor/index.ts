@@ -6,4 +6,6 @@ export {
   createOrUpdateAdmitCard,
   sendSlotMailBulk,
   sendingSlotBulkMail,
+  handleRankUpload,
+  storeAeeeRankWorker,
 } from "./examcenter";
