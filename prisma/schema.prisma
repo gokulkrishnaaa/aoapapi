@@ -203,6 +203,7 @@ model Exam {
   rankpublish     Boolean           @default(false)
   ExamApplication ExamApplication[]
   Registration    Registration[]
+  RankImport      RankImport[]
 }
 
 enum ExamApplicationStatus {
@@ -356,6 +357,22 @@ model Rank {
   createdAt      DateTime     @default(now())
 
   @@unique([registrationNo, phaseno])
+}
+
+enum RankImportStatus {
+  STARTED
+  FAILED
+  SUCCESS
+}
+
+model RankImport {
+  id      Int              @id @default(autoincrement())
+  exam    Exam             @relation(fields: [examId], references: [id])
+  examId  String
+  phaseno Int
+  status  RankImportStatus @default(STARTED)
+
+  @@unique([examId, phaseno])
 }
 
 enum PaymentStatus {

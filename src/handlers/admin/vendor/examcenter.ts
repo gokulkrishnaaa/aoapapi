@@ -475,8 +475,20 @@ export const handleRankUpload = async (req, res) => {
   if (req.headers["x-api-key"] !== apiKey) {
     throw new NotAuthorizedError();
   }
+  const { examId } = req.body;
+
   if (!req.files || Object.keys(req.files).length === 0) {
     return res.status(400).send("No files were uploaded.");
+  }
+
+  const exam = await prisma.exam.findUnique({
+    where: {
+      id: examId,
+    },
+  });
+
+  if (!exam) {
+    throw new BadRequestError("Exam does not exist");
   }
 
   let uploadedFile = req.files.file;
@@ -521,7 +533,10 @@ export const handleRankUpload = async (req, res) => {
       }
 
       // Enqueue a single job for verifying all candidates
-      await mainqueue.add("storeAeeeRankWorker", { file: uploadfilepath });
+      await mainqueue.add("storeAeeeRankWorker", {
+        file: uploadfilepath,
+        exam,
+      });
 
       return res.json({
         message: "Rank import job for exam enqueued",
@@ -533,24 +548,37 @@ export const handleRankUpload = async (req, res) => {
   });
 };
 
-export const storeAeeeRankWorker = async (data) => {
-  const { file } = data;
-  const aeeexam = await prisma.exam.findFirst({
+export const pollRankImport = async (req, res) => {
+  const { examId, phaseno } = req.body;
+
+  const record = await prisma.rankImport.findFirst({
     where: {
-      entrance: {
-        code: "AEEE",
-      },
-      status: {
-        notIn: ["CLOSED", "PAUSE"],
-      },
+      examId,
+      phaseno,
     },
   });
 
-  if (!aeeexam) {
-    return new BadRequestError("exam not found");
-  }
+  res.status(200).json(record);
+};
 
-  const phaseno = aeeexam.phaseno;
+export const storeAeeeRankWorker = async (data) => {
+  const { file, exam } = data;
+
+  const phaseno = exam.phaseno;
+  await prisma.rankImport.upsert({
+    where: {
+      examId_phaseno: {
+        examId: exam.id,
+        phaseno: phaseno,
+      },
+    },
+    update: { status: "STARTED" },
+    create: {
+      examId: exam.id, // This should match the examId used in the `where` clause
+      phaseno: phaseno,
+      status: "STARTED",
+    },
+  });
 
   try {
     const workbook = xlsx.readFile(file);
@@ -578,11 +606,28 @@ export const storeAeeeRankWorker = async (data) => {
         create: data,
       });
     }
-
+    await prisma.rankImport.update({
+      where: {
+        examId_phaseno: {
+          examId: exam.id, // Make sure to provide the examId variable
+          phaseno: phaseno,
+        },
+      },
+      data: { status: "SUCCESS" },
+    });
     fs.unlinkSync(file);
   } catch (error) {
     fs.unlinkSync(file);
-    console.log("import failed", error);
+    await prisma.rankImport.update({
+      where: {
+        examId_phaseno: {
+          examId: exam.id, // Make sure to provide the examId variable
+          phaseno: phaseno,
+        },
+      },
+      data: { status: "FAILED" },
+    });
+    console.log("import failed");
   }
 };
 

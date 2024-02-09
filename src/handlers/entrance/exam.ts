@@ -100,6 +100,9 @@ export const getExamByEntrance = async (req, res) => {
         not: "CLOSED",
       },
     },
+    include: {
+      RankImport: true,
+    },
     orderBy: {
       createdAt: "desc",
     },
