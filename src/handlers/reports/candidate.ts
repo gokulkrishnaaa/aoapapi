@@ -8,7 +8,11 @@ export const getFullAeeeDetailsByCandidateId = async (req, res) => {
       candidateId,
     },
     include: {
-      Registration: true,
+      Registration: {
+        include: {
+          Rank: true,
+        },
+      },
       exam: {
         include: {
           entrance: true, // Include Entrance details
