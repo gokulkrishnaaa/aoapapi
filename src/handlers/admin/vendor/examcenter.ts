@@ -592,19 +592,22 @@ export const storeAeeeRankWorker = async (data) => {
         phaseno,
         percentile: parseFloat(row["Percentile"].toFixed(7)),
       };
-
-      console.log(data);
-
-      await prisma.rank.upsert({
-        where: {
-          registrationNo_phaseno: {
-            registrationNo: data.registrationNo,
-            phaseno,
+      try {
+        await prisma.rank.upsert({
+          where: {
+            registrationNo_phaseno: {
+              registrationNo: data.registrationNo,
+              phaseno,
+            },
           },
-        },
-        update: data,
-        create: data,
-      });
+          update: data,
+          create: data,
+        });
+        console.log("success", data);
+      } catch (error) {
+        console.log("error", data);
+        throw error;
+      }
     }
     await prisma.rankImport.update({
       where: {
