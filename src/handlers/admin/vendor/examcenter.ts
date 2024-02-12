@@ -588,7 +588,7 @@ export const storeAeeeRankWorker = async (data) => {
 
     for (const row of rankdata) {
       const data = {
-        registrationNo: row["LoginName"],
+        registrationNo: row["RegNo"],
         phaseno,
         percentile: parseFloat(row["Percentile"].toFixed(7)),
       };
