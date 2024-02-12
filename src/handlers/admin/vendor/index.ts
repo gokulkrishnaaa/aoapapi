@@ -9,4 +9,5 @@ export {
   handleRankUpload,
   storeAeeeRankWorker,
   pollRankImport,
+  publishAeeeRank,
 } from "./examcenter";

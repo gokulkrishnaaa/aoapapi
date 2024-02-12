@@ -561,6 +561,45 @@ export const pollRankImport = async (req, res) => {
   res.status(200).json(record);
 };
 
+export const publishAeeeRank = async (req, res) => {
+  const { examId } = req.body;
+  const exam = await prisma.exam.findUnique({
+    where: {
+      id: examId,
+    },
+  });
+
+  const rankimport = await prisma.rankImport.findFirst({
+    where: {
+      examId,
+      phaseno: exam.phaseno,
+    },
+  });
+
+  if (!rankimport) {
+    throw new InternalServerError("Rank Not imported");
+  }
+
+  if (rankimport.status != "SUCCESS") {
+    throw new InternalServerError("Rank Import not completed");
+  }
+
+  const data = {
+    phaseno: exam.phaseno + 1,
+    slotstatus: false,
+    rankpublish: true,
+  };
+
+  await prisma.exam.update({
+    where: {
+      id: examId,
+    },
+    data,
+  });
+
+  res.status(200).json("published");
+};
+
 export const storeAeeeRankWorker = async (data) => {
   const { file, exam } = data;
 

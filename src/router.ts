@@ -255,6 +255,7 @@ import {
   createOrUpdateExamSlot,
   handleRankUpload,
   pollRankImport,
+  publishAeeeRank,
   sendSlotMailBulk,
   verifyAllCandidates,
   verifyCandidateSync,
@@ -692,6 +693,7 @@ router.post("/aee/slotconfirmation", createOrUpdateExamSlot);
 router.post("/aee/examlocation", createOrUpdateAdmitCard);
 router.post("/aee/rankimport", handleRankUpload);
 router.post("/aee/rankimportpoll", pollRankImport);
+router.post("/aee/rankpublish", requireAuth, publishAeeeRank);
 
 router.post("/omr/upload", handleOmrUpload);
 router.get("/omr/synccandidates", handleSyncCandidates);
