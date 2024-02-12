@@ -27,7 +27,12 @@ async function sendMail(options) {
 }
 
 export const sendEmailOtp = async (req, res) => {
-  const { email } = req.body;
+  const { email: emailraw } = req.body;
+  console.log("raw email", emailraw);
+
+  const email = emailraw.toLowerCase();
+
+  console.log("lower email", email);
 
   if (!email || !isValidEmail(email)) {
     return res.json({ created: false });

@@ -11,9 +11,8 @@ interface UTMProps {
 }
 
 export const signin = async (req, res) => {
-  const username = req.body.username;
-  const otp = req.body.otp;
-  const utm = req.body.utm;
+  const { username: usernameraw, otp, utm } = req.body;
+  const username = usernameraw.toLowerCase();
   console.log(utm);
 
   // 1. verify otp

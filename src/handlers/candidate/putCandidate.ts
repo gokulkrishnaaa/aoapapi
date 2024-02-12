@@ -10,6 +10,10 @@ export const createCandidate = async (req, res) => {
     data.dob = new Date(data.dob);
   }
 
+  if (data.email) {
+    data.email = data.email.toLowerCase();
+  }
+
   if (data.aadhaarverified === "") {
     delete data.aadhaarverified;
   }
@@ -49,6 +53,10 @@ export const putCandidate = async (req, res) => {
   if (data.dob) {
     const dobstr = new Date(data.dob);
     data.dob = new Date(data.dob);
+  }
+
+  if (data.email) {
+    data.email = data.email.toLowerCase();
   }
 
   if (data.aadhaarverified === "") {

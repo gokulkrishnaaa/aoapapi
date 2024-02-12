@@ -2,10 +2,13 @@ import prisma from "../../db";
 import isValidEmail from "../../utilities/checkemail";
 
 export const verifyEmail = async (req, res) => {
-  const email = req.body.email;
-  const otp = req.body.otp;
-  console.log(email);
-  console.log(otp);
+  const { email: emailraw, otp } = req.body;
+
+  console.log("raw email", emailraw);
+
+  const email = emailraw.toLowerCase();
+
+  console.log("lower email", email);
 
   // 1. verify otp
   let isValid = false;
