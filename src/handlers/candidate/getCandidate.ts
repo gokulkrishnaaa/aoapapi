@@ -6,21 +6,26 @@ import { Prisma } from "@prisma/client";
 
 export const getCandidate = async (req, res) => {
   const { id } = req.currentUser;
-  let candidate = await prisma.candidate.findFirst({
-    where: {
-      id,
-    },
-    include: {
-      gender: true,
-      socialstatus: true,
-      infosource: true,
-      state: true,
-      district: true,
-      city: true,
-      ParentInfo: true,
-      PlusTwoInfo: true,
-    },
-  });
+  console.log("user id", id);
+  let candidate = null;
+
+  if (id) {
+    candidate = await prisma.candidate.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        gender: true,
+        socialstatus: true,
+        infosource: true,
+        state: true,
+        district: true,
+        city: true,
+        ParentInfo: true,
+        PlusTwoInfo: true,
+      },
+    });
+  }
   return res.json(candidate);
 };
 
@@ -43,12 +48,8 @@ export const getCandidateById = async (req, res) => {
   return res.json(candidate);
 };
 
-
-
 // Get all candidates details : RG
 export const getAllCandidatesInfo = async (req, res) => {
-
-  
   let candidates = [];
   const options = { day: "2-digit", month: "2-digit", year: "numeric" };
 
@@ -218,24 +219,19 @@ export const getAllCandidatesInfo = async (req, res) => {
   res.end(XLSX.write(workbook, { bookType: "xlsx", type: "buffer" }));
 };
 
-
 // Get all candidates details w.r.t status : AR
-export const getAllCandidatesInfoByStatus = async  (req, res) => {
-  
-
+export const getAllCandidatesInfoByStatus = async (req, res) => {
   // Get status value
- const  {status}  = req.params;
+  const { status } = req.params;
 
- // Convert status value to boolean
- const isStatusTrue = status === 'true';
+  // Convert status value to boolean
+  const isStatusTrue = status === "true";
 
+  // Get isOMR value
+  const { isOMR = "false" } = req.params;
+  // Convert status value to boolean
+  const isOMRTrue = isOMR === "true";
 
- // Get isOMR value
- const { isOMR = 'false' } = req.params;
- // Convert status value to boolean
- const isOMRTrue = isOMR === 'true';
-
- 
   let candidates = [];
 
   const allCandidates = await prisma.candidate.findMany({
@@ -243,27 +239,26 @@ export const getAllCandidatesInfoByStatus = async  (req, res) => {
       Onboarding: {
         status: isStatusTrue,
       },
-      isOMR:isOMRTrue,
+      isOMR: isOMRTrue,
     },
 
     include: {
       state: true,
       Onboarding: true,
-      ParentInfo: true,    
+      ParentInfo: true,
     },
   });
 
   const formatted = allCandidates.map((row) => {
     let basic = {
       Name: row.fullname,
-     /* Gender: row.gender ? row.gender.name : null,*/
+      /* Gender: row.gender ? row.gender.name : null,*/
       Email: row.email,
       Phone: row.phone,
       State: row.state ? row.state.name : null,
       ParentName: row.ParentInfo ? row.ParentInfo.fullname : null,
       ParentEmail: row.ParentInfo ? row.ParentInfo.email : null,
       ParentPhone: row.ParentInfo ? row.ParentInfo.phone : null,
-     
     };
 
     return basic;
@@ -291,52 +286,45 @@ export const getAllCandidatesInfoByStatus = async  (req, res) => {
   res.end(XLSX.write(workbook, { bookType: "xlsx", type: "buffer" }));
 };
 
-
-
 // Get applied candidates details : AR
 export const getAllAppliedCandidatesInfo = async (req, res) => {
-  
-  console.log('In getAllCandidatesInfo');
- 
+  console.log("In getAllCandidatesInfo");
+
   let candidates = [];
 
-
   // Get isOMR value
- const { isOMR = 'false' } = req.params;
- // Convert status value to boolean
- const isOMRTrue = isOMR === 'true';
-
+  const { isOMR = "false" } = req.params;
+  // Convert status value to boolean
+  const isOMRTrue = isOMR === "true";
 
   const allCandidates = await prisma.candidate.findMany({
     where: {
       ExamApplication: {
         some: {
-          status: 'APPLIED',
-        },        
+          status: "APPLIED",
+        },
       },
-      isOMR:isOMRTrue,
+      isOMR: isOMRTrue,
     },
 
     include: {
       state: true,
       Onboarding: true,
-      ParentInfo: true, 
+      ParentInfo: true,
       ExamApplication: true,
-
     },
   });
 
   const formatted = allCandidates.map((row) => {
     let basic = {
       Name: row.fullname,
-     /* Gender: row.gender ? row.gender.name : null,*/
+      /* Gender: row.gender ? row.gender.name : null,*/
       Email: row.email,
       Phone: row.phone,
       State: row.state ? row.state.name : null,
       ParentName: row.ParentInfo ? row.ParentInfo.fullname : null,
       ParentEmail: row.ParentInfo ? row.ParentInfo.email : null,
       ParentPhone: row.ParentInfo ? row.ParentInfo.phone : null,
-     
     };
 
     return basic;
@@ -363,7 +351,6 @@ export const getAllAppliedCandidatesInfo = async (req, res) => {
   // Send the workbook directly to the response
   res.end(XLSX.write(workbook, { bookType: "xlsx", type: "buffer" }));
 };
-
 
 // Get  Datewise Candidates Count
 export const getDateWiseCandidatesCount = async (req, res) => {
@@ -371,7 +358,7 @@ export const getDateWiseCandidatesCount = async (req, res) => {
     const { fromDate, toDate } = req.params;
 
     const candidateCounts = await prisma.candidate.groupBy({
-      by: ['createdAt'],
+      by: ["createdAt"],
       where: {
         createdAt: {
           gte: new Date(fromDate),
@@ -382,12 +369,12 @@ export const getDateWiseCandidatesCount = async (req, res) => {
         createdAt: true,
       },
       orderBy: {
-        createdAt: 'asc',
+        createdAt: "asc",
       },
     });
 
     const onboardingCounts = await prisma.onboarding.groupBy({
-      by: ['createdAt'],
+      by: ["createdAt"],
       where: {
         status: true,
         createdAt: {
@@ -399,12 +386,12 @@ export const getDateWiseCandidatesCount = async (req, res) => {
         createdAt: true,
       },
       orderBy: {
-        createdAt: 'asc',
+        createdAt: "asc",
       },
     });
 
     const examApplicationCounts = await prisma.examApplication.groupBy({
-      by: ['createdAt'],
+      by: ["createdAt"],
       where: {
         createdAt: {
           gte: new Date(fromDate),
@@ -415,12 +402,12 @@ export const getDateWiseCandidatesCount = async (req, res) => {
         createdAt: true,
       },
       orderBy: {
-        createdAt: 'asc',
+        createdAt: "asc",
       },
     });
 
     const registrationCounts = await prisma.registration.groupBy({
-      by: ['createdAt'],
+      by: ["createdAt"],
       where: {
         createdAt: {
           gte: new Date(fromDate),
@@ -431,77 +418,94 @@ export const getDateWiseCandidatesCount = async (req, res) => {
         createdAt: true,
       },
       orderBy: {
-        createdAt: 'asc',
+        createdAt: "asc",
       },
     });
 
     const dateMap = new Map();
 
-   const updateCounts = (date, countKey, count) => {
-      const formattedDate = new Date(date).toLocaleDateString('en-GB'); // Format date to dd-mm-yyyy
-      const entry = dateMap.get(formattedDate) || { Date: formattedDate, SignedUp: 0, ProfileCompleted: 0, Applied: 0, Registered: 0 };
+    const updateCounts = (date, countKey, count) => {
+      const formattedDate = new Date(date).toLocaleDateString("en-GB"); // Format date to dd-mm-yyyy
+      const entry = dateMap.get(formattedDate) || {
+        Date: formattedDate,
+        SignedUp: 0,
+        ProfileCompleted: 0,
+        Applied: 0,
+        Registered: 0,
+      };
       entry[countKey] += count;
       dateMap.set(formattedDate, entry);
     };
 
     candidateCounts.forEach((candidateEntry) => {
-      updateCounts(candidateEntry.createdAt.toISOString().split('T')[0], 'SignedUp', candidateEntry._count.createdAt);
+      updateCounts(
+        candidateEntry.createdAt.toISOString().split("T")[0],
+        "SignedUp",
+        candidateEntry._count.createdAt
+      );
     });
 
     onboardingCounts.forEach((onboardingEntry) => {
-      updateCounts(onboardingEntry.createdAt.toISOString().split('T')[0], 'ProfileCompleted', onboardingEntry._count.createdAt);
+      updateCounts(
+        onboardingEntry.createdAt.toISOString().split("T")[0],
+        "ProfileCompleted",
+        onboardingEntry._count.createdAt
+      );
     });
 
     examApplicationCounts.forEach((examApplicationEntry) => {
-      updateCounts(examApplicationEntry.createdAt.toISOString().split('T')[0], 'Applied', examApplicationEntry._count.createdAt);
+      updateCounts(
+        examApplicationEntry.createdAt.toISOString().split("T")[0],
+        "Applied",
+        examApplicationEntry._count.createdAt
+      );
     });
 
     registrationCounts.forEach((registrationEntry) => {
-      updateCounts(registrationEntry.createdAt.toISOString().split('T')[0], 'Registered', registrationEntry._count.createdAt);
+      updateCounts(
+        registrationEntry.createdAt.toISOString().split("T")[0],
+        "Registered",
+        registrationEntry._count.createdAt
+      );
     });
 
     const formatted = Array.from(dateMap.values());
 
     const workbook = XLSX.utils.book_new();
     const worksheet = XLSX.utils.json_to_sheet(formatted);
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Report');
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
 
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', 'attachment; filename=excel.xlsx');
-    res.end(XLSX.write(workbook, { bookType: 'xlsx', type: 'buffer' }));
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    res.setHeader("Content-Disposition", "attachment; filename=excel.xlsx");
+    res.end(XLSX.write(workbook, { bookType: "xlsx", type: "buffer" }));
   } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
-
-
-
-
-
 
 /* OMR Candidates Section*/
 
 // Get applied Pending details : AR
 export const getOMRPendingList = async (req, res) => {
-  
-  console.log('In getOMRPendingList');
- 
+  console.log("In getOMRPendingList");
+
   let candidates = [];
 
   const allCandidates = await prisma.oMRMigrate.findMany({
-    where: {   
-          candidate:null,
+    where: {
+      candidate: null,
     },
-    
   });
 
   const formatted = allCandidates.map((row) => {
     let basic = {
       Name: row.fullname,
       RegistrationNo: row.registrationNo,
-      Phone: row.phone,      
+      Phone: row.phone,
     };
 
     return basic;
@@ -528,28 +532,24 @@ export const getOMRPendingList = async (req, res) => {
   // Send the workbook directly to the response
   res.end(XLSX.write(workbook, { bookType: "xlsx", type: "buffer" }));
 };
-
-
 
 // Get applied Pending details : AR
 export const getOMRDuplicateList = async (req, res) => {
-  
-  console.log('In getOMRDuplicateList');
- 
+  console.log("In getOMRDuplicateList");
+
   let candidates = [];
 
   const allCandidates = await prisma.oMRMigrate.findMany({
-    where: {   
-          comment:"Candidate already exists",
+    where: {
+      comment: "Candidate already exists",
     },
-    
   });
 
   const formatted = allCandidates.map((row) => {
     let basic = {
       Name: row.fullname,
       RegistrationNo: row.registrationNo,
-      Phone: row.phone,      
+      Phone: row.phone,
     };
 
     return basic;
@@ -577,27 +577,24 @@ export const getOMRDuplicateList = async (req, res) => {
   res.end(XLSX.write(workbook, { bookType: "xlsx", type: "buffer" }));
 };
 
-
 // Get applied Onboarded details : AR
 export const getOMROnboardedList = async (req, res) => {
-  
-  console.log('In getAllOMRCandidatesList');
- 
+  console.log("In getAllOMRCandidatesList");
+
   let candidates = [];
 
   const allCandidates = await prisma.candidate.findMany({
     where: {
       Onboarding: {
-           status: true,
-          },
-      isOMR:true,
+        status: true,
+      },
+      isOMR: true,
     },
 
     include: {
       state: true,
       Onboarding: true,
       ExamApplication: true,
-
     },
   });
 
@@ -605,7 +602,7 @@ export const getOMROnboardedList = async (req, res) => {
     let basic = {
       Name: row.fullname,
       Email: row.email,
-      Phone: row.phone,      
+      Phone: row.phone,
     };
 
     return basic;
@@ -633,39 +630,34 @@ export const getOMROnboardedList = async (req, res) => {
   res.end(XLSX.write(workbook, { bookType: "xlsx", type: "buffer" }));
 };
 
-
-
-
 // Get applied slot booked details : AR
 export const getOMRBookedList = async (req, res) => {
-  
-  console.log('In getOMRBookedList');
- 
+  console.log("In getOMRBookedList");
+
   let candidates = [];
 
   let allCandidates = await prisma.slot.findMany({
     where: {
       registration: {
-            examapplication: {
-                           candidate: {
-                                     isOMR:true,
-                },   
-       },
-  },
+        examapplication: {
+          candidate: {
+            isOMR: true,
+          },
+        },
+      },
     },
     include: {
-        registration: {
+      registration: {
+        include: {
+          examapplication: {
             include: {
-                examapplication: {
-                    include: {
-                        candidate: true,
-                    },
-                },
+              candidate: true,
             },
+          },
         },
+      },
     },
-});
-
+  });
 
   const formatted = allCandidates.map((row) => {
     let basic = {
@@ -676,7 +668,7 @@ export const getOMRBookedList = async (req, res) => {
       RegistrationNo: row.registrationNo,
       ExamDate: row.examDate,
       ExamTime: row.examTime,
-      ExamMode: row.examMode ,   
+      ExamMode: row.examMode,
     };
 
     return basic;
@@ -704,12 +696,10 @@ export const getOMRBookedList = async (req, res) => {
   res.end(XLSX.write(workbook, { bookType: "xlsx", type: "buffer" }));
 };
 
-
 // Get applied slot not booked details : AR
 export const getOMRNotBookedList = async (req, res) => {
-  
-  console.log('In getOMRNotBookedList');
- 
+  console.log("In getOMRNotBookedList");
+
   let candidates = [];
 
   let queryString = Prisma.sql`SELECT C.fullname,C.email,C.phone,R."registrationNo" FROM "Registration" R
@@ -721,53 +711,45 @@ export const getOMRNotBookedList = async (req, res) => {
 
   const allCandidates = candidateCounts as any[];
 
+  console.log("In allCandidates", allCandidates);
+  // Check if allCandidates is an array
+  if (Array.isArray(allCandidates)) {
+    const formatted = allCandidates.map((row) => {
+      let basic = {
+        Name: row.fullname,
+        Email: row.email,
+        Phone: row.phone,
+        RegistrationNo: row.registrationNo,
+      };
 
-  console.log('In allCandidates',allCandidates);
-// Check if allCandidates is an array
-if (Array.isArray(allCandidates)) {
+      return basic;
+    });
 
-  const formatted = allCandidates.map((row) => {
-    let basic = {
-      Name: row.fullname,
-      Email: row.email,
-      Phone: row.phone,
-      RegistrationNo: row.registrationNo,
-    };
+    //   return res.json(formatted);
 
-    return basic;
-  });
+    // Create a new workbook
+    const workbook = XLSX.utils.book_new();
 
+    // Add a worksheet to the workbook
+    const worksheet = XLSX.utils.json_to_sheet(formatted);
 
-  //   return res.json(formatted);
+    // Add the worksheet to the workbook
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
 
-  // Create a new workbook
-  const workbook = XLSX.utils.book_new();
+    // Set the appropriate headers for the response
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    res.setHeader("Content-Disposition", "attachment; filename=excel.xlsx");
 
-  // Add a worksheet to the workbook
-  const worksheet = XLSX.utils.json_to_sheet(formatted);
-
-  // Add the worksheet to the workbook
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
-
-  // Set the appropriate headers for the response
-  res.setHeader(
-    "Content-Type",
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-  );
-  res.setHeader("Content-Disposition", "attachment; filename=excel.xlsx");
-
-  // Send the workbook directly to the response
-  res.end(XLSX.write(workbook, { bookType: "xlsx", type: "buffer" }));
-}
+    // Send the workbook directly to the response
+    res.end(XLSX.write(workbook, { bookType: "xlsx", type: "buffer" }));
+  }
 };
-
-
 
 // Get OMR Statewise lsit
 export const getStateOMRCandidates = async (req, res) => {
-  
-
- 
   let candidates = [];
 
   let queryString = Prisma.sql` WITH CandidateCounts AS (
@@ -795,84 +777,76 @@ ORDER BY COALESCE(C.state, O.state);
 
   const allCandidates = candidateCounts as any[];
 
+  // Check if allCandidates is an array
+  if (Array.isArray(allCandidates)) {
+    const formatted = allCandidates.map((row) => {
+      let basic = {
+        State: row.state,
+        AppliedCount: Number(row.count),
+        PendingCount: Number(row.countpend),
+      };
 
+      return basic;
+    });
 
-// Check if allCandidates is an array
-if (Array.isArray(allCandidates)) {
+    //   return res.json(formatted);
 
-  const formatted = allCandidates.map((row) => {
-    let basic = {
-      State: row.state,
-      AppliedCount: Number(row.count), 
-      PendingCount: Number(row.countpend), 
-    };
+    // Create a new workbook
+    const workbook = XLSX.utils.book_new();
 
-    return basic;
-  });
+    // Add a worksheet to the workbook
+    const worksheet = XLSX.utils.json_to_sheet(formatted);
 
+    // Add the worksheet to the workbook
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
 
-  //   return res.json(formatted);
+    // Set the appropriate headers for the response
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    res.setHeader("Content-Disposition", "attachment; filename=excel.xlsx");
 
-  // Create a new workbook
-  const workbook = XLSX.utils.book_new();
-
-  // Add a worksheet to the workbook
-  const worksheet = XLSX.utils.json_to_sheet(formatted);
-
-  // Add the worksheet to the workbook
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
-
-  // Set the appropriate headers for the response
-  res.setHeader(
-    "Content-Type",
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-  );
-  res.setHeader("Content-Disposition", "attachment; filename=excel.xlsx");
-
-  // Send the workbook directly to the response
-  res.end(XLSX.write(workbook, { bookType: "xlsx", type: "buffer" }));
-}
+    // Send the workbook directly to the response
+    res.end(XLSX.write(workbook, { bookType: "xlsx", type: "buffer" }));
+  }
 };
-
-
 
 // Get OMR Datewise lsit
 export const getDateOMRCandidates = async (req, res) => {
-  
- 
   let candidates = [];
-// Get date values
-const { fromDate, toDate } = req.params;
+  // Get date values
+  const { fromDate, toDate } = req.params;
 
-const allCandidates = await prisma.candidate.groupBy({
-  by: ['createdAt'],
-  where: {
-    isOMR: true,
-    createdAt: {
-      gte: new Date(fromDate),
-      lte: new Date(toDate),
+  const allCandidates = await prisma.candidate.groupBy({
+    by: ["createdAt"],
+    where: {
+      isOMR: true,
+      createdAt: {
+        gte: new Date(fromDate),
+        lte: new Date(toDate),
+      },
     },
-  },
-  _count: {
-    createdAt: true,
-  },
-  orderBy: {
-    createdAt: 'asc',
-  },
-});
+    _count: {
+      createdAt: true,
+    },
+    orderBy: {
+      createdAt: "asc",
+    },
+  });
 
-    // Group by date and sum up the counts
-    const groupedByDate = allCandidates.reduce((result, entry) => {
-      const date = entry.createdAt.toISOString().split('T')[0];
-      result[date] = (result[date] || 0) + entry._count.createdAt;
-      return result;
-    }, {});
+  // Group by date and sum up the counts
+  const groupedByDate = allCandidates.reduce((result, entry) => {
+    const date = entry.createdAt.toISOString().split("T")[0];
+    result[date] = (result[date] || 0) + entry._count.createdAt;
+    return result;
+  }, {});
 
-    // Format the result as an array of objects
-    const formatted = Object.keys(groupedByDate).map(date => ({
-      Date: date,
-      CandidateCount: groupedByDate[date],
-    }));
+  // Format the result as an array of objects
+  const formatted = Object.keys(groupedByDate).map((date) => ({
+    Date: date,
+    CandidateCount: groupedByDate[date],
+  }));
 
   //   return res.json(formatted);
 
@@ -894,8 +868,4 @@ const allCandidates = await prisma.candidate.groupBy({
 
   // Send the workbook directly to the response
   res.end(XLSX.write(workbook, { bookType: "xlsx", type: "buffer" }));
-
 };
-
-
-

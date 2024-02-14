@@ -101,7 +101,7 @@ export const signin = async (req, res) => {
 
   let onboarding = null;
   if (!candidate) {
-    const candidateData = isValidEmail(username)
+    candidate = isValidEmail(username)
       ? {
           email: username,
           emailverified: new Date(),
@@ -111,28 +111,21 @@ export const signin = async (req, res) => {
           phoneverified: new Date(),
         };
 
-    candidate = await prisma.candidate.create({
-      data: candidateData,
-    });
-
-    const onboardingData = {
-      candidateId: candidate.id,
+    onboarding = {
+      current: 1,
+      status: false,
     };
 
     if (utm) {
-      await prisma.utm.create({
+      await prisma.utmlogin.create({
         data: {
-          candidateId: candidate.id,
+          username,
           utm_source: utm.utm_source,
           utm_medium: utm.utm_medium,
           utm_campaign: utm.utm_campaign,
         },
       });
     }
-
-    onboarding = await prisma.onboarding.create({
-      data: onboardingData,
-    });
   } else {
     onboarding = await prisma.onboarding.findUnique({
       where: {
