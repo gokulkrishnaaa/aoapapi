@@ -238,6 +238,7 @@ import {
 import {
   getFullAeeeDetailsByCandidateId,
   getFullJeeDetailsByCandidateId,
+  getCandidateNonScholarshipData,
 } from "./handlers/reports";
 import { invokeAPI } from "./handlers/leadsquared";
 import { invokebulkAPI } from "./handlers/leadsquared";
@@ -676,6 +677,10 @@ router.get(
 router.get(
   "/reports/candidate/jee/:candidateId",
   getFullJeeDetailsByCandidateId
+);
+router.get(
+  "/reports/candidate/nonscholarship/:candidateId",
+  getCandidateNonScholarshipData
 );
 
 router.get("/reports/download-excel", downloadExcel);

@@ -56,3 +56,15 @@ export const getFullJeeDetailsByCandidateId = async (req, res) => {
   });
   return res.json(application);
 };
+
+export const getCandidateNonScholarshipData = async (req, res) => {
+  const { candidateId } = req.params;
+
+  let application = await prisma.nonScholarshipApplication.findFirst({
+    where: {
+      candidateId,
+    },
+    
+  });
+  return res.json(application);
+};
