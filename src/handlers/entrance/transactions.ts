@@ -309,3 +309,215 @@ export const getTransactionLog = async (req, res) => {
 
   return res.json(transactionLog);
 };
+
+export const getAEEDoubleTransaction = async (req, res) => {
+  const { download } = req.query;
+  try {
+    const resultRows = await prisma.$queryRaw`
+    WITH SuccessCounts AS (
+      SELECT
+        "candidateId",
+        COUNT(*) AS SuccessCount
+      FROM "EntrancePayments"
+      WHERE status = 'SUCCESS' AND reattempt = false
+      GROUP BY "candidateId"
+      HAVING COUNT(*) > 1
+    )
+    SELECT 
+      ep.*, 
+      ep."txnid" as "txnid",
+      c.*, 
+      ea."reference" as "ApplicationNo",
+      r."registrationNo" as "RegistrationNo"
+    FROM "EntrancePayments" ep
+    INNER JOIN SuccessCounts sc ON ep."candidateId" = sc."candidateId"
+    INNER JOIN "Candidate" c ON ep."candidateId" = c.id
+    INNER JOIN "ExamApplication" ea ON ep."examapplicationId" = ea.id
+    INNER JOIN "Registration" r ON ea.id = r."examapplicationId" 
+    WHERE ep.status = 'SUCCESS' AND ep.reattempt = false
+    ORDER BY ep."candidateId";   
+    `;
+
+    const resultArr = resultRows as any[];
+
+  
+    const formattedCounts = resultArr.map((row) => ({
+      Name: row.fullname,
+      Email: row.email,
+      Phone: row.phone,
+      ApplicationNo: row.ApplicationNo,
+      RegistrationNo: row.RegistrationNo,
+      TXNid: row.txnid
+    }));
+    console.log("Data", formattedCounts);
+    console.log("Dowload", download);
+
+    if (download) {
+      const formattedCountsWithoutTXN = formattedCounts.map(({ TXNid, ...rest }) => rest);
+      // Create a new workbook
+      const workbook = XLSX.utils.book_new();
+
+      // Add a worksheet to the workbook
+      const worksheet = XLSX.utils.json_to_sheet(formattedCountsWithoutTXN);
+
+      // Add the worksheet to the workbook
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+
+      // Set the appropriate headers for the response
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+      res.setHeader("Content-Disposition", "attachment; filename=excel.xlsx");
+
+      // Send the workbook directly to the response
+      res.end(XLSX.write(workbook, { bookType: "xlsx", type: "buffer" }));
+    } else {
+    
+    return res.json(formattedCounts);
+  }
+  } catch (error) {
+    console.log(error);
+    throw new BadRequestError("Request cannot be processed");
+  }
+};
+
+export const getReattemptDoubleTransaction = async (req, res) => {
+  const { download } = req.query;
+  try {
+    const resultRows = await prisma.$queryRaw`
+    WITH SuccessCounts AS (
+      SELECT
+        "candidateId",
+        COUNT(*) AS SuccessCount
+      FROM "EntrancePayments"
+      WHERE status = 'SUCCESS' AND reattempt = true
+      GROUP BY "candidateId"
+      HAVING COUNT(*) > 1
+    )
+    SELECT 
+      ep.*, 
+      ep."txnid" as "txnid",
+      c.*, 
+      ea."reference" as "ApplicationNo",
+      r."registrationNo" as "RegistrationNo"
+    FROM "EntrancePayments" ep
+    INNER JOIN SuccessCounts sc ON ep."candidateId" = sc."candidateId"
+    INNER JOIN "Candidate" c ON ep."candidateId" = c.id
+    INNER JOIN "ExamApplication" ea ON ep."examapplicationId" = ea.id
+    INNER JOIN "Registration" r ON ea.id = r."examapplicationId" 
+    WHERE ep.status = 'SUCCESS' AND ep.reattempt = true
+    ORDER BY ep."candidateId";   
+    `;
+
+    const resultArr = resultRows as any[];
+
+    // Convert BigInt to regular numbers
+    const formattedCounts = resultArr.map((row) => ({
+      Name: row.fullname,
+      Email: row.email,
+      Phone: row.phone,
+      ApplicationNo: row.ApplicationNo,
+      RegistrationNo: row.RegistrationNo,
+      TXNid: row.txnid
+    }));
+
+    if (download) {
+      const formattedCountsWithoutTXN = formattedCounts.map(({ TXNid, ...rest }) => rest);
+
+      // Create a new workbook
+      const workbook = XLSX.utils.book_new();
+
+      // Add a worksheet to the workbook
+      const worksheet = XLSX.utils.json_to_sheet(formattedCountsWithoutTXN);
+
+      // Add the worksheet to the workbook
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+
+      // Set the appropriate headers for the response
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+      res.setHeader("Content-Disposition", "attachment; filename=excel.xlsx");
+
+      // Send the workbook directly to the response
+      res.end(XLSX.write(workbook, { bookType: "xlsx", type: "buffer" }));
+    } else {
+    
+    return res.json(formattedCounts);
+  }
+  } catch (error) {
+    console.log(error);
+    throw new BadRequestError("Request cannot be processed");
+  }
+};
+
+export const getJEEDoubleTransaction = async (req, res) => {
+  const { download } = req.query;
+  try {
+    const resultRows = await prisma.$queryRaw`
+    WITH SuccessCounts AS (
+      SELECT
+        "candidateId",
+        COUNT(*) AS SuccessCount
+      FROM "JEEPayments"
+      WHERE status = 'SUCCESS'
+      GROUP BY "candidateId"
+      HAVING COUNT(*) > 1
+    )
+    SELECT 
+      jp.*, 
+      jp."txnid" as "txnid",
+      c.*, 
+      ja."reference" as "ApplicationNo"
+    FROM "JEEPayments" jp
+    INNER JOIN SuccessCounts sc ON jp."candidateId" = sc."candidateId"
+    INNER JOIN "Candidate" c ON jp."candidateId" = c.id
+    INNER JOIN "JEEApplication" ja ON jp."jeeapplicationId" = ja.id 
+    WHERE jp.status = 'SUCCESS'
+    ORDER BY jp."candidateId";  
+    `;
+    
+
+    const resultArr = resultRows as any[];
+
+    // Convert BigInt to regular numbers
+    const formattedCounts = resultArr.map((row) => ({
+      Name: row.fullname,
+      Email: row.email,
+      Phone: row.phone,
+      ApplicationNo: row.ApplicationNo,
+      TXNid: row.txnid
+    }));
+
+    if (download) {
+      const formattedCountsWithoutTXN = formattedCounts.map(({ TXNid, ...rest }) => rest);
+      
+      // Create a new workbook
+      const workbook = XLSX.utils.book_new();
+
+      // Add a worksheet to the workbook
+      const worksheet = XLSX.utils.json_to_sheet(formattedCountsWithoutTXN);
+
+      // Add the worksheet to the workbook
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+
+      // Set the appropriate headers for the response
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+      res.setHeader("Content-Disposition", "attachment; filename=excel.xlsx");
+
+      // Send the workbook directly to the response
+      res.end(XLSX.write(workbook, { bookType: "xlsx", type: "buffer" }));
+    } else {
+    
+    return res.json(formattedCounts);
+  }
+  } catch (error) {
+    console.log(error);
+    throw new BadRequestError("Request cannot be processed");
+  }
+};

@@ -155,9 +155,9 @@ import {
   createEntranceTransaction,
   getTransactionsByApplication,
   getTransactionsByCandidate,
-  getFailedTransaction,
-  getExcessTransaction,
-  getDoubleTransaction,
+  getJEEDoubleTransaction,
+  getReattemptDoubleTransaction,
+  getAEEDoubleTransaction,
   getTransactionLog,
 } from "./handlers/entrance/transactions";
 
@@ -491,19 +491,19 @@ router.get(
 router.post("/transactions/entrance/", requireAuth, createEntranceTransaction);
 router.get("/transactions/entrance/", requireAuth, getTransactionsByCandidate);
 router.post(
-  "/transactions/entrance/failed/",
+  "/transactions/entrance/double/jee",
   requireAuth,
-  getFailedTransaction
+  getJEEDoubleTransaction
 );
 router.post(
-  "/transactions/entrance/excess/",
+  "/transactions/entrance/double/reattempt",
   requireAuth,
-  getExcessTransaction
+  getReattemptDoubleTransaction
 );
 router.post(
-  "/transactions/entrance/double/",
+  "/transactions/entrance/double/aeee",
   requireAuth,
-  getDoubleTransaction
+  getAEEDoubleTransaction
 );
 router.get("/transactions/entrance/:txnid", requireAuth, getTransactionLog);
 

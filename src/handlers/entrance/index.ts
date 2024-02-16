@@ -2,9 +2,9 @@ export {
   getTransactionsByApplication,
   createEntranceTransaction,
   getTransactionsByCandidate,
-  getFailedTransaction,
-  getExcessTransaction,
-  getDoubleTransaction,
+  getJEEDoubleTransaction,
+  getReattemptDoubleTransaction,
+  getAEEDoubleTransaction,
   getTransactionLog,
 } from "./transactions";
 
