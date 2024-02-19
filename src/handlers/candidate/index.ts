@@ -30,6 +30,7 @@ export {
   createCandidate,
   putCandidate,
   putCandidateById,
+  createOrUpdateCandidate,
 } from "./putCandidate";
 export {
   createCandidateParent,

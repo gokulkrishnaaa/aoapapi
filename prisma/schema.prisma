@@ -171,6 +171,16 @@ model Utm {
   createdAt DateTime @default(now())
 }
 
+model Utmlogin {
+  id           Int     @id @default(autoincrement())
+  username     String
+  utm_source   String?
+  utm_medium   String?
+  utm_campaign String?
+
+  createdAt DateTime @default(now())
+}
+
 model Entrance {
   id                 String               @id @default(cuid())
   createdAt          DateTime             @default(now())
