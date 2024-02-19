@@ -93,10 +93,6 @@ export const NonSchWelcome = ({
               the course/campus and nothing more.
             </Text>
             <Text className="text-sm leading-6 text-gray-700">
-              Welcome to a world of possibilities. We look forward to meeting
-              you in person.
-            </Text>
-            <Text className="text-sm leading-6 text-gray-700">
               To check your application status and profile, visit: {""}
               <Link href={baseurl} className="text-pink-800 underline">
                 Amrita Online Application Portal (AOAP) managed by Directorate
