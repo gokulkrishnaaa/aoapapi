@@ -40,9 +40,19 @@ export const getAEEEJEECount = async (req, res) => {
   try {
     const resultRows = await prisma.$queryRaw`
     SELECT
-    (SELECT COUNT(*) FROM "ExamApplication") AS aeecount,
-    (SELECT COUNT(*) FROM "JEEApplication") AS jeecount,
-    (SELECT COUNT(*) FROM "ExamApplication") + (SELECT COUNT(*) FROM "JEEApplication") AS totalcount`;
+    (SELECT COUNT(*) FROM "ExamApplication" WHERE status = 'REGISTERED') AS aeecount, 
+    (SELECT COUNT(*) FROM "ApplicationJEE" A 
+     INNER JOIN "ExamApplication" E ON E.id = A."examapplicationId"
+     WHERE A."jee" = true AND E.status = 'REGISTERED') AS aeejeecount,
+   (SELECT COUNT(*) FROM "JEEApplication" WHERE status = 'REGISTERED') AS jeecount,
+    (SELECT COUNT(*) FROM "ExamApplication" WHERE status = 'REGISTERED') + (SELECT COUNT(*) FROM "JEEApplication" WHERE status = 'REGISTERED') AS totalcount,
+
+    (SELECT COUNT(*) FROM "ExamApplication" WHERE status = 'APPLIED') AS aeecountapplied, 
+    (SELECT COUNT(*) FROM "ApplicationJEE" A 
+     INNER JOIN "ExamApplication" E ON E.id = A."examapplicationId"
+     WHERE A."jee" = true AND E.status = 'APPLIED') AS aeejeecountapplied,
+   (SELECT COUNT(*) FROM "JEEApplication" WHERE status != 'REGISTERED') AS jeecountapplied,
+    (SELECT COUNT(*) FROM "ExamApplication" WHERE status = 'APPLIED') + (SELECT COUNT(*) FROM "JEEApplication" WHERE status != 'REGISTERED') AS totalcountapplied;`;
 
     const resultArr = resultRows as any[];
 
@@ -50,7 +60,12 @@ export const getAEEEJEECount = async (req, res) => {
     const formattedCounts = resultArr.map((row) => ({
       aeecount: Number(row.aeecount),
       jeecount: Number(row.jeecount),
-      totalcount: Number(row.totalcount),   
+      aeejeecount: Number(row.aeejeecount),
+      totalcount: Number(row.totalcount), 
+      aeecountapplied: Number(row.aeecountapplied),
+      jeecountapplied: Number(row.jeecountapplied),
+      aeejeecountapplied: Number(row.aeejeecountapplied),
+      totalcountapplied: Number(row.totalcountapplied),     
     }));
 
     return res.json(formattedCounts);
