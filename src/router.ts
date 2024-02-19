@@ -96,6 +96,7 @@ import {
   updateCandidatePlustwoById,
   updateJeeApplication,
   checkCandidateRegistered,
+  createOrUpdateCandidate,
 } from "./handlers/candidate";
 import { requireAuth } from "./middlewares/require-auth";
 import {
@@ -301,6 +302,7 @@ router.get(
 );
 router.get("/candidate", requireAuth, requireCandidate, getCandidate);
 router.post("/candidate", requireAuth, createCandidate);
+router.post("/candidate/upsert", requireAuth, createOrUpdateCandidate);
 router.put("/candidate", requireAuth, putCandidate);
 
 router.post("/candidate/parent", requireAuth, createCandidateParent);
