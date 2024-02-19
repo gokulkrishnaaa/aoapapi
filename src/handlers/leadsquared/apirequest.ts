@@ -5,12 +5,15 @@ import prisma from "../../db";
 
 export async function invokeAPI(req,res) {
 
-    const candate = req.body.candid
-    const candidatecheck = await prisma.lSQ.findUnique({
+    const candate = req.body.candid;
+    let candidatecheck;
+    if(candate){
+     candidatecheck = await prisma.lSQ.findUnique({
         where: {
             candidateId: candate,
         },
       });
+    }
 
       if(req.body.section == 'App Fee Payment' || req.body.section == 'Application Initiated'){
 
@@ -184,7 +187,7 @@ const formattedDateTime = `${currentDatetime.getFullYear()}-${padZero(currentDat
       // Output the API response
       const relatedId = req.relatedId;
       const candid = req.candid;
-  
+  if(candid != "undefined"){
       const data = {
         candid,
         relatedId,
@@ -206,7 +209,7 @@ const formattedDateTime = `${currentDatetime.getFullYear()}-${padZero(currentDat
       });
     }
    
-  
+    }
       // return res.json(lsqresponse);
       return res.json(response.data);
     } catch (error) {
