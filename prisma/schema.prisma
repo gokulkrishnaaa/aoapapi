@@ -679,6 +679,7 @@ model NonScholarship {
 enum NonScholarshipApplicationStatus {
   PENDING
   APPLIED
+  CANCELLED
 }
 
 model NonScholarshipApplication {

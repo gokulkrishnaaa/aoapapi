@@ -8,4 +8,6 @@ export {
   getNonSchAppnlByCandidateId,
   getNonSchAppnlById,
   updateNonSchApplication,
+  cancelNonSchApplication,
+  activateNonSchApplication,
 } from "./application";
