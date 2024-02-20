@@ -129,3 +129,41 @@ export const updateNonSchApplication = async (req, res) => {
 
   return res.json(application);
 };
+
+export const cancelNonSchApplication = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const updated = await prisma.nonScholarshipApplication.update({
+      where: {
+        id,
+      },
+      data: {
+        status: "CANCELLED",
+      },
+    });
+    return res.json(updated);
+  } catch (error) {
+    console.log(error);
+    throw new InternalServerError("Status updation failed");
+  }
+};
+
+export const activateNonSchApplication = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const updated = await prisma.nonScholarshipApplication.update({
+      where: {
+        id,
+      },
+      data: {
+        status: "APPLIED",
+      },
+    });
+    return res.json(updated);
+  } catch (error) {
+    console.log(error);
+    throw new InternalServerError("Status updation failed");
+  }
+};

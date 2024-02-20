@@ -276,6 +276,8 @@ import {
   handleSyncCandidates,
 } from "./handlers/omr";
 import {
+  activateNonSchApplication,
+  cancelNonSchApplication,
   createNonSchApplication,
   createNonSchIntake,
   getCurrentNonSchIntake,
@@ -543,6 +545,8 @@ router.get(
 );
 router.get("/nonscholarship/application/:id", getNonSchAppnlById);
 router.put("/nonscholarship/application/:id", updateNonSchApplication);
+router.put("/nonscholarship/cancel/:id", cancelNonSchApplication);
+router.put("/nonscholarship/activate/:id", activateNonSchApplication);
 
 router.post("/email/otp", sendEmailOtp);
 router.get("/email/welcome", requireAuth, sendWelcomeMail);
