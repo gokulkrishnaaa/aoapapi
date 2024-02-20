@@ -441,7 +441,7 @@ router.post("/exam/paymentreattemptsuccess", examReattemptPaymentSuccess);
 router.post("/exam/paymentfailure", examPaymentFailure);
 router.post("/exam/paymentreattemptfailure", examReattemptPaymentFailure);
 router.get("/exam", requireAuth, getAllExams);
-router.get("/exam/makepaid", requireAuth, makeCandidatePaid);
+router.post("/exam/makepaid", requireAuth, makeCandidatePaid);
 
 router.post("/application", requireAuth, createApplication);
 router.post("/entrance/application", requireAuth, createEntranceApplication);
