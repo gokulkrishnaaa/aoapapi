@@ -232,6 +232,75 @@ export const registerForExam = async (req, res) => {
   return res.json({ message: "done" });
 };
 
+
+export const makeCandidatePaid = async (req, res) => {
+  const { examId, examapplicationId } = req.body;
+
+  const successPayment = await prisma.entrancePayments.findFirst({
+    where: {
+      examapplicationId,    
+    },
+    include: {
+      examapplication: {
+        include: {
+          exam: true,
+        },
+      },
+    },
+  });
+
+   if (successPayment.type == "ONLINE") {
+    const lastEntry = await prisma.registration.findFirst({
+      where: {
+        examId: successPayment.examapplication.exam.id,
+        type: "ONLINE",
+      },
+      orderBy: { id: "desc" },
+    });
+
+    let registrationNo = 1000001;
+
+    if (lastEntry) {
+      const lastRegNo = lastEntry.registrationNo;
+      registrationNo = lastRegNo + 1;
+    }
+
+    entranceWelcome(successPayment.candidateId);
+
+    try {
+      await prisma.registration.create({
+        data: {
+          examId: successPayment.examapplication.exam.id,
+          examapplicationId: successPayment.examapplication.id,
+          registrationNo,
+          createdAt: successPayment.createdAt,
+        },
+      });
+      await prisma.examApplication.update({
+        where: {
+          id: successPayment.examapplication.id,
+        },
+        data: {
+          status: "REGISTERED",
+        },
+      });
+      await prisma.entrancePayments.update({
+        where: {
+          id: examapplicationId,
+        },
+        data: {
+          status: "SUCCESS",
+        },
+      });
+    } catch (error) {
+      console.log(error);
+      throw new BadRequestError("Registration Unsuccessful");
+    }
+  }
+
+  return res.json({ message: "done" });
+};
+
 export const registerForExamReattempt = async (req, res) => {
   const { examapplicationId } = req.body;
 
