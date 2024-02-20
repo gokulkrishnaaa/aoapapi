@@ -294,7 +294,7 @@ export const makeCandidatePaid = async (req, res) => {
       });
     } catch (error) {
       console.log(error);
-      throw new BadRequestError("Registration Unsuccessful");
+      throw new BadRequestError("Make as Payment Unsuccessful");
     }
   }
 
