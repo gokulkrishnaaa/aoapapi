@@ -234,11 +234,11 @@ export const registerForExam = async (req, res) => {
 
 
 export const makeCandidatePaid = async (req, res) => {
-  const { examId, examapplicationId,candidateId } = req.body;  
+  const { examId, examapplicationId, candidateId } = req.body;  
 
     const lastEntry = await prisma.registration.findFirst({
       where: {
-        examId: examapplicationId,
+        examId: examId,
         type: "ONLINE",
       },
       orderBy: { id: "desc" },
@@ -256,7 +256,7 @@ export const makeCandidatePaid = async (req, res) => {
     try {
       await prisma.registration.create({
         data: {
-          examId: examapplicationId,
+          examId: examId,
           examapplicationId: examapplicationId,
           registrationNo,    
         },
