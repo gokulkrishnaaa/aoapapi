@@ -41,4 +41,5 @@ export {
   verifyJeeTransaction,
   examReattemptPaymentSuccess,
   examReattemptPaymentFailure,
+  makeCandidatePaid,
 } from "./exam";
